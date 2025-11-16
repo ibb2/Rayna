@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using KeySharp;
 using pMusic.Models;
@@ -22,7 +23,7 @@ public partial class DisplayAlbumViewModel : PinnedItemViewModelBase
         ImageUrl = album.Thumb;
     }
 
-    public void SetImageUrl()
+    public async Task SetImageUrl()
     {
         if (string.IsNullOrWhiteSpace(ImageUrl))
             return;

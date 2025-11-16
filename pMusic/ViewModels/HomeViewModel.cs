@@ -64,7 +64,7 @@ public partial class HomeViewModel : ViewModelBase
 
         await _plex.GetServerCapabilitiesAsync();
         var allAlbums = await _music.GetAllAlbums(CancellationToken.None, _plex, isLoaded);
-        // await LoadHomepageAlbumsAsync(allAlbums);
+        await LoadHomepageAlbumsAsync(allAlbums);
         await LoadHomepageRecentlyAddedAlbumsAsync(allAlbums);
         await LoadPlaylistsAsync(isLoaded);
         Console.WriteLine("Content loaded");
@@ -82,37 +82,34 @@ public partial class HomeViewModel : ViewModelBase
         Console.WriteLine($"Homepage Execution time: {elapsed.TotalSeconds} seconds");
     }
 
-    // public async Task LoadHomepageAlbumsAsync(IImmutableList<Album> allAlbums)
-    // {
-    //     Stopwatch stopwatch = new Stopwatch();
-    //
-    //     // Start the stopwatch
-    //     stopwatch.Start();
-    //
-    //     var viewModels = allAlbums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
-    //
-    //     // await Task.WhenAll(viewModels.Select(vm => vm.SetImageUrl()));
-    //
-    //     await Dispatcher.UIThread.InvokeAsync(() =>
-    //     {
-    //         Albums.Clear();
-    //
-    //         foreach (var vm in viewModels)
-    //             Albums.Add(vm);
-    //     });
-    //
-    //     Console.WriteLine($"All Albums loaded: {Albums.Count}");
-    //
-    //     // Stop the stopwatch
-    //     stopwatch.Stop();
-    //
-    //     // Get the elapsed time
-    //     TimeSpan elapsed = stopwatch.Elapsed;
-    //
-    //     // Display the elapsed time in various units
-    //     Console.WriteLine($"All Homepage Albums Execution time: {elapsed.TotalMilliseconds} ms");
-    //     Console.WriteLine($"All Homepage Albums Execution time: {elapsed.TotalSeconds} seconds");
-    // }
+    public async Task LoadHomepageAlbumsAsync(IImmutableList<Album> allAlbums)
+    {
+        Stopwatch stopwatch = new Stopwatch();
+
+        // Start the stopwatch
+        stopwatch.Start();
+
+        var viewModels = allAlbums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
+
+        Task.WaitAll(viewModels.Select(vm => vm.SetImageUrl()));
+
+        Albums.Clear();
+
+        foreach (var vm in viewModels)
+            Albums.Add(vm);
+
+        Console.WriteLine($"All Albums loaded: {Albums.Count}");
+
+        // Stop the stopwatch
+        stopwatch.Stop();
+
+        // Get the elapsed time
+        TimeSpan elapsed = stopwatch.Elapsed;
+
+        // Display the elapsed time in various units
+        Console.WriteLine($"All Homepage Albums Execution time: {elapsed.TotalMilliseconds} ms");
+        Console.WriteLine($"All Homepage Albums Execution time: {elapsed.TotalSeconds} seconds");
+    }
 
     public async Task LoadHomepageRecentlyAddedAlbumsAsync(IImmutableList<Album> allAlbums)
     {

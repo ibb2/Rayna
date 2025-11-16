@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         collection.AddTransient<IMusic, Music>();
         collection.AddTransient<LoginViewModel>();
         collection.AddTransient<MainViewModel>();
-        collection.AddSingleton<HomeViewModel>();
+        collection.AddTransient<HomeViewModel>();
         collection.AddTransient<AlbumViewModel>();
         collection.AddTransient<ArtistViewModel>();
         collection.AddTransient<SidecarViewModel>();

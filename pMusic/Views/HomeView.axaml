@@ -7,6 +7,7 @@
              xmlns:converter="clr-namespace:pMusic.Converter"
              xmlns:behaviours="clr-namespace:pMusic.Behaviours"
              xmlns:shadui="clr-namespace:ShadUI;assembly=ShadUI"
+             xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
              x:Class="pMusic.Views.HomeView"
              x:DataType="vm:HomeViewModel">
     <Design.DataContext>
@@ -102,11 +103,7 @@
                                         <StackPanel>
                                             <Border Width="175" Height="125" CornerRadius="4" ClipToBounds="True"
                                                     BorderThickness="1" HorizontalAlignment="Center">
-                                                <Rectangle RadiusX="4" RadiusY="4">
-                                                    <Rectangle.Fill>
-                                                        <ImageBrush Source="{Binding Image}" Stretch="UniformToFill" />
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
+                                                <Image asyncImageLoader:ImageLoader.Source="{Binding ImageUrl}" />
                                             </Border>
                                         </StackPanel>
                                         <StackPanel Spacing="4">

@@ -27,9 +27,10 @@ public partial class HomeView : UserControl
     protected override void OnLoaded(RoutedEventArgs e)
     {
         var vm = (HomeViewModel)DataContext!;
-        var isLoaded = vm.IsLoaded;
-        Console.WriteLine($"Is loaded: {isLoaded}");
-        if (!isLoaded) _ = vm.LoadContent();
-        Console.WriteLine($"check Is loaded: {isLoaded}");
+        // var isLoaded = vm.IsLoaded;
+        // Console.WriteLine($"Is loaded: {isLoaded}");
+        // if (!isLoaded)
+        _ = vm.LoadContent();
+        // Console.WriteLine($"check Is loaded: {isLoaded}");
     }
 }
