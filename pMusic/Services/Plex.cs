@@ -285,25 +285,14 @@ public class Plex
             var albumXml = await httpClient.GetStringAsync(albumUrl);
             var albumXElement = XElement.Parse(albumXml);
 
-            if (albumXElement.DescendantsAndSelf("Directory").Count() == albumsInDbCount)
-            {
-                return _musicDbContext.Albums.Where(a => (a.ArtistId == artist.Id) & (a.UserId == _plexId))
-                    .ToImmutableList();
-            }
+            Console.WriteLine($"Getting {artist.Title.ToUpper()}'s new albums from plex");
+            var albumsToParse = albumXElement.DescendantsAndSelf("Directory").ToList();
 
-            var dbAlbumsGuid = _musicDbContext.Albums.Select(a => a.Guid).ToList();
-            if (albumXElement.DescendantsAndSelf("Directory").Count() != albumsInDbCount)
-            {
-                Console.WriteLine($"Getting {artist.Title.ToUpper()}'s new albums from plex");
-                var albumsToParse = albumXElement.DescendantsAndSelf("Directory")
-                    .Where(a => !dbAlbumsGuid.Contains(a.Attribute("guid").Value)).ToList();
+            var albums = await ParseAlbums(albumsToParse, uri, artist);
 
-                var albums = await ParseAlbums(albumsToParse, uri, artist);
+            await _musicDbContext.SaveChangesAsync();
 
-                await _musicDbContext.SaveChangesAsync();
-
-                return albums.ToImmutableList();
-            }
+            return albums.ToImmutableList();
         }
         catch (HttpRequestException ex)
         {
@@ -678,11 +667,15 @@ public class Plex
 
         foreach (var album in albums)
         {
+            var guid = album.Attribute("guid")?.Value ?? "";
+            var exists = _musicDbContext.Albums.Any(x => x.Guid == guid);
+
+            // Always create a fresh network album object
             var a = new Album
             {
                 AddedAt = DateTimeOffset
                     .FromUnixTimeSeconds(long.Parse(album.Attribute("addedAt")?.Value ?? "0")).LocalDateTime,
-                Guid = album.Attribute("guid")?.Value ?? "",
+                Guid = guid,
                 Key = album.Attribute("key")?.Value ?? "",
                 LastRatedAt = DateTimeOffset
                     .FromUnixTimeSeconds(long.Parse(album.Attribute("lastRatedAt")?.Value ?? "0"))
@@ -714,25 +707,32 @@ public class Plex
                 Year = album.Attribute("year")?.Value ?? "",
                 Image = new Image
                 {
-                    Alt = album.Element("Image").Attribute("alt")?.Value ?? "",
-                    Type = album.Element("Image").Attribute("type")?.Value ?? "",
-                    Url = album.Element("Image").Attribute("url")?.Value ?? ""
+                    Alt = album.Element("Image")?.Attribute("alt")?.Value ?? "",
+                    Type = album.Element("Image")?.Attribute("type")?.Value ?? "",
+                    Url = album.Element("Image")?.Attribute("url")?.Value ?? ""
                 },
                 UltraBlurColors = new UltraBlurColors
                 {
-                    TopLeft = album.Element("UltraBlurColors").Attribute("topLeft")?.Value ?? "",
-                    TopRight = album.Element("UltraBlurColors").Attribute("topRight")?.Value ?? "",
-                    BottomLeft = album.Element("UltraBlurColors").Attribute("bottomLeft")?.Value ?? "",
-                    BottomRight = album.Element("UltraBlurColors").Attribute("bottomRight")?.Value ?? ""
+                    TopLeft = album.Element("UltraBlurColors")?.Attribute("topLeft")?.Value ?? "",
+                    TopRight = album.Element("UltraBlurColors")?.Attribute("topRight")?.Value ?? "",
+                    BottomLeft = album.Element("UltraBlurColors")?.Attribute("bottomLeft")?.Value ?? "",
+                    BottomRight = album.Element("UltraBlurColors")?.Attribute("bottomRight")?.Value ?? ""
                 },
                 UserId = _plexId,
                 ArtistId = artist.Id,
                 Artist = artist
             };
 
-            artist.Albums.Add(a);
+            // Always use the network album in the result
             newAlbums.Add(a);
-            _musicDbContext.Add(a);
+
+            // Only insert if new
+            if (!exists)
+            {
+                // Always link fresh album to artist
+                artist.Albums.Add(a);
+                _musicDbContext.Albums.Add(a);
+            }
         }
 
         return newAlbums;
