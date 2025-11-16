@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -64,8 +65,9 @@ public partial class HomeViewModel : ViewModelBase
 
         await _plex.GetServerCapabilitiesAsync();
         var allAlbums = await _music.GetAllAlbums(CancellationToken.None, _plex, isLoaded);
-        await LoadHomepageAlbumsAsync(allAlbums);
-        await LoadHomepageRecentlyAddedAlbumsAsync(allAlbums);
+        var viewModels = await LoadAlbumsViewModelsAsync(allAlbums);
+        await LoadHomepageAlbumsAsync(viewModels);
+        await LoadHomepageRecentlyAddedAlbumsAsync(viewModels);
         await LoadPlaylistsAsync(isLoaded);
         Console.WriteLine("Content loaded");
 
@@ -82,16 +84,21 @@ public partial class HomeViewModel : ViewModelBase
         Console.WriteLine($"Homepage Execution time: {elapsed.TotalSeconds} seconds");
     }
 
-    public async Task LoadHomepageAlbumsAsync(IImmutableList<Album> allAlbums)
+    public Task<List<DisplayAlbumViewModel>> LoadAlbumsViewModelsAsync(IImmutableList<Album> allAlbums)
+    {
+        var viewModels = allAlbums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
+
+        Task.WaitAll(viewModels.Select(vm => vm.SetImageUrl()));
+
+        return Task.FromResult(viewModels);
+    }
+
+    public async Task LoadHomepageAlbumsAsync(List<DisplayAlbumViewModel> viewModels)
     {
         Stopwatch stopwatch = new Stopwatch();
 
         // Start the stopwatch
         stopwatch.Start();
-
-        var viewModels = allAlbums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
-
-        Task.WaitAll(viewModels.Select(vm => vm.SetImageUrl()));
 
         Albums.Clear();
 
@@ -111,38 +118,33 @@ public partial class HomeViewModel : ViewModelBase
         Console.WriteLine($"All Homepage Albums Execution time: {elapsed.TotalSeconds} seconds");
     }
 
-    public async Task LoadHomepageRecentlyAddedAlbumsAsync(IImmutableList<Album> allAlbums)
+    public async Task LoadHomepageRecentlyAddedAlbumsAsync(List<DisplayAlbumViewModel> viewModels)
     {
         Stopwatch stopwatch = new Stopwatch();
 
         // Start the stopwatch
         stopwatch.Start();
 
-        var viewModels = allAlbums.OrderByDescending(a => a.AddedAt).Select(a => new DisplayAlbumViewModel(a, _plex))
+        var orderedViewModels = viewModels.OrderByDescending(a => a.Album.AddedAt)
             .ToList();
 
-        // await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
 
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        RecentlyAddedAlbums.Clear();
+        TopEight.Clear();
+
+        var count = 0;
+
+        foreach (var vm in orderedViewModels)
         {
-            RecentlyAddedAlbums.Clear();
-            TopEight.Clear();
-
-            var count = 0;
-
-            foreach (var vm in viewModels)
+            if (count < 8)
             {
-                if (count < 8)
-                {
-                    TopEight.Add(vm);
-                }
-
-                count++;
-
-                RecentlyAddedAlbums.Add(vm);
+                TopEight.Add(vm);
             }
-        });
 
+            count++;
+
+            RecentlyAddedAlbums.Add(vm);
+        }
 
         Console.WriteLine($"Recently Added Albums loaded: {Albums.Count}");
 
