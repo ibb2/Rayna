@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -8,18 +8,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
-	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
-		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
-		<!-- macOS doesn’t use ApplicationIcon — just ensure the .icns is bundled -->
-	</PropertyGroup>
-	<ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
-		<None Include="Assets/AppIcon.icns" Pack="true" />
-	</ItemGroup>
+    <ItemGroup>
+        <NativeLibrary Include="runtimes\**\*.*"/>
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+        <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
+        <!-- macOS doesn’t use ApplicationIcon — just ensure the .icns is bundled -->
+    </PropertyGroup>
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
+        <None Include="Assets/AppIcon.icns" Pack="true"/>
+    </ItemGroup>
 
     <ItemGroup>
         <None Update="..\music.db">
@@ -29,37 +33,37 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncImageLoader.Avalonia" />
-        <PackageReference Include="Avalonia" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" />
-        <PackageReference Include="Avalonia.Themes.Fluent" />
-        <PackageReference Include="Avalonia.Fonts.Inter" />
+        <PackageReference Include="AsyncImageLoader.Avalonia"/>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Controls.DataGrid"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Fonts.Inter"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" />
-        <PackageReference Include="CommunityToolkit.Mvvm" />
-        <PackageReference Include="HeroIcons.Avalonia" />
-        <PackageReference Include="Huskui.Avalonia" />
-        <PackageReference Include="IconPacks.Avalonia" />
-        <PackageReference Include="KeySharp" />
-        <PackageReference Include="Lucide.Avalonia" />
-        <PackageReference Include="LukeHagar.PlexAPI.SDK" />
-        <PackageReference Include="ManagedBass" />
-        <PackageReference Include="ManagedBass.Flac" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport"/>
+        <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="HeroIcons.Avalonia"/>
+        <PackageReference Include="Huskui.Avalonia"/>
+        <PackageReference Include="IconPacks.Avalonia"/>
+        <PackageReference Include="KeySharp"/>
+        <PackageReference Include="Lucide.Avalonia"/>
+        <PackageReference Include="LukeHagar.PlexAPI.SDK"/>
+        <PackageReference Include="ManagedBass"/>
+        <PackageReference Include="ManagedBass.Flac"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-        <PackageReference Include="Microsoft.Extensions.Http" />
-        <PackageReference Include="Microsoft.Extensions.Http.Polly" />
-        <PackageReference Include="ShadUI" />
-        <PackageReference Include="SoundFlow" />
-        <PackageReference Include="System.Net.Http" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="Microsoft.Extensions.Http"/>
+        <PackageReference Include="Microsoft.Extensions.Http.Polly"/>
+        <PackageReference Include="ShadUI"/>
+        <PackageReference Include="SoundFlow"/>
+        <PackageReference Include="System.Net.Http"/>
     </ItemGroup>
 </Project>

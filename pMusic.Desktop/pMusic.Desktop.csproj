@@ -1,85 +1,103 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net9.0</TargetFramework>
+    <!-- Basic Application Configuration -->
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 
-		<!-- Add your supported runtime identifiers -->
-		<RuntimeIdentifiers>win-x64;osx-arm64;osx-x64</RuntimeIdentifiers>
+        <!-- Supported runtime identifiers (for cross-platform builds) -->
+        <RuntimeIdentifiers>win-x64;osx-arm64;osx-x64</RuntimeIdentifiers>
 
-		<Nullable>enable</Nullable>
-		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <!-- Application Metadata -->
+        <ApplicationTitle>pMusic</ApplicationTitle>
+        <Version>0.3.0</Version>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <PackageId>com.ib.pmusic</PackageId>
+        <ApplicationId>$(PackageId)</ApplicationId>
+    </PropertyGroup>
 
-		<!-- Application metadata -->
-		<ApplicationTitle>pMusic</ApplicationTitle>
-		<Version>0.3.0</Version>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<PackageId>com.ib.pmusic</PackageId>
-		<ApplicationId>$(PackageId)</ApplicationId>
-	</PropertyGroup>
+    <!-- Native Library Handling -->
+    <PropertyGroup>
+        <!-- Copy all assembly dependencies to output (including native DLLs from NuGet) -->
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <!-- Don't warn about architecture mismatches for cross-platform builds -->
+        <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    </PropertyGroup>
 
-	<!-- Parcel / Publish settings -->
-	<PropertyGroup>
-		<PublishSingleFile>true</PublishSingleFile>
-		<SelfContained>true</SelfContained>
-		<PublishTrimmed>true</PublishTrimmed>
-		<PublishReadyToRun>true</PublishReadyToRun>
-		<UseAppHost>true</UseAppHost>
-	</PropertyGroup>
+    <!-- Copy runtime native libraries to output root (for ManagedBass, etc.) -->
+    <Target Name="CopyNativeBassLibraries" AfterTargets="AfterBuild;AfterPublish">
+        <!-- Determine the correct output directory (build or publish) -->
+        <PropertyGroup>
+            <TargetDir Condition="'$(PublishDir)' != ''">$(PublishDir)</TargetDir>
+            <TargetDir Condition="'$(PublishDir)' == ''">$(OutputPath)</TargetDir>
+        </PropertyGroup>
 
-	<!-- Include app assets -->
-	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
-		<ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
-		<!-- macOS doesn’t use ApplicationIcon — just ensure the .icns is bundled -->
-	</PropertyGroup>
-	<ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
-		<None Include="Assets/AppIcon.icns" Pack="true" />
-	</ItemGroup>
+        <ItemGroup>
+            <!-- Copy only the DLLs for the current platform -->
+            <BassNativeLibs Include="$(ProjectDir)runtimes\win-x64\native\*.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64'"/>
+            <BassNativeLibs Include="$(ProjectDir)runtimes\osx-arm64\native\*.*" Condition="'$(RuntimeIdentifier)' == 'osx-arm64'"/>
+            <BassNativeLibs Include="$(ProjectDir)runtimes\osx-x64\native\*.*" Condition="'$(RuntimeIdentifier)' == 'osx-x64'"/>
+            <!-- Fallback: also check output directory in case NuGet puts them there -->
+            <BassNativeLibs Include="$(TargetDir)runtimes\**\native\*.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64'"/>
+            <BassNativeLibs Include="$(TargetDir)runtimes\**\native\*.dylib" Condition="'$(RuntimeIdentifier)' == 'osx-arm64' Or '$(RuntimeIdentifier)' == 'osx-x64'"/>
+        </ItemGroup>
 
+        <Copy SourceFiles="@(BassNativeLibs)"
+              DestinationFolder="$(TargetDir)"
+              SkipUnchangedFiles="true"
+              Condition="'@(BassNativeLibs)' != ''"/>
+        <Message Text="Copied BASS native libraries to $(TargetDir)" Importance="high"/>
+    </Target>
 
-	<!-- NuGet dependencies -->
-	<ItemGroup>
-		<PackageReference Include="AsyncImageLoader.Avalonia" />
-		<PackageReference Include="Avalonia.Desktop" />
-		<PackageReference Include="AvaloniaUI.DiagnosticsSupport" />
-		<PackageReference Include="HeroIcons.Avalonia" />
-		<PackageReference Include="Huskui.Avalonia" />
-		<PackageReference Include="IconPacks.Avalonia" />
-		<PackageReference Include="Lucide.Avalonia" />
-		<PackageReference Include="ManagedBass" />
-		<PackageReference Include="ManagedBass.Flac" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="ShadUI" />
-	</ItemGroup>
+    <!-- Publishing Settings -->
+    <PropertyGroup>
+        <!-- SelfContained: Include .NET runtime with the app (true = no .NET install required) -->
+        <SelfContained>true</SelfContained>
+        <!-- PublishSingleFile: Package everything into one .exe (false = keep separate files) -->
+        <PublishSingleFile>false</PublishSingleFile>
+        <!-- PublishTrimmed: Remove unused code to reduce size (false = safer, larger) -->
+        <PublishTrimmed>false</PublishTrimmed>
+        <!-- PublishReadyToRun: Pre-compile for faster startup (false = smaller size) -->
+        <PublishReadyToRun>false</PublishReadyToRun>
+    </PropertyGroup>
 
-	<!-- Project reference -->
-	<ItemGroup>
-		<ProjectReference Include="..\pMusic\pMusic.csproj" />
-	</ItemGroup>
+    <!-- Platform-Specific Application Icons -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+        <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
+        <None Include="Assets/AppIcon.icns" Pack="true"/>
+    </ItemGroup>
 
-	<!-- Copy BASS native libraries into output -->
-	<ItemGroup>
-		<None Include="bass.dll" CopyToOutputDirectory="Always" />
-		<None Include="bassflac.dll" CopyToOutputDirectory="Always" />
-		<None Include="bass.net.dll" CopyToOutputDirectory="Always" />
-	</ItemGroup>
+    <!-- NuGet Package Dependencies -->
+    <ItemGroup>
+        <PackageReference Include="AsyncImageLoader.Avalonia"/>
+        <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport"/>
+        <PackageReference Include="HeroIcons.Avalonia"/>
+        <PackageReference Include="Huskui.Avalonia"/>
+        <PackageReference Include="IconPacks.Avalonia"/>
+        <PackageReference Include="Lucide.Avalonia"/>
+        <PackageReference Include="ManagedBass"/>
+        <PackageReference Include="ManagedBass.Flac"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="ShadUI"/>
+    </ItemGroup>
 
-	<!-- Preserve native DLLs in single-file publish -->
-	<ItemGroup>
-		<NativeFile Include="bass.dll" />
-		<NativeFile Include="bassflac.dll" />
-		<NativeFile Include="bass.net.dll" />
-	</ItemGroup>
+    <!-- Project References -->
+    <ItemGroup>
+        <ProjectReference Include="..\pMusic\pMusic.csproj"/>
+    </ItemGroup>
 
 </Project>

@@ -17,6 +17,7 @@ using Country = pMusic.Models.Country;
 using Image = pMusic.Models.Image;
 using Media = pMusic.Models.Media;
 using Part = pMusic.Models.Part;
+using Playlist = pMusic.Models.Playlist;
 using UltraBlurColors = pMusic.Models.UltraBlurColors;
 
 
@@ -411,8 +412,8 @@ public class Plex
 
     public async ValueTask MarkTrackAsPlayed(double ratingKey)
     {
-        var res = await _plexApi.Media.MarkPlayedAsync(ratingKey);
-        Console.WriteLine($"Mark Played Response: {res}");
+        // var res = await _plexApi..Media.MarkPlayedAsync(ratingKey);
+        // Console.WriteLine($"Mark Played Response: {res}");
     }
 
     public async ValueTask UpdateSession(string uri, string key, string state, string ratingKey, decimal time,
