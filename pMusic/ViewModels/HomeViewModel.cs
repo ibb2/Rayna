@@ -62,6 +62,7 @@ public partial class HomeViewModel : ViewModelBase
         // Start the stopwatch
         stopwatch.Start();
 
+        await _plex.GetServerCapabilitiesAsync();
         var allAlbums = await _music.GetAllAlbums(CancellationToken.None, _plex, isLoaded);
         await LoadHomepageAlbumsAsync(allAlbums);
         await LoadHomepageRecentlyAddedAlbumsAsync(allAlbums);

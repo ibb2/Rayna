@@ -37,6 +37,8 @@ public class Plex
     private string _plexId;
     private string _plexToken;
 
+    private string _serverUri = "";
+
 
     public Plex(HttpClient httpClient, MusicDbContext musicDbContext)
     {
@@ -219,7 +221,7 @@ public class Plex
         return thumbnail;
     }
 
-    public async ValueTask<string> GetServerCapabilitiesAsync()
+    public async ValueTask GetServerCapabilitiesAsync()
     {
         SetInformation();
         var uri = "https://plex.tv/api/v2/resources?" + "X-Plex-Client-Identifier=" + _plexClientIdentifier +
@@ -227,7 +229,12 @@ public class Plex
         var serversXmlRes = await httpClient.GetStringAsync(uri);
         var serverUri = XElement.Parse(serversXmlRes).Descendants("connection").First().Attribute("uri").Value;
         Console.WriteLine($"{serverUri} -> Server Response");
-        return serverUri;
+        _serverUri = serverUri;
+    }
+
+    public string GetServerUri()
+    {
+        return _serverUri;
     }
 
     public async ValueTask<IImmutableList<Artist>> GetArtists(string uri)

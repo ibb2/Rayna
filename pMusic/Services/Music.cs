@@ -45,7 +45,7 @@ public class Music : IMusic
     {
         await Task.Delay(TimeSpan.FromSeconds(1), ct);
 
-        var serverUrl = await plex.GetServerCapabilitiesAsync();
+        var serverUrl = plex.GetServerUri();
         var tracks = await plex.GetTrackList(serverUrl!, albumGuid);
 
         var i = 0;
@@ -57,7 +57,7 @@ public class Music : IMusic
     {
         await Task.Delay(TimeSpan.FromSeconds(1), ct);
 
-        var serverUrl = await plex.GetServerCapabilitiesAsync();
+        var serverUrl = plex.GetServerUri();
         var tracks = await plex.GetPlaylistTrackList(serverUrl!, guid);
 
         var i = 0;
@@ -71,7 +71,7 @@ public class Music : IMusic
         // Start the stopwatch
         stopwatch.Start();
 
-        ServerUri = await plex.GetServerCapabilitiesAsync();
+        ServerUri = plex.GetServerUri();
 
         var playlists = await plex.GetPlaylists(ServerUri!, loaded);
 
@@ -95,7 +95,7 @@ public class Music : IMusic
         // Start the stopwatch
         stopwatch.Start();
 
-        var serverUri = await plex.GetServerCapabilitiesAsync();
+        var serverUri = plex.GetServerUri();
         var albums = await plex.GetAllAlbums(serverUri, loaded);
 
         ServerUri = serverUri;
@@ -123,7 +123,7 @@ public class Music : IMusic
 
         await Task.Delay(TimeSpan.FromSeconds(1), ct);
 
-        var serverUri = await plex.GetServerCapabilitiesAsync();
+        var serverUri = plex.GetServerUri();
         var albums = await plex.GetArtistAlbums(serverUri, artist);
 
         // Stop the stopwatch
@@ -141,8 +141,7 @@ public class Music : IMusic
 
     public async ValueTask<string> GetServerUri(CancellationToken ct, Plex plex)
     {
-        ServerUri = await plex.GetServerCapabilitiesAsync();
-
+        ServerUri = plex.GetServerUri();
         return ServerUri;
     }
 }
