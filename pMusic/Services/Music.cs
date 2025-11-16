@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using pMusic.Models;
@@ -87,23 +88,23 @@ public class Music : IMusic
 
     public async ValueTask<IImmutableList<Album>> GetAllAlbums(CancellationToken ct, Plex plex, bool loaded = false)
     {
-        // Stopwatch stopwatch = new Stopwatch();
-        //
-        // // Start the stopwatch
-        // stopwatch.Start();
+        Stopwatch stopwatch = new Stopwatch();
+
+        // Start the stopwatch
+        stopwatch.Start();
 
         var serverUri = plex.GetServerUri();
         var albums = await plex.GetAllAlbums(serverUri, loaded);
 
-        // // Stop the stopwatch
-        // stopwatch.Stop();
-        //
-        // // Get the elapsed time
-        // TimeSpan elapsed = stopwatch.Elapsed;
-        //
-        // // Display the elapsed time in various units
-        // Console.WriteLine($"All Albums Execution time: {elapsed.TotalMilliseconds} ms");
-        // Console.WriteLine($"All Albums Execution time: {elapsed.TotalSeconds} seconds");
+        // Stop the stopwatch
+        stopwatch.Stop();
+
+        // Get the elapsed time
+        TimeSpan elapsed = stopwatch.Elapsed;
+
+        // Display the elapsed time in various units
+        Console.WriteLine($"All Albums Execution time: {elapsed.TotalMilliseconds} ms");
+        Console.WriteLine($"All Albums Execution time: {elapsed.TotalSeconds} seconds");
 
         return albums;
     }

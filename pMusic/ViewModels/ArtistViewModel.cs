@@ -74,7 +74,7 @@ public partial class ArtistViewModel : ViewModelBase
 
         var viewModels = albums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
 
-        await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
+        // await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
 
         await Dispatcher.UIThread.InvokeAsync(() =>
         {

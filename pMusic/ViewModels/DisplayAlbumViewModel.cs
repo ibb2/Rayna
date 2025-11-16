@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using KeySharp;
 using pMusic.Models;
@@ -18,26 +16,18 @@ public partial class DisplayAlbumViewModel : PinnedItemViewModelBase
     {
         _plex = plex;
         Album = album;
+        Artist = album.Artist.Title;
         Title = album.Title;
         // Artist = album.Artist.Title;
         ImageUrl = album.Thumb;
     }
 
-    public async Task LoadThumbAsync()
+    public void SetImageUrl()
     {
         if (string.IsNullOrWhiteSpace(ImageUrl))
             return;
 
-        try
-        {
-            var ThumbnailUrl = ImageUrl + "?X-Plex-Token=" +
-                               Keyring.GetPassword("com.ib", "pmusic", "authToken");
-            Image = await _plex.GetBitmapImage(ThumbnailUrl);
-        }
-        catch
-        {
-            // Log or handle failure (e.g., set fallback image)
-            Console.WriteLine("Failed to load thumbnail");
-        }
+        ImageUrl = ImageUrl + "?X-Plex-Token=" +
+                   Keyring.GetPassword("com.ib", "pmusic", "authToken");
     }
 }

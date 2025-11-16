@@ -117,7 +117,7 @@ public partial class AlbumViewModel : ViewModelBase
         foreach (var p in pViewModels) _sidebar.Pinned.Add(p);
         var albums = _musicDbContext.Albums.Where(x => x.IsPinned).ToList();
         var viewModels = albums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
-        await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
+        // await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
         foreach (var a in viewModels) _sidebar.Pinned.Add(a);
     }
 
