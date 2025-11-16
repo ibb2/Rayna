@@ -10,7 +10,6 @@ using System.Xml.Linq;
 using Avalonia.Media.Imaging;
 using KeySharp;
 using LukeHagar.PlexAPI.SDK;
-using Microsoft.EntityFrameworkCore;
 using pMusic.Database;
 using pMusic.Models;
 using Country = pMusic.Models.Country;
@@ -235,8 +234,6 @@ public class Plex
     {
         try
         {
-            var artistsFromDb = _musicDbContext.Artists.Where(a => a.UserId == _plexId).ToList();
-
             // Fetch Music library from Plex
             var libraryUrl = uri + "/library/sections/";
             var librariesXml = await httpClient.GetStringAsync(libraryUrl);
@@ -250,19 +247,25 @@ public class Plex
             var artistsDetailsXml = await httpClient.GetStringAsync(artistUri);
             var artistXElement = XElement.Parse(artistsDetailsXml);
 
-            if (artistXElement.DescendantsAndSelf("Directory").Count() == artistsFromDb.Count)
-            {
-                return artistsFromDb.ToImmutableList();
-            }
-
             Console.WriteLine($"Getting new artists from plex");
-            var dbArtistsGuid = _musicDbContext.Artists.Select(a => a.Guid).ToList();
             var artistsToParse = artistXElement.DescendantsAndSelf("Directory")
-                .Where(a => !dbArtistsGuid.Contains(a.Attribute("guid").Value)).ToList();
+                .ToList();
 
             var artists = await ParseArtists(artistsToParse, lib.Key, uri);
-            _musicDbContext.Artists.AddRange(artists);
-            await _musicDbContext.SaveChangesAsync();
+
+            // Get existing track IDs from the database for this album
+            var existingArtistId = _musicDbContext.Artists
+                .Select(a => a.Guid)
+                .ToHashSet();
+
+            // Filter to only tracks that don't already exist
+            var artistsNotInDb = artists.Where(a => !existingArtistId.Contains(a.Guid)).ToList();
+
+            if (artistsNotInDb.Any())
+            {
+                _musicDbContext.Artists.AddRange(artistsNotInDb);
+                await _musicDbContext.SaveChangesAsync();
+            }
 
             return artists.ToImmutableList();
         }
@@ -275,8 +278,6 @@ public class Plex
 
     public async ValueTask<IImmutableList<Album>> GetArtistAlbums(string uri, Artist artist)
     {
-        var albumsInDbCount = _musicDbContext.Albums.Count(a => (a.ArtistId == artist.Id) & (a.UserId == _plexId));
-
         try
         {
             var albumUrl =
@@ -285,79 +286,46 @@ public class Plex
             var albumXml = await httpClient.GetStringAsync(albumUrl);
             var albumXElement = XElement.Parse(albumXml);
 
-            if (albumXElement.DescendantsAndSelf("Directory").Count() == albumsInDbCount)
-            {
-                return _musicDbContext.Albums.Where(a => (a.ArtistId == artist.Id) & (a.UserId == _plexId))
-                    .ToImmutableList();
-            }
+            Console.WriteLine($"Getting {artist.Title.ToUpper()}'s new albums from plex");
+            var albumsToParse = albumXElement.DescendantsAndSelf("Directory").ToList();
 
-            var dbAlbumsGuid = _musicDbContext.Albums.Select(a => a.Guid).ToList();
-            if (albumXElement.DescendantsAndSelf("Directory").Count() != albumsInDbCount)
-            {
-                Console.WriteLine($"Getting {artist.Title.ToUpper()}'s new albums from plex");
-                var albumsToParse = albumXElement.DescendantsAndSelf("Directory")
-                    .Where(a => !dbAlbumsGuid.Contains(a.Attribute("guid").Value)).ToList();
+            var albums = await ParseAlbums(albumsToParse, uri, artist);
 
-                var albums = await ParseAlbums(albumsToParse, uri, artist);
+            await _musicDbContext.SaveChangesAsync();
 
-                await _musicDbContext.SaveChangesAsync();
-
-                return albums.ToImmutableList();
-            }
+            return albums.ToImmutableList();
         }
         catch (HttpRequestException ex)
         {
             Console.WriteLine($"Error retrieving albums: {ex.Message}");
-            if (albumsInDbCount > 0)
-            {
-                return _musicDbContext.Albums.Where(a => (a.Artist == artist) & (a.UserId == _plexId))
-                    .ToImmutableList();
-            }
 
-            return ImmutableList<Album>.Empty;
+            return _musicDbContext.Albums.Where(a => (a.Artist == artist) & (a.UserId == _plexId))
+                .ToImmutableList();
         }
-
-        return ImmutableList<Album>.Empty;
     }
 
     public async ValueTask<IImmutableList<Track>> GetTrackList(string uri, string albumGuid, bool isPlaylist = false)
     {
-        // Check if a track exists in db. If they do, return them.
-        var trackExists = _musicDbContext.Tracks.Any(t => t.UserId == _plexId && t.ParentGuid == albumGuid);
-
-        if (trackExists)
-        {
-            // _logger.LogInformation("Tracks found in DB for Album GUID {AlbumGuid}, retrieving with related data.", albumGuid); // Added logging for clarity
-
-            // Use Include() to load Media, and ThenInclude() to load Part from Media
-            var tracksFromDb = _musicDbContext.Tracks
-                .Include(t => t.Media) // Tell EF Core to load the Media navigation property
-                .ThenInclude(m => m.Part) // For each Media loaded, also load its Part navigation property
-                .Where(t => t.UserId == _plexId && t.ParentGuid == albumGuid) // Filter by UserId AND AlbumGuid
-                .ToImmutableList();
-
-            // _logger.LogInformation("Retrieved {TrackCount} tracks from DB.", tracksFromDb.Count);
-            // Optional: Check if Media/Part are loaded for the first track (for debugging)
-            // if (tracksFromDb.Any() && tracksFromDb.First().Media == null) {
-            //     _logger.LogWarning("First track from DB still has null Media. Check Include/ThenInclude logic and DB data.");
-            // } else if (tracksFromDb.Any() && tracksFromDb.First().Media?.Part == null) {
-            //     _logger.LogWarning("First track from DB has Media but null Part. Check ThenInclude logic and DB data.");
-            // }
-
-            return tracksFromDb;
-        }
-
-        // If not, get them from plex and save them to the db.
         var album = _musicDbContext.Albums.FirstOrDefault(a => a.Guid == albumGuid);
 
         var trackUri = uri + "/library/metadata/" + album.RatingKey + "/children";
-
         var trackXml = await httpClient.GetStringAsync(trackUri);
-
         var tracks = await ParseTracks(XElement.Parse(trackXml), uri, album);
 
-        _musicDbContext.Tracks.AddRange(tracks);
-        await _musicDbContext.SaveChangesAsync();
+        // Get existing track IDs from the database for this album
+        var existingTrackIds = _musicDbContext.Tracks
+            .Where(t => t.AlbumId == album.Id) // Adjust this condition based on your model
+            .Select(t => t.Guid)
+            .ToHashSet();
+
+        // Filter to only tracks that don't already exist
+        var tracksNotInDb = tracks.Where(t => !existingTrackIds.Contains(t.Guid)).ToList();
+
+        if (tracksNotInDb.Any())
+        {
+            _musicDbContext.Tracks.AddRange(tracksNotInDb);
+            await _musicDbContext.SaveChangesAsync();
+        }
 
         Console.WriteLine($"Tracks {tracks.Count}");
         return tracks.ToImmutableList();
@@ -366,31 +334,6 @@ public class Plex
     public async ValueTask<IImmutableList<Track>> GetPlaylistTrackList(string uri, string guid,
         bool isPlaylist = true)
     {
-        // Check if a track exists in db. If they do, return them.
-        var trackExists = _musicDbContext.Tracks.Any(t => t.UserId == _plexId && t.ParentGuid == guid);
-
-        if (trackExists)
-        {
-            // _logger.LogInformation("Tracks found in DB for Album GUID {AlbumGuid}, retrieving with related data.", albumGuid); // Added logging for clarity
-
-            // Use Include() to load Media, and ThenInclude() to load Part from Media
-            var tracksFromDb = _musicDbContext.Tracks
-                .Include(t => t.Media) // Tell EF Core to load the Media navigation property
-                .ThenInclude(m => m.Part) // For each Media loaded, also load its Part navigation property
-                .Where(t => t.UserId == _plexId && t.ParentGuid == guid) // Filter by UserId AND AlbumGuid
-                .ToImmutableList();
-
-            // _logger.LogInformation("Retrieved {TrackCount} tracks from DB.", tracksFromDb.Count);
-            // Optional: Check if Media/Part are loaded for the first track (for debugging)
-            // if (tracksFromDb.Any() && tracksFromDb.First().Media == null) {
-            //     _logger.LogWarning("First track from DB still has null Media. Check Include/ThenInclude logic and DB data.");
-            // } else if (tracksFromDb.Any() && tracksFromDb.First().Media?.Part == null) {
-            //     _logger.LogWarning("First track from DB has Media but null Part. Check ThenInclude logic and DB data.");
-            // }
-
-            return tracksFromDb;
-        }
-
         // If not, get them from plex and save them to the db.
         Playlist? obj = null;
         Album? album = null;
@@ -401,9 +344,6 @@ public class Plex
         var trackXml = await httpClient.GetStringAsync(trackUri);
 
         var tracks = await ParsePlaylistTracks(XElement.Parse(trackXml), uri, obj);
-
-        // _musicDbContext.Tracks.AddRange(tracks);
-        // await _musicDbContext.SaveChangesAsync();
 
         Console.WriteLine($"Tracks {tracks.Count}");
         return tracks.ToImmutableList();
@@ -439,33 +379,18 @@ public class Plex
 
     public async ValueTask<IImmutableList<Playlist>> GetPlaylists(string uri, bool loaded = false)
     {
-        if (loaded) return _musicDbContext.Playlists.Where(a => a.UserId == _plexId).ToImmutableList();
-
         try
         {
-            var pCount = _musicDbContext.Playlists.Count(p => p.UserId == _plexId);
-
             var playlistsXml = await httpClient.GetStringAsync(uri + "/playlists");
             var playlistXElement = XElement.Parse(playlistsXml);
 
-            if (playlistXElement.DescendantsAndSelf("Playlist")
-                    .Count(p => p.Attribute("playlistType").Value == "audio") == pCount)
-            {
-                return _musicDbContext.Playlists.Where(p => p.UserId == _plexId).ToImmutableList();
-            }
+            var newPlaylistsToParse = playlistXElement.DescendantsAndSelf("Playlist").ToList();
 
-            var dbPlaylistsGuid = _musicDbContext.Playlists.Select(a => a.Guid).ToList();
-            if (playlistXElement.DescendantsAndSelf("Playlist").Count() != pCount)
-            {
-                var newPlaylistsToParse = playlistXElement.DescendantsAndSelf("Playlist")
-                    .Where(p => !dbPlaylistsGuid.Contains(p.Attribute("guid").Value)).ToList();
+            var playlists = ParsePlaylists(newPlaylistsToParse, uri);
 
-                var playlists = ParsePlaylists(newPlaylistsToParse, uri);
+            await _musicDbContext.SaveChangesAsync();
 
-                await _musicDbContext.SaveChangesAsync();
-
-                return playlists.ToImmutableList();
-            }
+            return playlists.ToImmutableList();
         }
         catch (HttpRequestException ex)
         {
@@ -477,8 +402,6 @@ public class Plex
 
     public async ValueTask<IImmutableList<Album>> GetAllAlbums(string uri, bool loaded = false)
     {
-        if (loaded) return _musicDbContext.Albums.Where(a => a.UserId == _plexId).ToImmutableList();
-
         var artists = await GetArtists(uri);
 
         var albums = new List<Album>();
@@ -497,6 +420,9 @@ public class Plex
         var newPlaylists = new List<Playlist>();
         foreach (var playlist in playlists)
         {
+            var guid = playlist.Attribute("guid")?.Value ?? "";
+            var exists = _musicDbContext.Playlists.Any(x => x.Guid == guid);
+
             var p = new Playlist
             {
                 RatingKey = playlist.Attribute("ratingKey")?.Value ?? "",
@@ -524,7 +450,8 @@ public class Plex
                 UserId = _plexId
             };
 
-            _musicDbContext.Playlists.Add(p);
+            if (!exists) _musicDbContext.Playlists.Add(p);
+            newPlaylists.Add(p);
         }
 
         return newPlaylists;
@@ -680,11 +607,15 @@ public class Plex
 
         foreach (var album in albums)
         {
+            var guid = album.Attribute("guid")?.Value ?? "";
+            var exists = _musicDbContext.Albums.Any(x => x.Guid == guid);
+
+            // Always create a fresh network album object
             var a = new Album
             {
                 AddedAt = DateTimeOffset
                     .FromUnixTimeSeconds(long.Parse(album.Attribute("addedAt")?.Value ?? "0")).LocalDateTime,
-                Guid = album.Attribute("guid")?.Value ?? "",
+                Guid = guid,
                 Key = album.Attribute("key")?.Value ?? "",
                 LastRatedAt = DateTimeOffset
                     .FromUnixTimeSeconds(long.Parse(album.Attribute("lastRatedAt")?.Value ?? "0"))
@@ -716,25 +647,32 @@ public class Plex
                 Year = album.Attribute("year")?.Value ?? "",
                 Image = new Image
                 {
-                    Alt = album.Element("Image").Attribute("alt")?.Value ?? "",
-                    Type = album.Element("Image").Attribute("type")?.Value ?? "",
-                    Url = album.Element("Image").Attribute("url")?.Value ?? ""
+                    Alt = album.Element("Image")?.Attribute("alt")?.Value ?? "",
+                    Type = album.Element("Image")?.Attribute("type")?.Value ?? "",
+                    Url = album.Element("Image")?.Attribute("url")?.Value ?? ""
                 },
                 UltraBlurColors = new UltraBlurColors
                 {
-                    TopLeft = album.Element("UltraBlurColors").Attribute("topLeft")?.Value ?? "",
-                    TopRight = album.Element("UltraBlurColors").Attribute("topRight")?.Value ?? "",
-                    BottomLeft = album.Element("UltraBlurColors").Attribute("bottomLeft")?.Value ?? "",
-                    BottomRight = album.Element("UltraBlurColors").Attribute("bottomRight")?.Value ?? ""
+                    TopLeft = album.Element("UltraBlurColors")?.Attribute("topLeft")?.Value ?? "",
+                    TopRight = album.Element("UltraBlurColors")?.Attribute("topRight")?.Value ?? "",
+                    BottomLeft = album.Element("UltraBlurColors")?.Attribute("bottomLeft")?.Value ?? "",
+                    BottomRight = album.Element("UltraBlurColors")?.Attribute("bottomRight")?.Value ?? ""
                 },
                 UserId = _plexId,
                 ArtistId = artist.Id,
                 Artist = artist
             };
 
-            artist.Albums.Add(a);
+            // Always use the network album in the result
             newAlbums.Add(a);
-            _musicDbContext.Add(a);
+
+            // Only insert if new
+            if (!exists)
+            {
+                // Always link fresh album to artist
+                artist.Albums.Add(a);
+                _musicDbContext.Albums.Add(a);
+            }
         }
 
         return newAlbums;
