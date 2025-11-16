@@ -278,8 +278,6 @@ public class Plex
 
     public async ValueTask<IImmutableList<Album>> GetArtistAlbums(string uri, Artist artist)
     {
-        var albumsInDbCount = _musicDbContext.Albums.Count(a => (a.ArtistId == artist.Id) & (a.UserId == _plexId));
-
         try
         {
             var albumUrl =
@@ -300,16 +298,10 @@ public class Plex
         catch (HttpRequestException ex)
         {
             Console.WriteLine($"Error retrieving albums: {ex.Message}");
-            if (albumsInDbCount > 0)
-            {
-                return _musicDbContext.Albums.Where(a => (a.Artist == artist) & (a.UserId == _plexId))
-                    .ToImmutableList();
-            }
 
-            return ImmutableList<Album>.Empty;
+            return _musicDbContext.Albums.Where(a => (a.Artist == artist) & (a.UserId == _plexId))
+                .ToImmutableList();
         }
-
-        return ImmutableList<Album>.Empty;
     }
 
     public async ValueTask<IImmutableList<Track>> GetTrackList(string uri, string albumGuid, bool isPlaylist = false)
