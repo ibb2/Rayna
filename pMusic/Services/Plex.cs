@@ -428,33 +428,18 @@ public class Plex
 
     public async ValueTask<IImmutableList<Playlist>> GetPlaylists(string uri, bool loaded = false)
     {
-        if (loaded) return _musicDbContext.Playlists.Where(a => a.UserId == _plexId).ToImmutableList();
-
         try
         {
-            var pCount = _musicDbContext.Playlists.Count(p => p.UserId == _plexId);
-
             var playlistsXml = await httpClient.GetStringAsync(uri + "/playlists");
             var playlistXElement = XElement.Parse(playlistsXml);
 
-            if (playlistXElement.DescendantsAndSelf("Playlist")
-                    .Count(p => p.Attribute("playlistType").Value == "audio") == pCount)
-            {
-                return _musicDbContext.Playlists.Where(p => p.UserId == _plexId).ToImmutableList();
-            }
+            var newPlaylistsToParse = playlistXElement.DescendantsAndSelf("Playlist").ToList();
 
-            var dbPlaylistsGuid = _musicDbContext.Playlists.Select(a => a.Guid).ToList();
-            if (playlistXElement.DescendantsAndSelf("Playlist").Count() != pCount)
-            {
-                var newPlaylistsToParse = playlistXElement.DescendantsAndSelf("Playlist")
-                    .Where(p => !dbPlaylistsGuid.Contains(p.Attribute("guid").Value)).ToList();
+            var playlists = ParsePlaylists(newPlaylistsToParse, uri);
 
-                var playlists = ParsePlaylists(newPlaylistsToParse, uri);
+            await _musicDbContext.SaveChangesAsync();
 
-                await _musicDbContext.SaveChangesAsync();
-
-                return playlists.ToImmutableList();
-            }
+            return playlists.ToImmutableList();
         }
         catch (HttpRequestException ex)
         {
@@ -484,6 +469,9 @@ public class Plex
         var newPlaylists = new List<Playlist>();
         foreach (var playlist in playlists)
         {
+            var guid = playlist.Attribute("guid")?.Value ?? "";
+            var exists = _musicDbContext.Playlists.Any(x => x.Guid == guid);
+
             var p = new Playlist
             {
                 RatingKey = playlist.Attribute("ratingKey")?.Value ?? "",
@@ -511,7 +499,8 @@ public class Plex
                 UserId = _plexId
             };
 
-            _musicDbContext.Playlists.Add(p);
+            if (!exists) _musicDbContext.Playlists.Add(p);
+            newPlaylists.Add(p);
         }
 
         return newPlaylists;
