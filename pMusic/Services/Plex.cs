@@ -10,7 +10,6 @@ using System.Xml.Linq;
 using Avalonia.Media.Imaging;
 using KeySharp;
 using LukeHagar.PlexAPI.SDK;
-using Microsoft.EntityFrameworkCore;
 using pMusic.Database;
 using pMusic.Models;
 using Country = pMusic.Models.Country;
@@ -339,31 +338,6 @@ public class Plex
     public async ValueTask<IImmutableList<Track>> GetPlaylistTrackList(string uri, string guid,
         bool isPlaylist = true)
     {
-        // Check if a track exists in db. If they do, return them.
-        var trackExists = _musicDbContext.Tracks.Any(t => t.UserId == _plexId && t.ParentGuid == guid);
-
-        if (trackExists)
-        {
-            // _logger.LogInformation("Tracks found in DB for Album GUID {AlbumGuid}, retrieving with related data.", albumGuid); // Added logging for clarity
-
-            // Use Include() to load Media, and ThenInclude() to load Part from Media
-            var tracksFromDb = _musicDbContext.Tracks
-                .Include(t => t.Media) // Tell EF Core to load the Media navigation property
-                .ThenInclude(m => m.Part) // For each Media loaded, also load its Part navigation property
-                .Where(t => t.UserId == _plexId && t.ParentGuid == guid) // Filter by UserId AND AlbumGuid
-                .ToImmutableList();
-
-            // _logger.LogInformation("Retrieved {TrackCount} tracks from DB.", tracksFromDb.Count);
-            // Optional: Check if Media/Part are loaded for the first track (for debugging)
-            // if (tracksFromDb.Any() && tracksFromDb.First().Media == null) {
-            //     _logger.LogWarning("First track from DB still has null Media. Check Include/ThenInclude logic and DB data.");
-            // } else if (tracksFromDb.Any() && tracksFromDb.First().Media?.Part == null) {
-            //     _logger.LogWarning("First track from DB has Media but null Part. Check ThenInclude logic and DB data.");
-            // }
-
-            return tracksFromDb;
-        }
-
         // If not, get them from plex and save them to the db.
         Playlist? obj = null;
         Album? album = null;
@@ -374,9 +348,6 @@ public class Plex
         var trackXml = await httpClient.GetStringAsync(trackUri);
 
         var tracks = await ParsePlaylistTracks(XElement.Parse(trackXml), uri, obj);
-
-        // _musicDbContext.Tracks.AddRange(tracks);
-        // await _musicDbContext.SaveChangesAsync();
 
         Console.WriteLine($"Tracks {tracks.Count}");
         return tracks.ToImmutableList();
