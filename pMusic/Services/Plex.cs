@@ -254,7 +254,6 @@ public class Plex
             var artistsDetailsXml = await httpClient.GetStringAsync(artistUri);
             var artistXElement = XElement.Parse(artistsDetailsXml);
 
-            Console.WriteLine($"Getting new artists from plex");
             var artistsToParse = artistXElement.DescendantsAndSelf("Directory")
                 .ToList();
 
@@ -293,7 +292,6 @@ public class Plex
             var albumXml = await httpClient.GetStringAsync(albumUrl);
             var albumXElement = XElement.Parse(albumXml);
 
-            Console.WriteLine($"Getting {artist.Title.ToUpper()}'s new albums from plex");
             var albumsToParse = albumXElement.DescendantsAndSelf("Directory").ToList();
 
             var albums = await ParseAlbums(albumsToParse, uri, artist);

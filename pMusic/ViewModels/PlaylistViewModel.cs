@@ -63,7 +63,7 @@ public partial class PlaylistViewModel : ViewModelBase
         if (TrackList.Count == 0) return;
         _musicPlayer.PlayedTracks.Clear();
         _musicPlayer.UpcomingTracks.Clear();
-        var serverUri = await _music.GetServerUri(CancellationToken.None, _plex);
+        var serverUri = _plex.GetServerUri();
         _musicPlayer.ServerUrl = serverUri;
         _musicPlayer.Queue(TrackList.ToList()!);
         _musicPlayer.NextTrack();
@@ -72,7 +72,7 @@ public partial class PlaylistViewModel : ViewModelBase
     [RelayCommand]
     public async Task Play(Track track)
     {
-        var serverUri = await _music.GetServerUri(CancellationToken.None, _plex);
+        var serverUri = _plex.GetServerUri();
         _musicPlayer.ServerUrl = serverUri;
         _musicPlayer.Play(track);
     }
