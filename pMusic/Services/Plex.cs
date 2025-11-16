@@ -477,8 +477,6 @@ public class Plex
 
     public async ValueTask<IImmutableList<Album>> GetAllAlbums(string uri, bool loaded = false)
     {
-        if (loaded) return _musicDbContext.Albums.Where(a => a.UserId == _plexId).ToImmutableList();
-
         var artists = await GetArtists(uri);
 
         var albums = new List<Album>();
