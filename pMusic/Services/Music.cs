@@ -71,8 +71,6 @@ public class Music : IMusic
         // Start the stopwatch
         stopwatch.Start();
 
-        await Task.Delay(TimeSpan.FromSeconds(1), ct);
-
         ServerUri = await plex.GetServerCapabilitiesAsync();
 
         var playlists = await plex.GetPlaylists(ServerUri!, loaded);
