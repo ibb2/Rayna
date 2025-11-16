@@ -77,8 +77,8 @@ public partial class HomeViewModel : ViewModelBase
         TimeSpan elapsed = stopwatch.Elapsed;
 
         // Display the elapsed time in various units
-        Console.WriteLine($"Execution time: {elapsed.TotalMilliseconds} ms");
-        Console.WriteLine($"Execution time: {elapsed.TotalSeconds} seconds");
+        Console.WriteLine($"Homepage Execution time: {elapsed.TotalMilliseconds} ms");
+        Console.WriteLine($"Homepage Execution time: {elapsed.TotalSeconds} seconds");
     }
 
     public async Task LoadHomepageAlbumsAsync(IImmutableList<Album> allAlbums)
