@@ -234,8 +234,6 @@ public class Plex
     {
         try
         {
-            var artistsFromDb = _musicDbContext.Artists.Where(a => a.UserId == _plexId).ToList();
-
             // Fetch Music library from Plex
             var libraryUrl = uri + "/library/sections/";
             var librariesXml = await httpClient.GetStringAsync(libraryUrl);
@@ -249,19 +247,25 @@ public class Plex
             var artistsDetailsXml = await httpClient.GetStringAsync(artistUri);
             var artistXElement = XElement.Parse(artistsDetailsXml);
 
-            if (artistXElement.DescendantsAndSelf("Directory").Count() == artistsFromDb.Count)
-            {
-                return artistsFromDb.ToImmutableList();
-            }
-
             Console.WriteLine($"Getting new artists from plex");
-            var dbArtistsGuid = _musicDbContext.Artists.Select(a => a.Guid).ToList();
             var artistsToParse = artistXElement.DescendantsAndSelf("Directory")
-                .Where(a => !dbArtistsGuid.Contains(a.Attribute("guid").Value)).ToList();
+                .ToList();
 
             var artists = await ParseArtists(artistsToParse, lib.Key, uri);
-            _musicDbContext.Artists.AddRange(artists);
-            await _musicDbContext.SaveChangesAsync();
+
+            // Get existing track IDs from the database for this album
+            var existingArtistId = _musicDbContext.Artists
+                .Select(a => a.Guid)
+                .ToHashSet();
+
+            // Filter to only tracks that don't already exist
+            var artistsNotInDb = artists.Where(a => !existingArtistId.Contains(a.Guid)).ToList();
+
+            if (artistsNotInDb.Any())
+            {
+                _musicDbContext.Artists.AddRange(artistsNotInDb);
+                await _musicDbContext.SaveChangesAsync();
+            }
 
             return artists.ToImmutableList();
         }
