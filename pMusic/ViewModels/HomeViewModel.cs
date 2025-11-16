@@ -64,10 +64,11 @@ public partial class HomeViewModel : ViewModelBase
 
         await _plex.GetServerCapabilitiesAsync();
         var allAlbums = await _music.GetAllAlbums(CancellationToken.None, _plex, isLoaded);
+        var playlists = await _music.GetPlaylists(CancellationToken.None, _plex, isLoaded);
         var viewModels = await LoadAlbumsViewModelsAsync(allAlbums);
         await LoadHomepageAlbumsAsync(viewModels);
         await LoadHomepageRecentlyAddedAlbumsAsync(viewModels);
-        await LoadPlaylistsAsync(isLoaded);
+        await LoadPlaylistsAsync(playlists);
         Console.WriteLine("Content loaded");
 
         IsLoaded = true;
@@ -158,7 +159,7 @@ public partial class HomeViewModel : ViewModelBase
         Console.WriteLine($"Homepage Reccently Added Albums Execution time: {elapsed.TotalSeconds} seconds");
     }
 
-    public async Task LoadPlaylistsAsync(bool isLoaded)
+    public async Task LoadPlaylistsAsync(ImmutableList<Playlist> playlists)
     {
         Stopwatch stopwatch = new Stopwatch();
 
@@ -167,7 +168,6 @@ public partial class HomeViewModel : ViewModelBase
 
         Playlists.Clear();
 
-        var playlists = await _music.GetPlaylists(CancellationToken.None, _plex, isLoaded);
         var viewModels = playlists.Select(a => new DisplayPlaylistViewModel(a, _plex))
             .ToList();
 
