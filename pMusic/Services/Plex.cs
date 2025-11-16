@@ -311,42 +311,26 @@ public class Plex
 
     public async ValueTask<IImmutableList<Track>> GetTrackList(string uri, string albumGuid, bool isPlaylist = false)
     {
-        // Check if a track exists in db. If they do, return them.
-        var trackExists = _musicDbContext.Tracks.Any(t => t.UserId == _plexId && t.ParentGuid == albumGuid);
-
-        if (trackExists)
-        {
-            // _logger.LogInformation("Tracks found in DB for Album GUID {AlbumGuid}, retrieving with related data.", albumGuid); // Added logging for clarity
-
-            // Use Include() to load Media, and ThenInclude() to load Part from Media
-            var tracksFromDb = _musicDbContext.Tracks
-                .Include(t => t.Media) // Tell EF Core to load the Media navigation property
-                .ThenInclude(m => m.Part) // For each Media loaded, also load its Part navigation property
-                .Where(t => t.UserId == _plexId && t.ParentGuid == albumGuid) // Filter by UserId AND AlbumGuid
-                .ToImmutableList();
-
-            // _logger.LogInformation("Retrieved {TrackCount} tracks from DB.", tracksFromDb.Count);
-            // Optional: Check if Media/Part are loaded for the first track (for debugging)
-            // if (tracksFromDb.Any() && tracksFromDb.First().Media == null) {
-            //     _logger.LogWarning("First track from DB still has null Media. Check Include/ThenInclude logic and DB data.");
-            // } else if (tracksFromDb.Any() && tracksFromDb.First().Media?.Part == null) {
-            //     _logger.LogWarning("First track from DB has Media but null Part. Check ThenInclude logic and DB data.");
-            // }
-
-            return tracksFromDb;
-        }
-
-        // If not, get them from plex and save them to the db.
         var album = _musicDbContext.Albums.FirstOrDefault(a => a.Guid == albumGuid);
 
         var trackUri = uri + "/library/metadata/" + album.RatingKey + "/children";
-
         var trackXml = await httpClient.GetStringAsync(trackUri);
-
         var tracks = await ParseTracks(XElement.Parse(trackXml), uri, album);
 
-        _musicDbContext.Tracks.AddRange(tracks);
-        await _musicDbContext.SaveChangesAsync();
+        // Get existing track IDs from the database for this album
+        var existingTrackIds = _musicDbContext.Tracks
+            .Where(t => t.AlbumId == album.Id) // Adjust this condition based on your model
+            .Select(t => t.Guid)
+            .ToHashSet();
+
+        // Filter to only tracks that don't already exist
+        var tracksNotInDb = tracks.Where(t => !existingTrackIds.Contains(t.Guid)).ToList();
+
+        if (tracksNotInDb.Any())
+        {
+            _musicDbContext.Tracks.AddRange(tracksNotInDb);
+            await _musicDbContext.SaveChangesAsync();
+        }
 
         Console.WriteLine($"Tracks {tracks.Count}");
         return tracks.ToImmutableList();
