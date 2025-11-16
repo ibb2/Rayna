@@ -57,6 +57,11 @@ public partial class HomeViewModel : ViewModelBase
 
     public async Task LoadContent()
     {
+        Stopwatch stopwatch = new Stopwatch();
+
+        // Start the stopwatch
+        stopwatch.Start();
+
         var allAlbums = await _music.GetAllAlbums(CancellationToken.None, _plex, isLoaded);
         await LoadHomepageAlbumsAsync(allAlbums);
         await LoadHomepageRecentlyAddedAlbumsAsync(allAlbums);
@@ -64,6 +69,16 @@ public partial class HomeViewModel : ViewModelBase
         Console.WriteLine("Content loaded");
 
         IsLoaded = true;
+
+        // Stop the stopwatch
+        stopwatch.Stop();
+
+        // Get the elapsed time
+        TimeSpan elapsed = stopwatch.Elapsed;
+
+        // Display the elapsed time in various units
+        Console.WriteLine($"Execution time: {elapsed.TotalMilliseconds} ms");
+        Console.WriteLine($"Execution time: {elapsed.TotalSeconds} seconds");
     }
 
     public async Task LoadHomepageAlbumsAsync(IImmutableList<Album> allAlbums)
