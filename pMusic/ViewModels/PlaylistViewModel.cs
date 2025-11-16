@@ -94,7 +94,7 @@ public partial class PlaylistViewModel : ViewModelBase
         foreach (var a in aViewModels) _sidebar.Pinned.Add(a);
         var playlists = _musicDbContext.Playlists.Where(x => x.IsPinned).ToList();
         var viewModels = playlists.Select(a => new DisplayPlaylistViewModel(a, _plex)).ToList();
-        await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
+        await Task.WhenAll(viewModels.Select(vm => vm.SetImageUrl()));
         foreach (var p in viewModels) _sidebar.Pinned.Add(p);
     }
 

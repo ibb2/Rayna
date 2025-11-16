@@ -214,12 +214,10 @@
                                         <StackPanel>
                                             <Border Width="175" Height="125" CornerRadius="4" ClipToBounds="True"
                                                     BorderThickness="1" HorizontalAlignment="Center">
-                                                <Rectangle RadiusX="4" RadiusY="4">
-                                                    <Rectangle.Fill>
-                                                        <ImageBrush Source="{Binding Composite}"
-                                                                    Stretch="UniformToFill" />
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
+                                                <Border Width="175" Height="125" CornerRadius="4" ClipToBounds="True"
+                                                        BorderThickness="1" HorizontalAlignment="Center">
+                                                    <Image asyncImageLoader:ImageLoader.Source="{Binding ImageUrl}" />
+                                                </Border>
                                             </Border>
                                         </StackPanel>
                                         <StackPanel Spacing="4">

@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -172,16 +171,13 @@ public partial class HomeViewModel : ViewModelBase
         var viewModels = playlists.Select(a => new DisplayPlaylistViewModel(a, _plex))
             .ToList();
 
-        await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
+        await Task.WhenAll(viewModels.Select(vm => vm.SetImageUrl()));
 
         // Update on UI thread
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        foreach (var playlist in viewModels)
         {
-            foreach (var playlist in viewModels)
-            {
-                Playlists.Add(playlist);
-            }
-        });
+            Playlists.Add(playlist);
+        }
 
         // Stop the stopwatch
         stopwatch.Stop();

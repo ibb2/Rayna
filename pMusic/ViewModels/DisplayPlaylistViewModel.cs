@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -26,21 +25,13 @@ public partial class DisplayPlaylistViewModel : PinnedItemViewModelBase
     }
 
 
-    public async Task LoadThumbAsync()
+    public Task SetImageUrl()
     {
         if (string.IsNullOrWhiteSpace(ImageUrl))
-            return;
+            return Task.CompletedTask;
 
-        try
-        {
-            var ThumbnailUrl = ImageUrl + "?X-Plex-Token=" +
-                               Keyring.GetPassword("com.ib", "pmusic", "authToken");
-            Composite = await _plex.GetBitmapImage(ThumbnailUrl);
-        }
-        catch
-        {
-            // Log or handle failure (e.g., set fallback image)
-            Console.WriteLine("Failed to load thumbnail");
-        }
+        ImageUrl = ImageUrl + "?X-Plex-Token=" +
+                   Keyring.GetPassword("com.ib", "pmusic", "authToken");
+        return Task.CompletedTask;
     }
 }

@@ -75,7 +75,7 @@ public partial class MainViewModel : ViewModelBase
         var pinnedViewModels = pinnedPlaylists.Select(pp => new DisplayPlaylistViewModel(pp, _plex)).ToList();
 
         // await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
-        await Task.WhenAll(pinnedViewModels.Select(vm => vm.LoadThumbAsync()));
+        await Task.WhenAll(pinnedViewModels.Select(vm => vm.SetImageUrl()));
 
         foreach (var pinnedAlbum in viewModels) Sidebar.Pinned.Add(pinnedAlbum);
         foreach (var pinnedPlaylist in pinnedViewModels) Sidebar.Pinned.Add(pinnedPlaylist);
