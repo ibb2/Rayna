@@ -31,13 +31,13 @@ public class Plex
     private static readonly string _plexPlatform = "Desktop";
 
     private static string _serverUri = "";
+    private static string _plexId;
+    private static string _plexToken;
     private readonly MusicDbContext _musicDbContext;
     private readonly string _plexClientIdentifier;
     public readonly HttpClient httpClient;
 
     private PlexAPI? _plexApi;
-    private string _plexId;
-    private string _plexToken;
 
 
     public Plex(HttpClient httpClient, MusicDbContext musicDbContext)
