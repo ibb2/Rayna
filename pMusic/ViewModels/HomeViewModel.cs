@@ -16,12 +16,12 @@ namespace pMusic.ViewModels;
 
 public partial class HomeViewModel : ViewModelBase
 {
-    [ObservableProperty] public static bool isLoaded = false;
     private IMusic _music;
     private ObservableCollection<DisplayPlaylistViewModel> _playlists = new();
     private Plex _plex;
 
     [ObservableProperty] public ObservableCollection<DisplayAlbumViewModel> albums = new();
+    [ObservableProperty] private bool isLoaded;
     [ObservableProperty] public ObservableCollection<DisplayAlbumViewModel> recentlyAddedAlbums = new();
     [ObservableProperty] public ObservableCollection<DisplayAlbumViewModel> topEight = new();
 
@@ -57,137 +57,109 @@ public partial class HomeViewModel : ViewModelBase
 
     public async Task LoadContent()
     {
-        Stopwatch stopwatch = new Stopwatch();
-
-        // Start the stopwatch
-        stopwatch.Start();
+        var total = Stopwatch.StartNew();
 
         await _plex.GetServerCapabilitiesAsync();
-        var allAlbums = await _music.GetAllAlbums(CancellationToken.None, _plex, isLoaded);
-        var playlists = await _music.GetPlaylists(CancellationToken.None, _plex, isLoaded);
-        var viewModels = await LoadAlbumsViewModelsAsync(allAlbums);
-        await LoadHomepageAlbumsAsync(viewModels);
-        await LoadHomepageRecentlyAddedAlbumsAsync(viewModels);
-        await LoadPlaylistsAsync(playlists);
-        Console.WriteLine("Content loaded");
+        var albumsTask = _music.GetAllAlbums(CancellationToken.None, _plex, isLoaded);
+        var playlistsTask = _music.GetPlaylists(CancellationToken.None, _plex, isLoaded);
+
+        var swAlbums = Stopwatch.StartNew();
+        var allAlbums = await albumsTask.ConfigureAwait(false);
+        swAlbums.Stop();
+        Console.WriteLine($"[Perf] GetAllAlbums (await) = {swAlbums.ElapsedMilliseconds} ms");
+
+        var swPlaylists = Stopwatch.StartNew();
+        var playlists = await playlistsTask.ConfigureAwait(false);
+        swPlaylists.Stop();
+        Console.WriteLine($"[Perf] GetPlaylists (await) = {swPlaylists.ElapsedMilliseconds} ms");
+
+        var swVm = Stopwatch.StartNew();
+        var viewModels = await LoadAlbumsViewModelsAsync(allAlbums).ConfigureAwait(false);
+        swVm.Stop();
+        Console.WriteLine($"[Perf] LoadAlbumsViewModelsAsync = {swVm.ElapsedMilliseconds} ms");
+
+        var swHomeAlbums = Stopwatch.StartNew();
+        await LoadHomepageAlbumsAsync(viewModels).ConfigureAwait(false);
+        swHomeAlbums.Stop();
+        Console.WriteLine($"[Perf] LoadHomepageAlbumsAsync = {swHomeAlbums.ElapsedMilliseconds} ms");
+
+        var swRecent = Stopwatch.StartNew();
+        await LoadHomepageRecentlyAddedAlbumsAsync(viewModels).ConfigureAwait(false);
+        swRecent.Stop();
+        Console.WriteLine($"[Perf] LoadHomepageRecentlyAddedAlbumsAsync = {swRecent.ElapsedMilliseconds} ms");
+
+        var swPl = Stopwatch.StartNew();
+        await LoadPlaylistsAsync(playlists).ConfigureAwait(false);
+        swPl.Stop();
+        Console.WriteLine($"[Perf] LoadPlaylistsAsync = {swPl.ElapsedMilliseconds} ms");
+
+        total.Stop();
+        Console.WriteLine($"[Perf] Homepage total = {total.ElapsedMilliseconds} ms");
 
         IsLoaded = true;
-
-        // Stop the stopwatch
-        stopwatch.Stop();
-
-        // Get the elapsed time
-        TimeSpan elapsed = stopwatch.Elapsed;
-
-        // Display the elapsed time in various units
-        Console.WriteLine($"Homepage Execution time: {elapsed.TotalMilliseconds} ms");
-        Console.WriteLine($"Homepage Execution time: {elapsed.TotalSeconds} seconds");
     }
 
-    public Task<List<DisplayAlbumViewModel>> LoadAlbumsViewModelsAsync(IImmutableList<Album> allAlbums)
+    public async Task<List<DisplayAlbumViewModel>> LoadAlbumsViewModelsAsync(IImmutableList<Album> allAlbums)
     {
-        var viewModels = allAlbums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
+        var viewModels = allAlbums
+            .Select(a => new DisplayAlbumViewModel(a, _plex))
+            .ToList();
 
-        Task.WaitAll(viewModels.Select(vm => vm.SetImageUrl()));
+        // Load all images concurrently without blocking the UI thread
+        var loadImageTasks = viewModels.Select(vm => vm.SetImageUrl());
+        await Task.WhenAll(loadImageTasks).ConfigureAwait(false);
 
-        return Task.FromResult(viewModels);
+        return viewModels;
     }
 
     public async Task LoadHomepageAlbumsAsync(List<DisplayAlbumViewModel> viewModels)
     {
-        Stopwatch stopwatch = new Stopwatch();
+        var stopwatch = Stopwatch.StartNew();
 
-        // Start the stopwatch
-        stopwatch.Start();
-
-        Albums.Clear();
-
-        foreach (var vm in viewModels)
-            Albums.Add(vm);
+        // Replace the collection in one go to minimize change notifications
+        Albums = new ObservableCollection<DisplayAlbumViewModel>(viewModels);
 
         Console.WriteLine($"All Albums loaded: {Albums.Count}");
 
-        // Stop the stopwatch
         stopwatch.Stop();
-
-        // Get the elapsed time
-        TimeSpan elapsed = stopwatch.Elapsed;
-
-        // Display the elapsed time in various units
-        Console.WriteLine($"All Homepage Albums Execution time: {elapsed.TotalMilliseconds} ms");
-        Console.WriteLine($"All Homepage Albums Execution time: {elapsed.TotalSeconds} seconds");
+        Console.WriteLine($"All Homepage Albums Execution time: {stopwatch.Elapsed.TotalMilliseconds} ms");
     }
 
     public async Task LoadHomepageRecentlyAddedAlbumsAsync(List<DisplayAlbumViewModel> viewModels)
     {
-        Stopwatch stopwatch = new Stopwatch();
+        var stopwatch = Stopwatch.StartNew();
 
-        // Start the stopwatch
-        stopwatch.Start();
-
-        var orderedViewModels = viewModels.OrderByDescending(a => a.Album.AddedAt)
+        var orderedViewModels = viewModels
+            .OrderByDescending(a => a.Album.AddedAt)
             .ToList();
 
+        RecentlyAddedAlbums =
+            new ObservableCollection<DisplayAlbumViewModel>(orderedViewModels);
 
-        RecentlyAddedAlbums.Clear();
-        TopEight.Clear();
+        TopEight =
+            new ObservableCollection<DisplayAlbumViewModel>(orderedViewModels.Take(8));
 
-        var count = 0;
+        Console.WriteLine($"Recently Added Albums loaded: {RecentlyAddedAlbums.Count}");
 
-        foreach (var vm in orderedViewModels)
-        {
-            if (count < 8)
-            {
-                TopEight.Add(vm);
-            }
-
-            count++;
-
-            RecentlyAddedAlbums.Add(vm);
-        }
-
-        Console.WriteLine($"Recently Added Albums loaded: {Albums.Count}");
-
-        // Stop the stopwatch
         stopwatch.Stop();
-
-        // Get the elapsed time
-        TimeSpan elapsed = stopwatch.Elapsed;
-
-        // Display the elapsed time in various units
-        Console.WriteLine($"Homepage Reccently Added Albums Execution time: {elapsed.TotalMilliseconds} ms");
-        Console.WriteLine($"Homepage Reccently Added Albums Execution time: {elapsed.TotalSeconds} seconds");
+        Console.WriteLine($"Homepage Recently Added Albums Execution time: {stopwatch.Elapsed.TotalMilliseconds} ms");
     }
 
     public async Task LoadPlaylistsAsync(ImmutableList<Playlist> playlists)
     {
-        Stopwatch stopwatch = new Stopwatch();
+        var stopwatch = Stopwatch.StartNew();
 
-        // Start the stopwatch
-        stopwatch.Start();
-
-        Playlists.Clear();
-
-        var viewModels = playlists.Select(a => new DisplayPlaylistViewModel(a, _plex))
+        var viewModels = playlists
+            .Select(a => new DisplayPlaylistViewModel(a, _plex))
             .ToList();
 
-        await Task.WhenAll(viewModels.Select(vm => vm.SetImageUrl()));
+        await Task.WhenAll(viewModels.Select(vm => vm.SetImageUrl()))
+            .ConfigureAwait(false);
 
-        // Update on UI thread
-        foreach (var playlist in viewModels)
-        {
-            Playlists.Add(playlist);
-        }
+        Playlists = new ObservableCollection<DisplayPlaylistViewModel>(viewModels);
 
-        // Stop the stopwatch
         stopwatch.Stop();
-
-        // Get the elapsed time
-        TimeSpan elapsed = stopwatch.Elapsed;
-
-        // Display the elapsed time in various units
-        Console.WriteLine($"Homepage Playlists Execution time: {elapsed.TotalMilliseconds} ms");
-        Console.WriteLine($"Homepage Playlists Execution time: {elapsed.TotalSeconds} seconds");
+        Console.WriteLine($"Homepage Playlists Execution time: {stopwatch.Elapsed.TotalMilliseconds} ms");
     }
 
     [RelayCommand]

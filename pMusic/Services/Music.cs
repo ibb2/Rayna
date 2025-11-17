@@ -64,24 +64,24 @@ public class Music : IMusic
 
     public async ValueTask<ImmutableList<Playlist>> GetPlaylists(CancellationToken ct, Plex plex, bool loaded = false)
     {
-        // Stopwatch stopwatch = new Stopwatch();
-        //
-        // // Start the stopwatch
-        // stopwatch.Start();
+        Stopwatch stopwatch = new Stopwatch();
+
+        // Start the stopwatch
+        stopwatch.Start();
 
         var serverUri = plex.GetServerUri();
 
         var playlists = await plex.GetPlaylists(serverUri, loaded);
 
-        // // Stop the stopwatch
-        // stopwatch.Stop();
-        //
-        // // Get the elapsed time
-        // TimeSpan elapsed = stopwatch.Elapsed;
-        //
-        // // Display the elapsed time in various units
-        // Console.WriteLine($"Playlists Execution time: {elapsed.TotalMilliseconds} ms");
-        // Console.WriteLine($"Playlists Execution time: {elapsed.TotalSeconds} seconds");
+        // Stop the stopwatch
+        stopwatch.Stop();
+
+        // Get the elapsed time
+        TimeSpan elapsed = stopwatch.Elapsed;
+
+        // Display the elapsed time in various units
+        Console.WriteLine($"Playlists Execution time: {elapsed.TotalMilliseconds} ms");
+        Console.WriteLine($"Playlists Execution time: {elapsed.TotalSeconds} seconds");
 
         return playlists.ToImmutableList();
     }

@@ -48,6 +48,7 @@ public partial class MainViewModel : ViewModelBase
         muted = MusicPlayer.Muted;
         _loaded = false;
 
+        _ = Ioc.Default.GetRequiredService<HomeViewModel>().LoadContent();
         _ = CheckLoginStatus();
     }
 
