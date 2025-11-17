@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,6 +61,8 @@ public partial class AlbumViewModel : ViewModelBase
         if (Album?.Guid == null || _isLoadingTracks)
             return;
 
+        var total = Stopwatch.StartNew();
+
         _isLoadingTracks = true;
         try
         {
@@ -76,6 +79,9 @@ public partial class AlbumViewModel : ViewModelBase
         {
             _isLoadingTracks = false;
         }
+
+        total.Stop();
+        Console.WriteLine($"[Perf] Get Album tracks  = {total.ElapsedMilliseconds} ms");
     }
 
     [RelayCommand]

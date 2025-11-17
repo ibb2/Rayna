@@ -44,12 +44,14 @@ public class Music : IMusic
     //
     public async ValueTask<IImmutableList<Track>> GetTrackList(CancellationToken ct, Plex plex, string albumGuid)
     {
-        await Task.Delay(TimeSpan.FromSeconds(1), ct);
+        var total = Stopwatch.StartNew();
 
         var serverUrl = plex.GetServerUri();
-        var tracks = await plex.GetTrackList(serverUrl!, albumGuid);
+        var tracks = await plex.GetTrackList(serverUrl, albumGuid);
 
-        var i = 0;
+        total.Stop();
+        Console.WriteLine($"[Perf] Get Tracklist  = {total.ElapsedMilliseconds} ms");
+
         return tracks;
     }
 

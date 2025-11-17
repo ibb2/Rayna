@@ -29,6 +29,8 @@ public class Plex
     private static readonly string _plexProduct = "pMusic";
     private static readonly string _plexDeviceName = "Desktop";
     private static readonly string _plexPlatform = "Desktop";
+
+    private static string _serverUri = "";
     private readonly MusicDbContext _musicDbContext;
     private readonly string _plexClientIdentifier;
     public readonly HttpClient httpClient;
@@ -36,8 +38,6 @@ public class Plex
     private PlexAPI? _plexApi;
     private string _plexId;
     private string _plexToken;
-
-    private string _serverUri = "";
 
 
     public Plex(HttpClient httpClient, MusicDbContext musicDbContext)

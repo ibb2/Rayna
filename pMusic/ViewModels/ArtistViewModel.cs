@@ -70,6 +70,7 @@ public partial class ArtistViewModel : ViewModelBase
     [RelayCommand]
     public async Task LoadArtistAlbums()
     {
+        // var total = Stopwatch.StartNew();
         var albums = await _music.GetArtistAlbums(CancellationToken.None, _plex, Artist);
 
         var viewModels = albums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
@@ -85,6 +86,8 @@ public partial class ArtistViewModel : ViewModelBase
         });
 
         Console.WriteLine($"Artist albums loaded: {Albums.Count}");
+        // total.Stop();
+        // Console.WriteLine($"[Perf]  = {total.ElapsedMilliseconds} ms");
     }
 
     [RelayCommand]
