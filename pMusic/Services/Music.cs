@@ -20,6 +20,9 @@ public interface IMusic
 
 public class Music : IMusic
 {
+    private IImmutableList<Album>? _cachedAllAlbums;
+    private ImmutableList<Playlist>? _cachedPlaylists;
+
     // public async ValueTask<ObservableCollection<Artist>> GetArtistsAsync(CancellationToken ct, Plex plex)
     // {
     //     await Task.Delay(TimeSpan.FromSeconds(1), ct);
@@ -64,6 +67,12 @@ public class Music : IMusic
 
     public async ValueTask<ImmutableList<Playlist>> GetPlaylists(CancellationToken ct, Plex plex, bool loaded = false)
     {
+        if (loaded && _cachedPlaylists is { Count: > 0 })
+        {
+            Console.WriteLine("Using cached playlists");
+            return _cachedPlaylists;
+        }
+
         Stopwatch stopwatch = new Stopwatch();
 
         // Start the stopwatch
@@ -72,7 +81,7 @@ public class Music : IMusic
         var serverUri = plex.GetServerUri();
 
         var playlists = await plex.GetPlaylists(serverUri, loaded);
-
+        _cachedPlaylists = playlists.ToImmutableList();
         // Stop the stopwatch
         stopwatch.Stop();
 
@@ -88,6 +97,12 @@ public class Music : IMusic
 
     public async ValueTask<IImmutableList<Album>> GetAllAlbums(CancellationToken ct, Plex plex, bool loaded = false)
     {
+        if (loaded && _cachedAllAlbums is { Count: > 0 })
+        {
+            Console.WriteLine("Using cached albums");
+            return _cachedAllAlbums;
+        }
+
         Stopwatch stopwatch = new Stopwatch();
 
         // Start the stopwatch
@@ -95,6 +110,7 @@ public class Music : IMusic
 
         var serverUri = plex.GetServerUri();
         var albums = await plex.GetAllAlbums(serverUri, loaded);
+        _cachedAllAlbums = albums;
 
         // Stop the stopwatch
         stopwatch.Stop();
@@ -108,7 +124,6 @@ public class Music : IMusic
 
         return albums;
     }
-
 
     public async ValueTask<IImmutableList<Album>> GetArtistAlbums(CancellationToken ct, Plex plex, Artist artist)
     {

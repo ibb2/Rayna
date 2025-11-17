@@ -57,6 +57,14 @@ public partial class HomeViewModel : ViewModelBase
 
     public async Task LoadContent()
     {
+        if (IsLoaded)
+        {
+            Console.WriteLine("Already loaded");
+            return;
+        }
+
+        ;
+
         var total = Stopwatch.StartNew();
 
         await _plex.GetServerCapabilitiesAsync();
