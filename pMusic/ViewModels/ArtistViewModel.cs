@@ -1,10 +1,10 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
@@ -70,24 +70,18 @@ public partial class ArtistViewModel : ViewModelBase
     [RelayCommand]
     public async Task LoadArtistAlbums()
     {
-        // var total = Stopwatch.StartNew();
+        var total = Stopwatch.StartNew();
         var albums = await _music.GetArtistAlbums(CancellationToken.None, _plex, Artist);
 
         var viewModels = albums.Select(a => new DisplayAlbumViewModel(a, _plex)).ToList();
 
-        // await Task.WhenAll(viewModels.Select(vm => vm.LoadThumbAsync()));
+        await Task.WhenAll(viewModels.Select(vm => vm.SetImageUrl()));
 
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            Albums.Clear();
-
-            foreach (var vm in viewModels)
-                Albums.Add(vm);
-        });
+        Albums = new ObservableCollection<DisplayAlbumViewModel>(viewModels);
 
         Console.WriteLine($"Artist albums loaded: {Albums.Count}");
-        // total.Stop();
-        // Console.WriteLine($"[Perf]  = {total.ElapsedMilliseconds} ms");
+        total.Stop();
+        Console.WriteLine($"[Perf] Get Album tracks  = {total.ElapsedMilliseconds} ms");
     }
 
     [RelayCommand]

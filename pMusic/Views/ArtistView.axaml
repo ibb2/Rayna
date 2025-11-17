@@ -76,8 +76,7 @@
                                         <StackPanel>
                                             <Border Width="175" Height="125" CornerRadius="4" ClipToBounds="True"
                                                     BorderThickness="1" HorizontalAlignment="Center">
-                                                <Image asyncImageLoader:ImageLoader.Source="{Binding ImageUrl}"
-                                                       Stretch="UniformToFill" />
+                                                <Image asyncImageLoader:ImageLoader.Source="{Binding ImageUrl}" />
                                             </Border>
                                         </StackPanel>
                                         <StackPanel Spacing="4">
