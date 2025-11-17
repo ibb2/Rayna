@@ -19,10 +19,10 @@
             <Grid ColumnDefinitions="Auto, *" VerticalAlignment="Top">
                 <Grid>
                     <Border CornerRadius="{DynamicResource FullCornerRadius}" Margin="0 0 24 0" ClipToBounds="True">
-                        <Image Source="/Assets/Images/blank_playlist.png" Width="300" />
+                        <Image Source="/Assets/Images/blank_playlist.png" Width="200" />
                     </Border>
                     <Border CornerRadius="{DynamicResource FullCornerRadius}" Margin="0 0 24 0" ClipToBounds="True">
-                        <Image asyncImageLoader:ImageLoader.Source="{Binding ImageUrl}" Width="300" />
+                        <Image asyncImageLoader:ImageLoader.Source="{Binding ImageUrl}" Width="200" />
                     </Border>
                 </Grid>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -76,12 +76,8 @@
                                         <StackPanel>
                                             <Border Width="175" Height="125" CornerRadius="4" ClipToBounds="True"
                                                     BorderThickness="1" HorizontalAlignment="Center">
-                                                <Rectangle RadiusX="4" RadiusY="4">
-                                                    <Rectangle.Fill>
-                                                        <ImageBrush Source="{Binding Image}"
-                                                                    Stretch="UniformToFill" />
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
+                                                <Image asyncImageLoader:ImageLoader.Source="{Binding ImageUrl}"
+                                                       Stretch="UniformToFill" />
                                             </Border>
                                         </StackPanel>
                                         <StackPanel Spacing="4">

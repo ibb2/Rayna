@@ -129,25 +129,23 @@ public class Music : IMusic
 
     public async ValueTask<IImmutableList<Album>> GetArtistAlbums(CancellationToken ct, Plex plex, Artist artist)
     {
-        // Stopwatch stopwatch = new Stopwatch();
-        //
-        // // Start the stopwatch
-        // stopwatch.Start();
+        Stopwatch stopwatch = new Stopwatch();
 
-        await Task.Delay(TimeSpan.FromSeconds(1), ct);
+        // Start the stopwatch
+        stopwatch.Start();
 
         var serverUri = plex.GetServerUri();
         var albums = await plex.GetArtistAlbums(serverUri, artist);
 
-        // // Stop the stopwatch
-        // stopwatch.Stop();
-        //
-        // // Get the elapsed time
-        // TimeSpan elapsed = stopwatch.Elapsed;
-        //
-        // // Display the elapsed time in various units
-        // Console.WriteLine($"Get Artist Albums Execution time: {elapsed.TotalMilliseconds} ms");
-        // Console.WriteLine($"Get Artist Albums Execution time: {elapsed.TotalSeconds} seconds");
+        // Stop the stopwatch
+        stopwatch.Stop();
+
+        // Get the elapsed time
+        TimeSpan elapsed = stopwatch.Elapsed;
+
+        // Display the elapsed time in various units
+        Console.WriteLine($"Get Artist Albums Execution time: {elapsed.TotalMilliseconds} ms");
+        Console.WriteLine($"Get Artist Albums Execution time: {elapsed.TotalSeconds} seconds");
 
         return albums;
     }
