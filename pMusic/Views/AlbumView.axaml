@@ -1,7 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:cc="clr-namespace:pMusic.Controls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="clr-namespace:pMusic.ViewModels"
@@ -29,135 +28,135 @@
             </Style>
         </Style>
     </UserControl.Styles>
-    <cc:FourCornerGradientBlur TopLeftColor="{Binding Album.UltraBlurColors.TopLeft}"
-                               TopRightColor="{Binding Album.UltraBlurColors.TopRight}"
-                               BottomLeftColor="{Binding Album.UltraBlurColors.BottomLeft}"
-                               BottomRightColor="{Binding Album.UltraBlurColors.BottomRight}" CornerRadius="8"
-                               ClipToBounds="True">
-        <Border Padding="16 8" Margin="0 4 8 2" CornerRadius="8" ClipToBounds="True">
-            <Grid RowDefinitions="Auto, Auto, *">
-                <Grid>
-                    <Grid ColumnDefinitions="Auto, *" VerticalAlignment="Top">
-                        <Grid>
-                            <Border CornerRadius="15" Margin="0 0 24 0" ClipToBounds="True">
-                                <Image Source="/Assets/Images/blank_playlist.png" Width="300" />
-                            </Border>
-                            <Border CornerRadius="15" Margin="0 0 24 0" ClipToBounds="True">
-                                <Image Source="{Binding Image}" Width="300" />
-                            </Border>
-                        </Grid>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Spacing="24">
-                            <StackPanel VerticalAlignment="Top">
-                                <TextBlock FontSize="16">Album</TextBlock>
-                                <Viewbox Stretch="Fill" StretchDirection="Both" MaxWidth="500"
-                                         HorizontalAlignment="Left">
-                                    <TextBlock Classes="h1" Text="{Binding Album.Title}"></TextBlock>
-                                </Viewbox>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Album.Artist.Title}" FontWeight="SemiBold"
-                                               VerticalAlignment="Center"
-                                               PointerPressed="InputElement_OnPointerPressed" FontSize="16">
-                                        <TextBlock.Styles>
-                                            <Style Selector="TextBlock:pointerover">
-                                                <Setter Property="TextDecorations" Value="Underline" />
-                                            </Style>
-                                        </TextBlock.Styles>
-                                    </TextBlock>
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Album.OriginallyAvailableAt}"
-                                           VerticalAlignment="Center">
+    <!-- <cc:FourCornerGradientBlur TopLeftColor="{Binding Album.UltraBlurColors.TopLeft}" -->
+    <!--                            TopRightColor="{Binding Album.UltraBlurColors.TopRight}" -->
+    <!--                            BottomLeftColor="{Binding Album.UltraBlurColors.BottomLeft}" -->
+    <!--                            BottomRightColor="{Binding Album.UltraBlurColors.BottomRight}" CornerRadius="8" -->
+    <!--                            ClipToBounds="True"> -->
+    <Border Padding="16 8" Margin="0 4 8 2" CornerRadius="8" ClipToBounds="True">
+        <Grid RowDefinitions="Auto, Auto, *">
+            <Grid>
+                <Grid ColumnDefinitions="Auto, *" VerticalAlignment="Top">
+                    <Grid>
+                        <Border CornerRadius="15" Margin="0 0 24 0" ClipToBounds="True">
+                            <Image Source="/Assets/Images/blank_playlist.png" Width="200" />
+                        </Border>
+                        <Border CornerRadius="15" Margin="0 0 24 0" ClipToBounds="True">
+                            <Image Source="{Binding Image}" Width="200" />
+                        </Border>
+                    </Grid>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Spacing="24">
+                        <StackPanel VerticalAlignment="Top">
+                            <TextBlock FontSize="16">Album</TextBlock>
+                            <Viewbox Stretch="Fill" StretchDirection="Both" MaxWidth="500"
+                                     HorizontalAlignment="Left">
+                                <TextBlock Classes="h1" Text="{Binding Album.Title}"></TextBlock>
+                            </Viewbox>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Album.Artist.Title}" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           PointerPressed="InputElement_OnPointerPressed" FontSize="16">
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock:pointerover">
+                                            <Setter Property="TextDecorations" Value="Underline" />
+                                        </Style>
+                                    </TextBlock.Styles>
                                 </TextBlock>
                             </StackPanel>
                         </StackPanel>
-                    </Grid>
-                </Grid>
-                <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="0 32">
-                    <StackPanel Orientation="Horizontal" Spacing="20">
-                        <Button
-                            shadUi:ElementAssist.Classes="Primary"
-                            Command="{Binding QueueAlbumCommand}"
-                            Content="Play">
-                            <shadUi:ButtonAssist.Icon>
-                                <iconPacks:PackIconLucide Kind="Play"></iconPacks:PackIconLucide>
-                            </shadUi:ButtonAssist.Icon>
-                        </Button>
-                        <Button shadUi:ElementAssist.Classes="Icon">
-                            <shadUi:ButtonAssist.Icon>
-                                <iconPacks:PackIconLucide Kind="Shuffle"></iconPacks:PackIconLucide>
-                            </shadUi:ButtonAssist.Icon>
-                        </Button>
-                        <Button shadUi:ElementAssist.Classes="Icon"
-                                Command="{Binding AddToLibraryCommand}" CommandParameter="{Binding Album}">
-                            <shadUi:ButtonAssist.Icon>
-                                <iconPacks:PackIconLucide Kind="Plus"></iconPacks:PackIconLucide>
-                            </shadUi:ButtonAssist.Icon>
-                        </Button>
-                        <Button shadUi:ElementAssist.Classes="Icon">
-                            <shadUi:ButtonAssist.Icon>
-                                <iconPacks:PackIconLucide Kind="Download"></iconPacks:PackIconLucide>
-                            </shadUi:ButtonAssist.Icon>
-                        </Button>
+                        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Album.OriginallyAvailableAt}"
+                                       VerticalAlignment="Center">
+                            </TextBlock>
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
-                <DataGrid
-                    Grid.Row="2"
-                    x:Name="DataGrid"
-                    CanUserReorderColumns="False"
-                    CanUserSortColumns="False"
-                    CanUserResizeColumns="False"
-                    GridLinesVisibility="Horizontal"
-                    VerticalScrollBarVisibility="Disabled"
-                    ItemsSource="{Binding TrackList}"
-                    SelectionMode="Single">
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="60">
-                            <DataGridTemplateColumn.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="#" HorizontalAlignment="Center">
-                                    </TextBlock>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.HeaderTemplate>
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Panel>
-                                        <Button shadUi:ElementAssist.Classes="Icon"
-                                                IsVisible="{Binding $parent[DataGridCellsPresenter].IsPointerOver}"
-                                                Command="{Binding ((vm:AlbumViewModel)DataContext).PlayCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                CommandParameter="{Binding }"
-                                                Width="40"
-                                                Height="15">
-                                            <shadUi:ButtonAssist.Icon>
-                                                <iconPacks:PackIconLucide Kind="Play"></iconPacks:PackIconLucide>
-                                            </shadUi:ButtonAssist.Icon>
-                                        </Button>
-                                        <TextBlock Text="{Binding Index}"
-                                                   IsVisible="{Binding !$parent[DataGridCellsPresenter].IsPointerOver}"
-                                                   VerticalAlignment="Center" Padding="12 0 0 0" />
-                                    </Panel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTextColumn Width="*" Binding="{Binding Title}">
-                            <DataGridTextColumn.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="Title"></TextBlock>
-                                </DataTemplate>
-                            </DataGridTextColumn.HeaderTemplate>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn
-                            Binding="{Binding Duration, Converter={StaticResource TimeSpanToMinSecConverter}, Mode=OneWay}"
-                            CellStyleClasses="right">
-                            <DataGridTextColumn.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="Length" HorizontalAlignment="Right"></TextBlock>
-                                </DataTemplate>
-                            </DataGridTextColumn.HeaderTemplate>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
             </Grid>
-        </Border>
-    </cc:FourCornerGradientBlur>
+            <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="0 32">
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <Button
+                        shadUi:ElementAssist.Classes="Primary"
+                        Command="{Binding QueueAlbumCommand}"
+                        Content="Play">
+                        <shadUi:ButtonAssist.Icon>
+                            <iconPacks:PackIconLucide Kind="Play"></iconPacks:PackIconLucide>
+                        </shadUi:ButtonAssist.Icon>
+                    </Button>
+                    <Button shadUi:ElementAssist.Classes="Icon">
+                        <shadUi:ButtonAssist.Icon>
+                            <iconPacks:PackIconLucide Kind="Shuffle"></iconPacks:PackIconLucide>
+                        </shadUi:ButtonAssist.Icon>
+                    </Button>
+                    <Button shadUi:ElementAssist.Classes="Icon"
+                            Command="{Binding AddToLibraryCommand}" CommandParameter="{Binding Album}">
+                        <shadUi:ButtonAssist.Icon>
+                            <iconPacks:PackIconLucide Kind="Plus"></iconPacks:PackIconLucide>
+                        </shadUi:ButtonAssist.Icon>
+                    </Button>
+                    <Button shadUi:ElementAssist.Classes="Icon">
+                        <shadUi:ButtonAssist.Icon>
+                            <iconPacks:PackIconLucide Kind="Download"></iconPacks:PackIconLucide>
+                        </shadUi:ButtonAssist.Icon>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <DataGrid
+                Grid.Row="2"
+                x:Name="DataGrid"
+                CanUserReorderColumns="False"
+                CanUserSortColumns="False"
+                CanUserResizeColumns="False"
+                GridLinesVisibility="Horizontal"
+                VerticalScrollBarVisibility="Disabled"
+                ItemsSource="{Binding TrackList}"
+                SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="60">
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="#" HorizontalAlignment="Center">
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Panel>
+                                    <Button shadUi:ElementAssist.Classes="Icon"
+                                            IsVisible="{Binding $parent[DataGridCellsPresenter].IsPointerOver}"
+                                            Command="{Binding ((vm:AlbumViewModel)DataContext).PlayCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding }"
+                                            Width="40"
+                                            Height="15">
+                                        <shadUi:ButtonAssist.Icon>
+                                            <iconPacks:PackIconLucide Kind="Play"></iconPacks:PackIconLucide>
+                                        </shadUi:ButtonAssist.Icon>
+                                    </Button>
+                                    <TextBlock Text="{Binding Index}"
+                                               IsVisible="{Binding !$parent[DataGridCellsPresenter].IsPointerOver}"
+                                               VerticalAlignment="Center" Padding="12 0 0 0" />
+                                </Panel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Title}">
+                        <DataGridTextColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Title"></TextBlock>
+                            </DataTemplate>
+                        </DataGridTextColumn.HeaderTemplate>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn
+                        Binding="{Binding Duration, Converter={StaticResource TimeSpanToMinSecConverter}, Mode=OneWay}"
+                        CellStyleClasses="right">
+                        <DataGridTextColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Length" HorizontalAlignment="Right"></TextBlock>
+                            </DataTemplate>
+                        </DataGridTextColumn.HeaderTemplate>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Border>
+    <!-- </cc:FourCornerGradientBlur> -->
 </UserControl>
