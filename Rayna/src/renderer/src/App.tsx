@@ -17,7 +17,7 @@ function App(): React.JSX.Element {
       </p>
       <div className="actions">
         <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
+          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer" className="text-xl">
             Documentation
           </a>
         </div>
