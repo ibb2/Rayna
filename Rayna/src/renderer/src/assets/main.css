@@ -4,13 +4,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
-  background-image: url('./wavy-lines.svg');
-  background-size: cover;
+}
+
+body {
   user-select: none;
 }
 
@@ -31,11 +33,8 @@ code {
 }
 
 #root {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin-bottom: 80px;
+  width: 100%;
+  height: 100%;
 }
 
 .logo {
