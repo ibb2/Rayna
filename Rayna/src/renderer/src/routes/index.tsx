@@ -6,11 +6,11 @@ import data from '../data.json'
 
 export const Route = createFileRoute('/')({
   component: Index,
-  loader: () => {
+  beforeLoad: () => {
     throw redirect({
       to: '/auth'
     })
-  }
+  },
 })
 
 function Index() {

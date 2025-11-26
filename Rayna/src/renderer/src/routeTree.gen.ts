@@ -10,14 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlaylistPlaylistIdRouteImport } from './routes/playlist.$playlistId'
 import { Route as ArtistArtistIdRouteImport } from './routes/artist.$artistId'
+import { Route as AppHomeRouteImport } from './routes/app/home'
 import { Route as AlbumAlbumIdRouteImport } from './routes/album.$albumId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +42,11 @@ const ArtistArtistIdRoute = ArtistArtistIdRouteImport.update({
   path: '/artist/$artistId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AlbumAlbumIdRoute = AlbumAlbumIdRouteImport.update({
   id: '/album/$albumId',
   path: '/album/$albumId',
@@ -43,23 +55,29 @@ const AlbumAlbumIdRoute = AlbumAlbumIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/album/$albumId': typeof AlbumAlbumIdRoute
+  '/app/home': typeof AppHomeRoute
   '/artist/$artistId': typeof ArtistArtistIdRoute
   '/playlist/$playlistId': typeof PlaylistPlaylistIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/album/$albumId': typeof AlbumAlbumIdRoute
+  '/app/home': typeof AppHomeRoute
   '/artist/$artistId': typeof ArtistArtistIdRoute
   '/playlist/$playlistId': typeof PlaylistPlaylistIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/album/$albumId': typeof AlbumAlbumIdRoute
+  '/app/home': typeof AppHomeRoute
   '/artist/$artistId': typeof ArtistArtistIdRoute
   '/playlist/$playlistId': typeof PlaylistPlaylistIdRoute
 }
@@ -67,28 +85,35 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app'
     | '/auth'
     | '/album/$albumId'
+    | '/app/home'
     | '/artist/$artistId'
     | '/playlist/$playlistId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/app'
     | '/auth'
     | '/album/$albumId'
+    | '/app/home'
     | '/artist/$artistId'
     | '/playlist/$playlistId'
   id:
     | '__root__'
     | '/'
+    | '/app'
     | '/auth'
     | '/album/$albumId'
+    | '/app/home'
     | '/artist/$artistId'
     | '/playlist/$playlistId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   AlbumAlbumIdRoute: typeof AlbumAlbumIdRoute
   ArtistArtistIdRoute: typeof ArtistArtistIdRoute
@@ -102,6 +127,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -125,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtistArtistIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/home': {
+      id: '/app/home'
+      path: '/home'
+      fullPath: '/app/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/album/$albumId': {
       id: '/album/$albumId'
       path: '/album/$albumId'
@@ -135,8 +174,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppRouteRouteChildren {
+  AppHomeRoute: typeof AppHomeRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppHomeRoute: AppHomeRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   AlbumAlbumIdRoute: AlbumAlbumIdRoute,
   ArtistArtistIdRoute: ArtistArtistIdRoute,
