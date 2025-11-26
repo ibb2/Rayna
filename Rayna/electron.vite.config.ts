@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -20,7 +21,14 @@ export default defineConfig({
         '@': resolve(__dirname, 'src/renderer/src')
       }
     },
-    plugins: [react(), tailwindcss()]
+    plugins: [
+      TanStackRouterVite({
+        routesDirectory: './src/renderer/src/routes',
+        generatedRouteTree: './src/renderer/src/routeTree.gen.ts',
+      }),
+      react(),
+      tailwindcss()
+    ]
   }
 })
 

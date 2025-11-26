@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { DatabaseManager } from './database'
 
 function createWindow(): void {
   // Create the browser window.
@@ -51,6 +52,10 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  const db = new DatabaseManager()
+  ipcMain.handle('db:get', (_, key) => db.get(key))
+  ipcMain.handle('db:set', (_, key, value) => db.set(key, value))
 
   createWindow()
 
