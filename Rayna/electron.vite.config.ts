@@ -24,11 +24,10 @@ export default defineConfig({
     plugins: [
       TanStackRouterVite({
         routesDirectory: './src/renderer/src/routes',
-        generatedRouteTree: './src/renderer/src/routeTree.gen.ts',
+        generatedRouteTree: './src/renderer/src/routeTree.gen.ts'
       }),
       react(),
       tailwindcss()
     ]
   }
 })
-

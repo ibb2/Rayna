@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/album/$albumId')({
-    component: AlbumPage,
+  component: AlbumPage
 })
 
 function AlbumPage() {
-    const { albumId } = Route.useParams()
-    return <div className="p-4">Album Page: {albumId}</div>
+  const { albumId } = Route.useParams()
+  return <div className="p-4">Album Page: {albumId}</div>
 }
