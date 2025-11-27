@@ -6,11 +6,27 @@ import data from '../data.json'
 
 export const Route = createFileRoute('/')({
   component: Index,
-  beforeLoad: () => {
-    throw redirect({
-      to: '/auth'
-    })
-  },
+  beforeLoad: async () => {
+    const isUserLoggedIn = await window.api.auth.isUserSignedIn()
+    const hasUserSelectedAServer = await window.api.auth.isServerSelected()
+
+    console.log('Is user logged in: ', isUserLoggedIn)
+
+    if (!isUserLoggedIn) {
+      throw redirect({
+        to: '/auth'
+      })
+    } else {
+      if (hasUserSelectedAServer) {
+        return redirect({
+          to: '/server'
+        })
+      }
+      return redirect({
+        to: '/app'
+      })
+    }
+  }
 })
 
 function Index() {

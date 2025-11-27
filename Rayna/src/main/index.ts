@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { DatabaseManager } from './database'
+import { PlexServer } from './types'
 
 function createWindow(): void {
   // Create the browser window.
@@ -80,6 +81,14 @@ app.whenReady().then(async () => {
   ipcMain.handle('auth:checkPinStatus', async (_, id) => {
     return await auth.checkPinStatus(id)
   })
+
+  ipcMain.handle('auth:isUserSignedIn', () => auth.isUserSignedIn())
+
+  ipcMain.handle('auth:getServers', () => auth.getServers())
+
+  ipcMain.handle('auth:selectServer', (_, server: PlexServer) => auth.selectServer(server))
+
+  ipcMain.handle('auth:isServerSelected', () => auth.isServerSelected())
 
   createWindow()
 

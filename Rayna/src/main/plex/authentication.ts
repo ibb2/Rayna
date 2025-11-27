@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
 import qs from 'qs'
 import { safeStorage } from 'electron'
+import { PlexServer } from '../types'
 
 class Authentication {
     plexProduct = 'pMusic' //TODO: Change this to Rayna product name
@@ -13,8 +14,13 @@ class Authentication {
     plexCode = ''
     privateKey: string | null = null
     publicKey: string | null = null
+    selectedServer: PlexServer | null = null
 
     store = new Store()
+
+    constructor() {
+        this.setUserInformation()
+    }
 
     private encrypt(text: string): string {
         if (safeStorage.isEncryptionAvailable()) {
@@ -99,10 +105,6 @@ class Authentication {
             "Accept": "application/json",
             "X-Plex-Product": this.plexProduct,
             "X-Plex-Client-Identifier": this.plexClientId || this.generateClientIdentifier(),
-            "X-Plex-Version": "1.0.0",
-            "X-Plex-Platform": "Rayna",
-            "X-Plex-Device": "Rayna",
-            "X-Plex-Device-Name": "Rayna",
         }
 
         const response = await fetch(url, { headers, method: 'POST' })
@@ -143,22 +145,82 @@ class Authentication {
         const headers = {
             "Accept": "application/json",
             "X-Plex-Product": this.plexProduct,
-            "X-Plex-Client-Identifier": this.plexClientId || this.generateClientIdentifier(),
-            "X-Plex-Version": "1.0.0",
-            "X-Plex-Platform": "Rayna",
-            "X-Plex-Device": "Rayna",
-            "X-Plex-Device-Name": "Rayna",
+            "X-Plex-Client-Identifier": this.plexClientId || this.generateClientIdentifier()
         }
 
         const response = await fetch(url, { headers })
         const data = await response.json()
 
-        if (data.auth_token) {
-            this.plexUserAccessToken = data.auth_token
+        console.log(data['authToken'])
+
+        if (data['authToken']) {
+            this.plexUserAccessToken = data['authToken']
             this.store.set('plexUserAccessToken', this.encrypt(this.plexUserAccessToken))
         }
 
         return data
+    }
+
+    public isUserSignedIn(): boolean {
+        // Check if the user is signed in by checking if the authentication token exists
+
+        const authenticationToken = this.store.get('plexUserAccessToken') as string | undefined
+
+        if (authenticationToken) {
+            return true
+        }
+
+        return false
+    }
+
+    public async getServers(): Promise<PlexServer[]> {
+        const url = "https://clients.plex.tv/api/v2/resources?includeHttps=1&includeRelay=1&includeIPv6=1"
+        const headers = {
+            "Accept": "application/json",
+            "X-Plex-Product": this.plexProduct,
+            "X-Plex-Client-Identifier": this.plexClientId || this.generateClientIdentifier(),
+            "X-Plex-Token": this.plexUserAccessToken,
+        }
+
+        const response = await fetch(url, { headers })
+        const data = await response.json() as PlexServer[]
+
+        const servers: PlexServer[] = data.filter(s => s.product == 'Plex Media Server')
+        console.log(servers)
+        return servers
+    }
+
+    public async selectServer(server: PlexServer) {
+
+        this.selectedServer = server
+        this.store.set('selectedServer', JSON.stringify(this.selectedServer))
+        console.log("Selected server: ", server)
+    }
+
+    public isServerSelected(): boolean {
+        const selectedServer = this.store.get('selectedServer') as string | undefined
+
+        console.log("selected server: ", selectedServer)
+
+        if (selectedServer !== undefined || selectedServer !== null) {
+            return true
+        }
+
+        return false
+    }
+
+    private setUserInformation() {
+        this.plexClientId = this.generateClientIdentifier()
+        try {
+            this.plexUserAccessToken = this.decrypt(this.store.get('plexUserAccessToken') as string)
+            this.plexId = this.store.get('plexId') as string
+            this.privateKey = this.decrypt(this.store.get("privateKey") as string)
+            this.publicKey = this.decrypt(this.store.get("publicKey") as string)
+            const selectedServer = this.store.get("selectedServer") as string | undefined
+            this.selectedServer = selectedServer != undefined ? JSON.parse(selectedServer) as PlexServer : null
+        } catch (e) {
+            console.error('User not authenticated: ', e)
+        }
     }
 
 }

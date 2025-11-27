@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { PlexServer } from 'src/main/types'
 
 // Custom APIs for renderer
 const api = {
@@ -12,7 +13,11 @@ const api = {
     generateKeyPair: () => ipcRenderer.invoke('auth:generateKeyPair'),
     generatePin: () => ipcRenderer.invoke('auth:generatePin'),
     checkPin: () => ipcRenderer.invoke('auth:checkPin'),
-    checkPinStatus: (id: string) => ipcRenderer.invoke('auth:checkPinStatus', id)
+    checkPinStatus: (id: string) => ipcRenderer.invoke('auth:checkPinStatus', id),
+    isUserSignedIn: () => ipcRenderer.invoke('auth:isUserSignedIn'),
+    getServers: () => ipcRenderer.invoke('auth:getServers'),
+    selectServer: (server: PlexServer) => ipcRenderer.invoke('auth:selectServer', server),
+    isServerSelected: () => ipcRenderer.invoke('auth:isServerSelected')
   }
 }
 
