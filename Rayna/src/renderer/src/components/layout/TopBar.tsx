@@ -1,8 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useRouter } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
 export function TopBar() {
+  const router = useRouter();
+
   return (
     <div className="flex h-16 items-center justify-between px-6 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
       <div className="flex items-center gap-2">
@@ -10,7 +13,7 @@ export function TopBar() {
           variant="ghost"
           size="icon"
           className="rounded-full bg-black/50 hover:bg-black/70 text-white"
-          onClick={() => window.history.back()}
+          onClick={() => router.history.back()}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
@@ -18,7 +21,7 @@ export function TopBar() {
           variant="ghost"
           size="icon"
           className="rounded-full bg-black/50 hover:bg-black/70 text-white"
-          onClick={() => window.history.forward()}
+          onClick={() => router.history.forward()}
         >
           <ChevronRight className="h-5 w-5" />
         </Button>

@@ -4,8 +4,6 @@ import {
   ItemActions,
   ItemContent,
   ItemDescription,
-  ItemFooter,
-  ItemHeader,
   ItemMedia,
   ItemTitle
 } from '@/components/ui/item'
@@ -48,7 +46,9 @@ export default function SelectServer() {
               onClick={() => {
                 window.api.auth.selectServer(server)
                 navigate({
-                  to: '/app'
+                  to: '/app',
+                  replace: true,
+                  reloadDocument: true
                 })
               }}
               className="w-full h-full"

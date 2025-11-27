@@ -41,7 +41,9 @@ function Auth() {
             // Wait a moment to show success message before redirecting
             setTimeout(() => {
               navigate({
-                to: '/app/home'
+                to: '/app',
+                replace: true,
+                reloadDocument: true
               })
             }, 1500)
           }
