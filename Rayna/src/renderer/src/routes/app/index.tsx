@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/app/')({
-  component: RouteComponent
+  component: Home
 })
 
-function RouteComponent() {
+export default function Home() {
   return (
-    <div>
+    <div className="flex flex-col h-full w-full">
       <p>Home</p>
     </div>
   )
