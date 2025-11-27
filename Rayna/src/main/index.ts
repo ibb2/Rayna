@@ -39,7 +39,7 @@ function createWindow(): void {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -56,6 +56,30 @@ app.whenReady().then(() => {
   const db = new DatabaseManager()
   ipcMain.handle('db:get', (_, key) => db.get(key))
   ipcMain.handle('db:set', (_, key, value) => db.set(key, value))
+
+  // Authentication IPC handlers
+  const Authentication = (await import('./plex/authentication')).default
+  const auth = new Authentication()
+
+  ipcMain.handle('auth:generateClientIdentifier', async () => {
+    return auth.generateClientIdentifier()
+  })
+
+  ipcMain.handle('auth:generateKeyPair', async () => {
+    return await auth.generateKeyPair()
+  })
+
+  ipcMain.handle('auth:generatePin', async () => {
+    return await auth.generatePin()
+  })
+
+  ipcMain.handle('auth:checkPin', async () => {
+    return await auth.checkPin()
+  })
+
+  ipcMain.handle('auth:checkPinStatus', async (_, id) => {
+    return await auth.checkPinStatus(id)
+  })
 
   createWindow()
 
