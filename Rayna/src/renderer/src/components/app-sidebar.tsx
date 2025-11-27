@@ -149,8 +149,11 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // Check if running on macOS
+  const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="offcanvas" {...props} className={isMacOS ? 'sidebar-macos-offset' : ''}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
