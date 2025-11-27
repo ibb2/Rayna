@@ -1,26 +1,31 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useRouter } from '@tanstack/react-router'
+import { useCanGoBack, useRouter } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 export function TopBar() {
-  const router = useRouter();
+  const router = useRouter()
+  const canGoBack = useCanGoBack()
 
   return (
-    <div className="flex h-16 items-center justify-between px-6 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+    <div className="flex h-16 items-center justify-between py-4 bg-background/95 backdrop-blur sticky top-0 z-10 w-full">
       <div className="flex items-center gap-2">
         <Button
+          disabled={!canGoBack}
           variant="ghost"
-          size="icon"
-          className="rounded-full bg-black/50 hover:bg-black/70 text-white"
+          size="icon-sm"
           onClick={() => router.history.back()}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
         <Button
+          disabled={
+            !(router.history.length >= 1) ||
+            !(router.history.location === router.history[router.history.length - 1])
+          }
           variant="ghost"
-          size="icon"
-          className="rounded-full bg-black/50 hover:bg-black/70 text-white"
+          size="icon-sm"
           onClick={() => router.history.forward()}
         >
           <ChevronRight className="h-5 w-5" />
@@ -32,17 +37,17 @@ export function TopBar() {
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="What do you want to play?"
-            className="pl-8 rounded-full bg-secondary border-0"
+            className="pl-8 rounded-full bg-secondary border-0 w-full"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex gap-4">
         {/* User profile or other actions */}
-        <Button variant="ghost" className="font-semibold">
-          Sign up
-        </Button>
-        <Button className="rounded-full font-bold px-8">Log in</Button>
+        <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
       </div>
     </div>
   )
