@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
 import { createFileRoute, Link, useParams } from '@tanstack/react-router'
-import { Heart, MoreVertical, Play } from 'lucide-react';
+import { Heart, MoreVertical, Play } from 'lucide-react'
 
 export const Route = createFileRoute('/app/artist/$artistId')({
   component: ArtistPage
@@ -14,16 +14,26 @@ const artistData: Record<string, any> = {
     verified: true,
     image: 'https://images.unsplash.com/photo-1647220419119-316822d9d053?w=500',
     albums: [
-      { id: 1, name: 'VULTURES 1', year: 2024, image: 'https://images.unsplash.com/photo-1644855640845-ab57a047320e?w=300' },
-      { id: 2, name: 'VULTURES 2', year: 2024, image: 'https://images.unsplash.com/photo-1647220419119-316822d9d053?w=300' },
+      {
+        id: 1,
+        name: 'VULTURES 1',
+        year: 2024,
+        image: 'https://images.unsplash.com/photo-1644855640845-ab57a047320e?w=300'
+      },
+      {
+        id: 2,
+        name: 'VULTURES 2',
+        year: 2024,
+        image: 'https://images.unsplash.com/photo-1647220419119-316822d9d053?w=300'
+      }
     ],
     topTracks: [
       { id: 1, name: 'STARS', plays: '45.2M', duration: '1:55' },
       { id: 2, name: 'KEYS TO MY LIFE', plays: '38.7M', duration: '2:54' },
       { id: 3, name: 'PAID', plays: '32.1M', duration: '3:15' },
       { id: 4, name: 'TALKING', plays: '28.9M', duration: '3:05' },
-      { id: 5, name: 'VULTURES', plays: '25.4M', duration: '3:56' },
-    ],
+      { id: 5, name: 'VULTURES', plays: '25.4M', duration: '3:56' }
+    ]
   },
   '2': {
     id: 2,
@@ -32,21 +42,26 @@ const artistData: Record<string, any> = {
     verified: true,
     image: 'https://images.unsplash.com/photo-1616688920494-6758cf681803?w=500',
     albums: [
-      { id: 3, name: 'Blonde', year: 2016, image: 'https://images.unsplash.com/photo-1616688920494-6758cf681803?w=300' },
+      {
+        id: 3,
+        name: 'Blonde',
+        year: 2016,
+        image: 'https://images.unsplash.com/photo-1616688920494-6758cf681803?w=300'
+      }
     ],
     topTracks: [
       { id: 1, name: 'Ivy', plays: '52.3M', duration: '4:09' },
       { id: 2, name: 'Pink + White', plays: '48.1M', duration: '3:04' },
       { id: 3, name: 'Nights', plays: '45.7M', duration: '5:07' },
       { id: 4, name: 'Self Control', plays: '42.9M', duration: '4:10' },
-      { id: 5, name: 'Thinkin Bout You', plays: '38.2M', duration: '3:21' },
-    ],
-  },
-};
+      { id: 5, name: 'Thinkin Bout You', plays: '38.2M', duration: '3:21' }
+    ]
+  }
+}
 
 export function ArtistPage() {
-  const { artistId: id } = Route.useParams();
-  const artist = artistData[id || '1'] || artistData['1'];
+  const { artistId: id } = Route.useParams()
+  const artist = artistData[id || '1'] || artistData['1']
 
   return (
     <div className="flex flex-col h-full bg-zinc-900">
@@ -61,7 +76,9 @@ export function ArtistPage() {
             />
             <div className="flex flex-col justify-between py-2">
               <div>
-                {artist.verified && <div className="text-blue-400 text-sm mb-2">✓ VERIFIED ARTIST</div>}
+                {artist.verified && (
+                  <div className="text-blue-400 text-sm mb-2">✓ VERIFIED ARTIST</div>
+                )}
                 <h1 className="text-white text-5xl mb-2">{artist.name}</h1>
                 <div className="text-zinc-400">{artist.followers} monthly listeners</div>
               </div>
@@ -78,7 +95,11 @@ export function ArtistPage() {
               <Heart size={18} className="mr-2" />
               Follow
             </Button>
-            <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-zinc-800">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+            >
               <MoreVertical size={20} />
             </Button>
           </div>
@@ -132,5 +153,5 @@ export function ArtistPage() {
         </div>
       </main>
     </div>
-  );
+  )
 }

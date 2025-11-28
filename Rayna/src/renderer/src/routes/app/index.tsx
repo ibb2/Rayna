@@ -92,32 +92,81 @@ const recentlyPlayed = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-full w-full overflow-y-scroll px-16">
-      <p>Home</p>
-      <main className="flex-1 overflow-y-auto p-6">
-        {/* Quick Access Grid */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          {quickAccessAlbums.map((album) => (
+    <div className="flex-1 h-full overflow-y-scroll px-16 py-4 pb-48 ">
+      {/* Quick Access Grid */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        {quickAccessAlbums.map((album) => (
+          <Link
+            key={album.id}
+            to={`/app/album/${album.id}`}
+            className="flex items-center gap-4 bg-white/10 hover:bg-white/20 transition-colors rounded overflow-hidden group"
+          >
+            <img src={album.image} alt={album.name} className="w-20 h-20 object-cover" />
+            <span>{album.name}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Recently Played */}
+      <section>
+        <h2 className="text-2xl mb-4">Recently Played</h2>
+        <div className="grid grid-cols-6 gap-4">
+          {recentlyPlayed.map((album) => (
             <Link
               key={album.id}
               to={`/app/album/${album.id}`}
-              className="flex items-center gap-4 bg-white/10 hover:bg-white/20 transition-colors rounded overflow-hidden group"
+              className="bg-zinc-300/40 p-4 rounded-lg hover:bg-zinc-400/60 transition-colors group"
             >
-              <img src={album.image} alt={album.name} className="w-20 h-20 object-cover" />
-              <span className="text-white">{album.name}</span>
+              <div className="aspect-square mb-4 relative">
+                <img
+                  src={album.image}
+                  alt={album.name}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              </div>
+              <h3>{album.name}</h3>
+              <p className="text-sm truncate">{album.artist}</p>
             </Link>
           ))}
         </div>
+      </section>
 
-        {/* Recently Played */}
-        <section>
-          <h2 className="text-white text-2xl mb-4">Recently Played</h2>
-          <div className="grid grid-cols-6 gap-4">
-            {recentlyPlayed.map((album) => (
+      {/* Recently Added */}
+      <section>
+        <h2 className="text-2xl mt-8">Recently Added</h2>
+        <div className="grid grid-cols-6 gap-4">
+          {recentlyPlayed.map((album) => (
+            <Link
+              key={album.id}
+              to={`/app/album/${album.id}`}
+              className="bg-zinc-300/40 p-4 rounded-lg hover:bg-zinc-400/60 transition-colors group"
+            >
+              <div className="aspect-square mb-4 relative">
+                <img
+                  src={album.image}
+                  alt={album.name}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              </div>
+              <h3>{album.name}</h3>
+              <p className="text-sm truncate">{album.artist}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Recommended */}
+      <section className="mt-8">
+        <h2 className="text-2xl mb-4">Recommended for You</h2>
+        <div className="grid grid-cols-6 gap-4">
+          {recentlyPlayed
+            .slice()
+            .reverse()
+            .map((album) => (
               <Link
-                key={album.id}
+                key={`rec-${album.id}`}
                 to={`/app/album/${album.id}`}
-                className="bg-zinc-800/40 p-4 rounded-lg hover:bg-zinc-800/60 transition-colors group"
+                className="bg-zinc-300/40 p-4 rounded-lg hover:bg-zinc-400/60 transition-colors group"
               >
                 <div className="aspect-square mb-4 relative">
                   <img
@@ -126,40 +175,12 @@ export default function Home() {
                     className="w-full h-full object-cover rounded-md"
                   />
                 </div>
-                <h3 className="text-white truncate mb-1">{album.name}</h3>
-                <p className="text-zinc-400 text-sm truncate">{album.artist}</p>
+                <h3 className=" truncate mb-1">{album.name}</h3>
+                <p className="text-sm truncate">{album.artist}</p>
               </Link>
             ))}
-          </div>
-        </section>
-
-        {/* Recommended */}
-        <section className="mt-8">
-          <h2 className="text-white text-2xl mb-4">Recommended for You</h2>
-          <div className="grid grid-cols-6 gap-4">
-            {recentlyPlayed
-              .slice()
-              .reverse()
-              .map((album) => (
-                <Link
-                  key={`rec-${album.id}`}
-                  to={`/app/album/${album.id}`}
-                  className="bg-zinc-800/40 p-4 rounded-lg hover:bg-zinc-800/60 transition-colors group"
-                >
-                  <div className="aspect-square mb-4 relative">
-                    <img
-                      src={album.image}
-                      alt={album.name}
-                      className="w-full h-full object-cover rounded-md"
-                    />
-                  </div>
-                  <h3 className="text-white truncate mb-1">{album.name}</h3>
-                  <p className="text-zinc-400 text-sm truncate">{album.artist}</p>
-                </Link>
-              ))}
-          </div>
-        </section>
-      </main>
+        </div>
+      </section>
     </div>
   )
 }
