@@ -7,6 +7,7 @@ import {
   CarouselPrevious
 } from '@/components/ui/carousel'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 
 export const Route = createFileRoute('/app/')({
   component: Home
@@ -91,6 +92,18 @@ const recentlyPlayed = [
 ]
 
 export default function Home() {
+  const [load, onLoad] = useState(false)
+
+  const testFastApiBackend = async () => {
+    const response = await fetch('http://127.0.0.1:8000')
+    const res = await response.json()
+    console.log(res)
+  }
+
+  useEffect(() => {
+    if (!load) testFastApiBackend()
+  })
+
   return (
     <div className="flex-1 h-full overflow-y-scroll px-16 py-4 pb-48 ">
       {/* Quick Access Grid */}
