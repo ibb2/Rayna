@@ -1,12 +1,19 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useCanGoBack, useRouter } from '@tanstack/react-router'
+import { Link, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 export function TopBar() {
   const router = useRouter()
   const canGoBack = useCanGoBack()
+  const routerState = useRouterState()
+
+  // Check if we can go forward by comparing current index with history length
+  const canGoForward =
+    routerState.resolvedLocation?.state?.__TSR_index !== undefined
+      ? (routerState.resolvedLocation?.state.__TSR_index as number) < router.history.length - 1
+      : false
 
   return (
     <div className="flex h-16 items-center justify-between py-4 bg-background/95 backdrop-blur sticky top-0 z-10 w-full">
@@ -20,10 +27,7 @@ export function TopBar() {
           <ChevronLeft className="h-5 w-5" />
         </Button>
         <Button
-          disabled={
-            !(router.history.length >= 1) ||
-            !(router.history.location === router.history[router.history.length - 1])
-          }
+          disabled={!canGoForward}
           variant="ghost"
           size="icon-sm"
           onClick={() => router.history.forward()}
@@ -44,10 +48,12 @@ export function TopBar() {
 
       <div className="flex gap-4">
         {/* User profile or other actions */}
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        <Link to={'/app/settings'}>
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </Link>
       </div>
     </div>
   )
