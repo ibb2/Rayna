@@ -93,6 +93,10 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('auth:isServerSelected', () => auth.isServerSelected())
 
+  ipcMain.handle('auth:getUserSelectedServer', () => auth.getUserSelectedServer())
+
+  ipcMain.handle('auth:getUserAccessToken', () => auth.getUserAccessToken())
+
   createWindow()
 
   app.on('activate', function () {

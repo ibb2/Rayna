@@ -17,7 +17,9 @@ const api = {
     isUserSignedIn: () => ipcRenderer.invoke('auth:isUserSignedIn'),
     getServers: () => ipcRenderer.invoke('auth:getServers'),
     selectServer: (server: PlexServer) => ipcRenderer.invoke('auth:selectServer', server),
-    isServerSelected: () => ipcRenderer.invoke('auth:isServerSelected')
+    isServerSelected: () => ipcRenderer.invoke('auth:isServerSelected'),
+    getUserSelectedServer: () => ipcRenderer.invoke('auth:getUserSelectedServer'),
+    getUserAccessToken: () => ipcRenderer.invoke('auth:getUserAccessToken')
   }
 }
 

@@ -15,6 +15,8 @@ interface Window {
       getServers: () => Promise<PlexServer[]>
       selectServer: (server: PlexServer) => Promise<void>
       isServerSelected: () => boolean
+      getUserSelectedServer: () => Promise<PlexServer>
+      getUserAccessToken: () => Promise<string>
     }
   }
 }

@@ -14,6 +14,8 @@ declare global {
         generatePin: () => Promise<any>
         checkPin: () => Promise<any>
         checkPinStatus: (id: string) => Promise<any>
+        getUserSelectedServer: () => Promise<PlexServer>
+        getUserAccessToken: () => Promise<string>
       }
     }
   }
