@@ -102,7 +102,7 @@ const recentlyPlayed = [
 
 export default function Home() {
   // queries
-  const queryRecentlyAddedAlbums = useQuery({
+  const queryRecentlyPlayedAlbums = useQuery({
     queryKey: ['albums'],
     queryFn: () =>
       fetch('http://127.0.0.1:8000/music/albums/recently-played').then((res) => {
@@ -112,9 +112,19 @@ export default function Home() {
       })
   })
 
-  if (queryRecentlyAddedAlbums.isLoading) return <div>Loading...</div>
-  if (queryRecentlyAddedAlbums.error)
-    return 'An error has occurred: ' + queryRecentlyAddedAlbums.error.message
+  const queryRecentlyAddedAlbums = useQuery({
+    queryKey: ['album'],
+    queryFn: () =>
+      fetch('http://127.0.0.1:8000/music/albums/recently-added').then((res) => res.json())
+  })
+
+  if (queryRecentlyAddedAlbums.isLoading || queryRecentlyPlayedAlbums.isLoading)
+    return <div>Loading...</div>
+  if (queryRecentlyAddedAlbums.isError || queryRecentlyAddedAlbums.isError)
+    return (
+      'An error has occurred: ' + queryRecentlyAddedAlbums.error.message ||
+      queryRecentlyPlayedAlbums.error?.message
+    )
 
   return (
     <div className="flex-1 h-full overflow-y-scroll px-16 py-4 pb-48 ">
@@ -136,7 +146,7 @@ export default function Home() {
       <section>
         <h2 className="text-2xl mb-4">Recently Played</h2>
         <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
-          {queryRecentlyAddedAlbums.data?.map((album) => (
+          {queryRecentlyPlayedAlbums.data?.map((album) => (
             <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48">
               <CardHeader className="p-0">
                 <img
@@ -157,23 +167,21 @@ export default function Home() {
       {/* Recently Added */}
       <section>
         <h2 className="text-2xl mt-8">Recently Added</h2>
-        <div className="grid grid-cols-6 gap-4">
-          {recentlyPlayed.map((album) => (
-            <Link
-              key={album.id}
-              to={`/app/album/${album.id}`}
-              className="bg-zinc-300/40 p-4 rounded-lg hover:bg-zinc-400/60 transition-colors group"
-            >
-              <div className="aspect-square mb-4 relative">
+        <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
+          {queryRecentlyAddedAlbums.data?.map((album) => (
+            <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48">
+              <CardHeader className="p-0">
                 <img
-                  src={album.image}
-                  alt={album.name}
-                  className="w-full h-full object-cover rounded-md"
+                  src={album.thumb}
+                  alt={album.title}
+                  className="w-full object-cover rounded-lg"
                 />
-              </div>
-              <h3>{album.name}</h3>
-              <p className="text-sm truncate">{album.artist}</p>
-            </Link>
+                <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                  {album.title}
+                </CardTitle>
+                <CardDescription>{album.artist}</CardDescription>
+              </CardHeader>
+            </Card>
           ))}
         </div>
       </section>
@@ -181,7 +189,7 @@ export default function Home() {
       {/* Recommended */}
       <section className="mt-8">
         <h2 className="text-2xl mb-4">Recommended for You</h2>
-        <div className="grid grid-cols-6 gap-4">
+        <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
           {recentlyPlayed
             .slice()
             .reverse()
