@@ -18,6 +18,13 @@ import {
   CardTitle
 } from '@/components/ui/card'
 
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(duration)
+dayjs.extend(relativeTime)
+
 export const Route = createFileRoute('/app/')({
   component: Home
 })
@@ -105,11 +112,7 @@ export default function Home() {
   const queryRecentlyPlayedAlbums = useQuery({
     queryKey: ['albums'],
     queryFn: () =>
-      fetch('http://127.0.0.1:8000/music/albums/recently-played').then((res) => {
-        const data = res.json()
-        console.log(data)
-        return data
-      })
+      fetch('http://127.0.0.1:8000/music/albums/recently-played').then((res) => res.json())
   })
 
   const queryRecentlyAddedAlbums = useQuery({
@@ -118,12 +121,26 @@ export default function Home() {
       fetch('http://127.0.0.1:8000/music/albums/recently-added').then((res) => res.json())
   })
 
-  if (queryRecentlyAddedAlbums.isLoading || queryRecentlyPlayedAlbums.isLoading)
+  const queryAllPlaylists = useQuery({
+    queryKey: ['playlist'],
+    queryFn: () => fetch('http://127.0.0.1:8000/music/playlists/all').then((res) => res.json())
+  })
+
+  if (
+    queryRecentlyAddedAlbums.isLoading ||
+    queryRecentlyPlayedAlbums.isLoading ||
+    queryAllPlaylists.isLoading
+  )
     return <div>Loading...</div>
-  if (queryRecentlyAddedAlbums.isError || queryRecentlyAddedAlbums.isError)
+  if (
+    queryRecentlyAddedAlbums.isError ||
+    queryRecentlyPlayedAlbums.isError ||
+    queryAllPlaylists.isError
+  )
     return (
-      'An error has occurred: ' + queryRecentlyAddedAlbums.error.message ||
-      queryRecentlyPlayedAlbums.error?.message
+      'An error has occurred: ' + queryRecentlyAddedAlbums.error?.message ||
+      queryRecentlyPlayedAlbums.error?.message ||
+      queryAllPlaylists.error?.message
     )
 
   return (
@@ -190,26 +207,25 @@ export default function Home() {
       <section className="mt-8">
         <h2 className="text-2xl mb-4">Recommended for You</h2>
         <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
-          {recentlyPlayed
-            .slice()
-            .reverse()
-            .map((album) => (
-              <Link
-                key={`rec-${album.id}`}
-                to={`/app/album/${album.id}`}
-                className="bg-zinc-300/40 p-4 rounded-lg hover:bg-zinc-400/60 transition-colors group"
-              >
-                <div className="aspect-square mb-4 relative">
-                  <img
-                    src={album.image}
-                    alt={album.name}
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                </div>
-                <h3 className=" truncate mb-1">{album.name}</h3>
-                <p className="text-sm truncate">{album.artist}</p>
-              </Link>
-            ))}
+          {queryAllPlaylists.data.map((playlist) => (
+            <Card key={playlist.id} className="flex p-4 justify-center min-w-36 h-48">
+              <CardHeader className="p-0">
+                <img
+                  src={playlist.composite}
+                  alt={playlist.title}
+                  className="w-full object-cover rounded-lg"
+                />
+                <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                  {playlist.title}
+                </CardTitle>
+                <CardDescription>
+                  {/*{dayjs.duration(playlist.duration).days() + 'day'}*/}
+                  {dayjs.duration(playlist.duration).hours() + 'hr '}
+                  {dayjs.duration(playlist.duration).minutes() + 'min'}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
         </div>
       </section>
     </div>

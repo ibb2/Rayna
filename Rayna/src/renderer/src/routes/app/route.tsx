@@ -29,7 +29,6 @@ function AppLayoutComponent() {
       })
     })
     const res = await response.json()
-    console.log(res)
   }
 
   useEffect(() => {

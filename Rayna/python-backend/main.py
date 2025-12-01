@@ -64,7 +64,7 @@ def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
         raise HTTPException(status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.albums()
-    print(albums)
+
     return [
         {
             "id": a.key,
@@ -86,7 +86,7 @@ def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
         raise HTTPException(status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.searchAlbums(sort="lastViewedAt:desc")
-    print(albums)
+
     return [
         {
             "id": a.key,
@@ -108,7 +108,7 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
         raise HTTPException(status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.recentlyAddedAlbums()
-    print(albums)
+
     return [
         {
             "id": a.key,
@@ -123,6 +123,24 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
 
 
 @app.get("/music/playlists/all")
-def read_playlists():
-    playlist = app.plex.library.section("Music").stations()
-    return {"playlists", playlist}
+def read_playlists(plex: Annotated[PlexServer, Depends(get_plex)]):
+    sections = plex.library.sections()
+    musicSection = next((x for x in sections if x.type == "artist"), None)
+    if musicSection is None:
+        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+
+    playlists = plex.playlists()
+    return [
+        {
+            "id": p.key,
+            "title": p.title,
+            "addedAt": p.addedAt,
+            "ratingKey": p.ratingKey,
+            "composite": plex.url(p.composite, includeToken=True),
+            "smart": p.smart,
+            "icon": p.icon,
+            "duration": p.duration,
+            "durationInSeconds": p.durationInSeconds,
+        }
+        for p in playlists
+    ]
