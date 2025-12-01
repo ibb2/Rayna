@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { createFileRoute, Link, useParams } from '@tanstack/react-router'
 import { Heart, MoreVertical, Play } from 'lucide-react'
 
-export const Route = createFileRoute('/app/artist/$artistId')({
+export const Route = createFileRoute('/app/artist/$ratingKey')({
   component: ArtistPage
 })
 
@@ -60,7 +60,7 @@ const artistData: Record<string, any> = {
 }
 
 export function ArtistPage() {
-  const { artistId: id } = Route.useParams()
+  const { ratingKey } = Route.useParams()
   const artist = artistData[id || '1'] || artistData['1']
 
   return (

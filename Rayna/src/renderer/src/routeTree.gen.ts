@@ -15,9 +15,9 @@ import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
-import { Route as AppPlaylistPlaylistIdRouteImport } from './routes/app/playlist.$playlistId'
-import { Route as AppArtistArtistIdRouteImport } from './routes/app/artist.$artistId'
-import { Route as AppAlbumAlbumIdRouteImport } from './routes/app/album.$albumId'
+import { Route as AppPlaylistPlaylistIdRouteImport } from './routes/app/playlist.$ratingKey'
+import { Route as AppArtistArtistIdRouteImport } from './routes/app/artist.$ratingKey'
+import { Route as AppAlbumRatingKeyRouteImport } from './routes/app/album.$ratingKey'
 
 const ServerRoute = ServerRouteImport.update({
   id: '/server',
@@ -59,9 +59,9 @@ const AppArtistArtistIdRoute = AppArtistArtistIdRouteImport.update({
   path: '/artist/$artistId',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppAlbumAlbumIdRoute = AppAlbumAlbumIdRouteImport.update({
-  id: '/album/$albumId',
-  path: '/album/$albumId',
+const AppAlbumRatingKeyRoute = AppAlbumRatingKeyRouteImport.update({
+  id: '/album/$ratingKey',
+  path: '/album/$ratingKey',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -72,7 +72,7 @@ export interface FileRoutesByFullPath {
   '/server': typeof ServerRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
-  '/app/album/$albumId': typeof AppAlbumAlbumIdRoute
+  '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
   '/app/artist/$artistId': typeof AppArtistArtistIdRoute
   '/app/playlist/$playlistId': typeof AppPlaylistPlaylistIdRoute
 }
@@ -82,7 +82,7 @@ export interface FileRoutesByTo {
   '/server': typeof ServerRoute
   '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
-  '/app/album/$albumId': typeof AppAlbumAlbumIdRoute
+  '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
   '/app/artist/$artistId': typeof AppArtistArtistIdRoute
   '/app/playlist/$playlistId': typeof AppPlaylistPlaylistIdRoute
 }
@@ -94,7 +94,7 @@ export interface FileRoutesById {
   '/server': typeof ServerRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
-  '/app/album/$albumId': typeof AppAlbumAlbumIdRoute
+  '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
   '/app/artist/$artistId': typeof AppArtistArtistIdRoute
   '/app/playlist/$playlistId': typeof AppPlaylistPlaylistIdRoute
 }
@@ -107,7 +107,7 @@ export interface FileRouteTypes {
     | '/server'
     | '/app/settings'
     | '/app/'
-    | '/app/album/$albumId'
+    | '/app/album/$ratingKey'
     | '/app/artist/$artistId'
     | '/app/playlist/$playlistId'
   fileRoutesByTo: FileRoutesByTo
@@ -117,7 +117,7 @@ export interface FileRouteTypes {
     | '/server'
     | '/app/settings'
     | '/app'
-    | '/app/album/$albumId'
+    | '/app/album/$ratingKey'
     | '/app/artist/$artistId'
     | '/app/playlist/$playlistId'
   id:
@@ -128,7 +128,7 @@ export interface FileRouteTypes {
     | '/server'
     | '/app/settings'
     | '/app/'
-    | '/app/album/$albumId'
+    | '/app/album/$ratingKey'
     | '/app/artist/$artistId'
     | '/app/playlist/$playlistId'
   fileRoutesById: FileRoutesById
@@ -198,11 +198,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppArtistArtistIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/album/$albumId': {
-      id: '/app/album/$albumId'
-      path: '/album/$albumId'
-      fullPath: '/app/album/$albumId'
-      preLoaderRoute: typeof AppAlbumAlbumIdRouteImport
+    '/app/album/$ratingKey': {
+      id: '/app/album/$ratingKey'
+      path: '/album/$ratingKey'
+      fullPath: '/app/album/$ratingKey'
+      preLoaderRoute: typeof AppAlbumRatingKeyRouteImport
       parentRoute: typeof AppRouteRoute
     }
   }
@@ -211,7 +211,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppAlbumAlbumIdRoute: typeof AppAlbumAlbumIdRoute
+  AppAlbumRatingKeyRoute: typeof AppAlbumRatingKeyRoute
   AppArtistArtistIdRoute: typeof AppArtistArtistIdRoute
   AppPlaylistPlaylistIdRoute: typeof AppPlaylistPlaylistIdRoute
 }
@@ -219,7 +219,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
-  AppAlbumAlbumIdRoute: AppAlbumAlbumIdRoute,
+  AppAlbumRatingKeyRoute: AppAlbumRatingKeyRoute,
   AppArtistArtistIdRoute: AppArtistArtistIdRoute,
   AppPlaylistPlaylistIdRoute: AppPlaylistPlaylistIdRoute,
 }

@@ -123,6 +123,33 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     ]
 
 
+@app.get("/music/album/{rating_key}")
+def read_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]):
+    print(rating_key)
+    album = plex.fetchItem(rating_key)
+    tracks = album.tracks()
+    print("Tracks title", tracks[0].originalTitle)
+    return {
+        "id": album.key,
+        "title": album.title,
+        "year": album.year,
+        "artist": album.parentTitle,
+        "artistKey": album.parentKey,
+        "ratingKey": album.ratingKey,
+        "leafCount": album.leafCount,
+        "thumb": plex.url(album.thumb, includeToken=True),
+        "tracks": [
+            {
+                # "index": index + 1,
+                "number": t.trackNumber,
+                "title": t.title,
+                "duration": t.duration,
+            }
+            for t in tracks
+        ],
+    }
+
+
 @app.get("/music/playlists/all")
 def read_playlists(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()

@@ -14,9 +14,9 @@ import {
 
 export function PlayerFooter() {
   return (
-    <div className="h-24 bg-card border-t border-border flex items-center justify-between px-4 fixed bottom-0 w-full z-50">
+    <div className="flex h-30 bg-card border-t border-border p-4 w-full shrink-0">
       {/* Now Playing Info */}
-      <div className="flex items-center gap-4 w-[30%]">
+      <div className="flex gap-4 w-[30%]">
         <div className="h-14 w-14 bg-muted rounded-md flex items-center justify-center">
           {/* Album Art Placeholder */}
           <span className="text-xs text-muted-foreground">Cover</span>

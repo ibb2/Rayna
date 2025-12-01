@@ -36,13 +36,17 @@ function AppLayoutComponent() {
   }, [load])
 
   return (
-    <SidebarProvider>
-      <AppSidebar variant="inset" />
-      <SidebarInset className="overflow-hidden">
-        <SiteHeader />
-        <Outlet />
-      </SidebarInset>
+    <div className="flex flex-col h-screen w-screen">
+      <div className="flex-1 min-h-0 overflow-hidden relative">
+        <SidebarProvider className="[&_div[data-slot='sidebar-container']]:absolute! [&_div[data-slot='sidebar-container']]:h-full! [&_div[data-slot='sidebar-container']]:top-0! [&_div[data-slot='sidebar-container']]:bottom-0!">
+          <AppSidebar variant="inset" collapsible="icon" />
+          <SidebarInset className="overflow-hidden h-screen">
+            <SiteHeader />
+            <Outlet />
+          </SidebarInset>
+        </SidebarProvider>
+      </div>
       <PlayerFooter />
-    </SidebarProvider>
+    </div>
   )
 }

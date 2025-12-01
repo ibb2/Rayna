@@ -165,27 +165,30 @@ export default function Home() {
     )
 
   return (
-    <div className="flex flex-col overflow-auto p-6 pb-48 gap-8">
+    <div className="flex flex-col overflow-scroll gap-12 p-6 mb-30">
       {/* Quick Access Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full">
         {queryTopEight.data.map((x) => (
-          <Item
+          <Link
             key={x.id}
-            variant={'muted'}
-            className="flex flex-row hover:bg-slate-300/40 overflow-hidden"
+            to={x.type === 'album' ? `/app/album/${x.ratingKey}` : `/app/playlist/${x.ratingKey}`}
+            params={x.ratingKey}
+            asChild
           >
-            <ItemMedia variant={'image'}>
-              <img src={x.thumb} alt={x.title} className="w-20 object-cover rounded-lg" />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>{x.title}</ItemTitle>
-            </ItemContent>
-          </Item>
+            <Item variant={'muted'} className="flex flex-row hover:bg-slate-300/40 overflow-hidden">
+              <ItemMedia variant={'image'}>
+                <img src={x.thumb} alt={x.title} className="w-20 object-cover rounded-lg" />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>{x.title}</ItemTitle>
+              </ItemContent>
+            </Item>
+          </Link>
         ))}
       </div>
 
       {/* Recently Played */}
-      <section className="">
+      <div>
         <h2 className="text-2xl mb-4">Recently Played</h2>
         <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
           {queryRecentlyPlayedAlbums.data?.map((album) => (
@@ -204,10 +207,10 @@ export default function Home() {
             </Card>
           ))}
         </div>
-      </section>
+      </div>
 
       {/* Recently Added */}
-      <section>
+      <div>
         <h2 className="text-2xl mb-4">Recently Added</h2>
         <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
           {queryRecentlyAddedAlbums.data?.map((album) => (
@@ -226,10 +229,10 @@ export default function Home() {
             </Card>
           ))}
         </div>
-      </section>
+      </div>
 
       {/* Recommended */}
-      <section>
+      <div>
         <h2 className="text-2xl mb-4">Recommended for You</h2>
         <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
           {queryAllPlaylists.data.map((playlist) => (
@@ -257,7 +260,7 @@ export default function Home() {
             </Card>
           ))}
         </div>
-      </section>
+      </div>
     </div>
   )
 }
