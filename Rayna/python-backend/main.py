@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Union, cast
 
 from fastapi import FastAPI
@@ -129,18 +130,77 @@ def read_playlists(plex: Annotated[PlexServer, Depends(get_plex)]):
     if musicSection is None:
         raise HTTPException(status_code=404, detail="No Music section(s) not found.")
 
-    playlists = plex.playlists()
+    music_playlists = [p for p in plex.playlists() if p.playlistType == "audio"]
+
     return [
         {
             "id": p.key,
             "title": p.title,
             "addedAt": p.addedAt,
             "ratingKey": p.ratingKey,
-            "composite": plex.url(p.composite, includeToken=True),
+            "composite": plex.url(p.composite, includeToken=True)
+            if p.composite is not None
+            else "",
             "smart": p.smart,
             "icon": p.icon,
             "duration": p.duration,
-            "durationInSeconds": p.durationInSeconds,
         }
-        for p in playlists
+        for p in music_playlists
     ]
+
+
+@app.get("/music/library/top-eight")
+def read_top_eight(plex: Annotated[PlexServer, Depends(get_plex)]):
+    # Get music section
+    sections = plex.library.sections()
+    musicSection = next((x for x in sections if x.type == "artist"), None)
+    if musicSection is None:
+        raise HTTPException(status_code=404, detail="No Music section found.")
+
+    # Get recently viewed albums
+    albums = musicSection.searchAlbums(sort="lastViewedAt:desc", limit=20)
+
+    # Get all playlists (filter for audio if needed)
+    all_playlists = plex.playlists()
+    music_playlists = [p for p in all_playlists if p.playlistType == "audio"]
+
+    # Convert albums to common format
+    album_items = [
+        {
+            "id": a.key,
+            "title": a.title,
+            "year": a.year,
+            "artist": a.parentTitle,
+            "ratingKey": a.ratingKey,
+            "thumb": plex.url(a.thumb, includeToken=True),
+            "type": "album",
+            "lastViewedAt": a.lastViewedAt
+            or a.addedAt,  # Fallback to addedAt if never viewed
+        }
+        for a in albums
+    ]
+
+    # Convert playlists to common format
+    playlist_items = [
+        {
+            "id": p.key,
+            "title": p.title,
+            "year": p.addedAt.year if hasattr(p.addedAt, "year") else None,
+            "artist": f"{len(p.items())} tracks",  # Or leave empty
+            "ratingKey": p.ratingKey,
+            "thumb": plex.url(p.composite, includeToken=True) if p.composite else None,
+            "type": "playlist",
+            "lastViewedAt": p.addedAt,  # Fallback to addedAt
+        }
+        for p in music_playlists
+    ]
+
+    # Combine and sort by lastViewedAt (most recent first)
+    combined = album_items + playlist_items
+    combined.sort(
+        key=lambda x: x["lastViewedAt"] if x["lastViewedAt"] else datetime.min,
+        reverse=True,
+    )
+
+    # Return top 8
+    return combined[:8]

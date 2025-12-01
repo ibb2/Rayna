@@ -38,7 +38,7 @@ function AppLayoutComponent() {
   return (
     <SidebarProvider>
       <AppSidebar variant="inset" />
-      <SidebarInset>
+      <SidebarInset className="overflow-hidden">
         <SiteHeader />
         <Outlet />
       </SidebarInset>

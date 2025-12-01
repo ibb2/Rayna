@@ -21,6 +21,19 @@ import {
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemHeader,
+  ItemMedia,
+  ItemTitle
+} from '@/components/ui/item'
+
+import noPlaylistCover from '../../assets/no-playlist-cover.png'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -109,6 +122,11 @@ const recentlyPlayed = [
 
 export default function Home() {
   // queries
+  const queryTopEight = useQuery({
+    queryKey: ['top-eight'],
+    queryFn: () => fetch('http://127.0.0.1:8000/music/library/top-eight').then((res) => res.json())
+  })
+
   const queryRecentlyPlayedAlbums = useQuery({
     queryKey: ['albums'],
     queryFn: () =>
@@ -129,42 +147,49 @@ export default function Home() {
   if (
     queryRecentlyAddedAlbums.isLoading ||
     queryRecentlyPlayedAlbums.isLoading ||
-    queryAllPlaylists.isLoading
+    queryAllPlaylists.isLoading ||
+    queryTopEight.isLoading
   )
     return <div>Loading...</div>
   if (
     queryRecentlyAddedAlbums.isError ||
     queryRecentlyPlayedAlbums.isError ||
-    queryAllPlaylists.isError
+    queryAllPlaylists.isError ||
+    queryTopEight.isError
   )
     return (
       'An error has occurred: ' + queryRecentlyAddedAlbums.error?.message ||
       queryRecentlyPlayedAlbums.error?.message ||
-      queryAllPlaylists.error?.message
+      queryAllPlaylists.error?.message ||
+      queryTopEight.error?.message
     )
 
   return (
-    <div className="flex-1 h-full overflow-y-scroll px-16 py-4 pb-48 ">
+    <div className="flex flex-col overflow-auto p-6 pb-48 gap-8">
       {/* Quick Access Grid */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {quickAccessAlbums.map((album) => (
-          <Link
-            key={album.id}
-            to={`/app/album/${album.id}`}
-            className="flex items-center gap-4 bg-white/10 hover:bg-white/20 transition-colors rounded overflow-hidden group"
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full">
+        {queryTopEight.data.map((x) => (
+          <Item
+            key={x.id}
+            variant={'muted'}
+            className="flex flex-row hover:bg-slate-300/40 overflow-hidden"
           >
-            <img src={album.image} alt={album.name} className="w-20 h-20 object-cover" />
-            <span>{album.name}</span>
-          </Link>
+            <ItemMedia variant={'image'}>
+              <img src={x.thumb} alt={x.title} className="w-20 object-cover rounded-lg" />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>{x.title}</ItemTitle>
+            </ItemContent>
+          </Item>
         ))}
       </div>
 
       {/* Recently Played */}
-      <section>
+      <section className="">
         <h2 className="text-2xl mb-4">Recently Played</h2>
-        <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
+        <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
           {queryRecentlyPlayedAlbums.data?.map((album) => (
-            <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48">
+            <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48 shrink-0">
               <CardHeader className="p-0">
                 <img
                   src={album.thumb}
@@ -183,10 +208,10 @@ export default function Home() {
 
       {/* Recently Added */}
       <section>
-        <h2 className="text-2xl mt-8">Recently Added</h2>
-        <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
+        <h2 className="text-2xl mb-4">Recently Added</h2>
+        <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
           {queryRecentlyAddedAlbums.data?.map((album) => (
-            <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48">
+            <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48 shrink-0">
               <CardHeader className="p-0">
                 <img
                   src={album.thumb}
@@ -204,25 +229,30 @@ export default function Home() {
       </section>
 
       {/* Recommended */}
-      <section className="mt-8">
+      <section>
         <h2 className="text-2xl mb-4">Recommended for You</h2>
         <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
           {queryAllPlaylists.data.map((playlist) => (
             <Card key={playlist.id} className="flex p-4 justify-center min-w-36 h-48">
               <CardHeader className="p-0">
                 <img
-                  src={playlist.composite}
+                  src={playlist.composite || noPlaylistCover}
                   alt={playlist.title}
                   className="w-full object-cover rounded-lg"
                 />
                 <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
                   {playlist.title}
                 </CardTitle>
-                <CardDescription>
-                  {/*{dayjs.duration(playlist.duration).days() + 'day'}*/}
-                  {dayjs.duration(playlist.duration).hours() + 'hr '}
-                  {dayjs.duration(playlist.duration).minutes() + 'min'}
-                </CardDescription>
+                {playlist.duration !== null ? (
+                  <CardDescription>
+                    {dayjs.duration(playlist.duration).hours() + 'hr '}
+                    {dayjs.duration(playlist.duration).minutes() + 'min'}
+                  </CardDescription>
+                ) : (
+                  <CardDescription>
+                    <p>0hr 0min</p>
+                  </CardDescription>
+                )}
               </CardHeader>
             </Card>
           ))}
