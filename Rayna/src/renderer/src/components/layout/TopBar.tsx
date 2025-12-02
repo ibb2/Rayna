@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Link, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, Settings } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 export function TopBar() {
@@ -49,10 +49,7 @@ export function TopBar() {
       <div className="flex gap-4">
         {/* User profile or other actions */}
         <Link to={'/app/settings'}>
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          <Settings className="w-5" /> {/* Change back to UserProfile image */}
         </Link>
       </div>
     </div>
