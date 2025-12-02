@@ -20,24 +20,28 @@ export default function Home() {
   // queries
   const queryTopEight = useQuery({
     queryKey: ['top-eight'],
-    queryFn: () => fetch('http://127.0.0.1:8000/music/library/top-eight').then((res) => res.json())
+    queryFn: () => fetch('http://127.0.0.1:8000/music/library/top-eight').then((res) => res.json()),
+    staleTime: 30 * 60 * 1000
   })
 
   const queryRecentlyPlayedAlbums = useQuery({
     queryKey: ['albums'],
     queryFn: () =>
-      fetch('http://127.0.0.1:8000/music/albums/recently-played').then((res) => res.json())
+      fetch('http://127.0.0.1:8000/music/albums/recently-played').then((res) => res.json()),
+    staleTime: 30 * 60 * 1000
   })
 
   const queryRecentlyAddedAlbums = useQuery({
     queryKey: ['album'],
     queryFn: () =>
-      fetch('http://127.0.0.1:8000/music/albums/recently-added').then((res) => res.json())
+      fetch('http://127.0.0.1:8000/music/albums/recently-added').then((res) => res.json()),
+    staleTime: 30 * 60 * 1000
   })
 
   const queryAllPlaylists = useQuery({
     queryKey: ['playlist'],
-    queryFn: () => fetch('http://127.0.0.1:8000/music/playlists/all').then((res) => res.json())
+    queryFn: () => fetch('http://127.0.0.1:8000/music/playlists/all').then((res) => res.json()),
+    staleTime: 30 * 60 * 1000
   })
 
   if (
@@ -88,19 +92,26 @@ export default function Home() {
         <h2 className="text-2xl mb-4">Recently Played</h2>
         <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
           {queryRecentlyPlayedAlbums.data?.map((album) => (
-            <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48 shrink-0">
-              <CardHeader className="p-0">
-                <img
-                  src={album.thumb}
-                  alt={album.title}
-                  className="w-full object-cover rounded-lg"
-                />
-                <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
-                  {album.title}
-                </CardTitle>
-                <CardDescription>{album.artist}</CardDescription>
-              </CardHeader>
-            </Card>
+            <Link
+              key={album.id}
+              to={`/app/album/${album.ratingKey}`}
+              params={album.ratingKey}
+              asChild
+            >
+              <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
+                <CardHeader className="p-0">
+                  <img
+                    src={album.thumb}
+                    alt={album.title}
+                    className="w-full object-cover rounded-lg"
+                  />
+                  <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                    {album.title}
+                  </CardTitle>
+                  <CardDescription>{album.artist}</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
@@ -110,19 +121,26 @@ export default function Home() {
         <h2 className="text-2xl mb-4">Recently Added</h2>
         <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
           {queryRecentlyAddedAlbums.data?.map((album) => (
-            <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48 shrink-0">
-              <CardHeader className="p-0">
-                <img
-                  src={album.thumb}
-                  alt={album.title}
-                  className="w-full object-cover rounded-lg"
-                />
-                <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
-                  {album.title}
-                </CardTitle>
-                <CardDescription>{album.artist}</CardDescription>
-              </CardHeader>
-            </Card>
+            <Link
+              key={album.id}
+              to={`/app/album/${album.ratingKey}`}
+              params={album.ratingKey}
+              asChild
+            >
+              <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
+                <CardHeader className="p-0">
+                  <img
+                    src={album.thumb}
+                    alt={album.title}
+                    className="w-full object-cover rounded-lg"
+                  />
+                  <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                    {album.title}
+                  </CardTitle>
+                  <CardDescription>{album.artist}</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
@@ -132,28 +150,35 @@ export default function Home() {
         <h2 className="text-2xl mb-4">Recommended for You</h2>
         <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
           {queryAllPlaylists.data.map((playlist) => (
-            <Card key={playlist.id} className="flex p-4 justify-center min-w-36 h-48">
-              <CardHeader className="p-0">
-                <img
-                  src={playlist.composite || noPlaylistCover}
-                  alt={playlist.title}
-                  className="w-full object-cover rounded-lg"
-                />
-                <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
-                  {playlist.title}
-                </CardTitle>
-                {playlist.duration !== null ? (
-                  <CardDescription>
-                    {dayjs.duration(playlist.duration).hours() + 'hr '}
-                    {dayjs.duration(playlist.duration).minutes() + 'min'}
-                  </CardDescription>
-                ) : (
-                  <CardDescription>
-                    <p>0hr 0min</p>
-                  </CardDescription>
-                )}
-              </CardHeader>
-            </Card>
+            <Link
+              key={playlist.id}
+              to={`/app/playlist/${playlist.ratingKey}`}
+              params={playlist.ratingKey}
+              asChild
+            >
+              <Card key={playlist.id} className="flex p-4 justify-center min-w-36 h-48">
+                <CardHeader className="p-0">
+                  <img
+                    src={playlist.composite || noPlaylistCover}
+                    alt={playlist.title}
+                    className="w-full object-cover rounded-lg"
+                  />
+                  <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                    {playlist.title}
+                  </CardTitle>
+                  {playlist.duration !== null ? (
+                    <CardDescription>
+                      {dayjs.duration(playlist.duration).hours() + 'hr '}
+                      {dayjs.duration(playlist.duration).minutes() + 'min'}
+                    </CardDescription>
+                  ) : (
+                    <CardDescription>
+                      <p>0hr 0min</p>
+                    </CardDescription>
+                  )}
+                </CardHeader>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
