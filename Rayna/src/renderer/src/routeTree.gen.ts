@@ -15,8 +15,8 @@ import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
-import { Route as AppPlaylistPlaylistIdRouteImport } from './routes/app/playlist.$ratingKey'
-import { Route as AppArtistArtistIdRouteImport } from './routes/app/artist.$ratingKey'
+import { Route as AppPlaylistRatingKeyRouteImport } from './routes/app/playlist.$ratingKey'
+import { Route as AppArtistRatingKeyRouteImport } from './routes/app/artist.$ratingKey'
 import { Route as AppAlbumRatingKeyRouteImport } from './routes/app/album.$ratingKey'
 
 const ServerRoute = ServerRouteImport.update({
@@ -49,14 +49,14 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppPlaylistPlaylistIdRoute = AppPlaylistPlaylistIdRouteImport.update({
-  id: '/playlist/$playlistId',
-  path: '/playlist/$playlistId',
+const AppPlaylistRatingKeyRoute = AppPlaylistRatingKeyRouteImport.update({
+  id: '/playlist/$ratingKey',
+  path: '/playlist/$ratingKey',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppArtistArtistIdRoute = AppArtistArtistIdRouteImport.update({
-  id: '/artist/$artistId',
-  path: '/artist/$artistId',
+const AppArtistRatingKeyRoute = AppArtistRatingKeyRouteImport.update({
+  id: '/artist/$ratingKey',
+  path: '/artist/$ratingKey',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppAlbumRatingKeyRoute = AppAlbumRatingKeyRouteImport.update({
@@ -73,8 +73,8 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
-  '/app/artist/$artistId': typeof AppArtistArtistIdRoute
-  '/app/playlist/$playlistId': typeof AppPlaylistPlaylistIdRoute
+  '/app/artist/$ratingKey': typeof AppArtistRatingKeyRoute
+  '/app/playlist/$ratingKey': typeof AppPlaylistRatingKeyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -83,8 +83,8 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
   '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
-  '/app/artist/$artistId': typeof AppArtistArtistIdRoute
-  '/app/playlist/$playlistId': typeof AppPlaylistPlaylistIdRoute
+  '/app/artist/$ratingKey': typeof AppArtistRatingKeyRoute
+  '/app/playlist/$ratingKey': typeof AppPlaylistRatingKeyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -95,8 +95,8 @@ export interface FileRoutesById {
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
-  '/app/artist/$artistId': typeof AppArtistArtistIdRoute
-  '/app/playlist/$playlistId': typeof AppPlaylistPlaylistIdRoute
+  '/app/artist/$ratingKey': typeof AppArtistRatingKeyRoute
+  '/app/playlist/$ratingKey': typeof AppPlaylistRatingKeyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,8 +108,8 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/'
     | '/app/album/$ratingKey'
-    | '/app/artist/$artistId'
-    | '/app/playlist/$playlistId'
+    | '/app/artist/$ratingKey'
+    | '/app/playlist/$ratingKey'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,8 +118,8 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app'
     | '/app/album/$ratingKey'
-    | '/app/artist/$artistId'
-    | '/app/playlist/$playlistId'
+    | '/app/artist/$ratingKey'
+    | '/app/playlist/$ratingKey'
   id:
     | '__root__'
     | '/'
@@ -129,8 +129,8 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/'
     | '/app/album/$ratingKey'
-    | '/app/artist/$artistId'
-    | '/app/playlist/$playlistId'
+    | '/app/artist/$ratingKey'
+    | '/app/playlist/$ratingKey'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,18 +184,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/playlist/$playlistId': {
-      id: '/app/playlist/$playlistId'
-      path: '/playlist/$playlistId'
-      fullPath: '/app/playlist/$playlistId'
-      preLoaderRoute: typeof AppPlaylistPlaylistIdRouteImport
+    '/app/playlist/$ratingKey': {
+      id: '/app/playlist/$ratingKey'
+      path: '/playlist/$ratingKey'
+      fullPath: '/app/playlist/$ratingKey'
+      preLoaderRoute: typeof AppPlaylistRatingKeyRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/artist/$artistId': {
-      id: '/app/artist/$artistId'
-      path: '/artist/$artistId'
-      fullPath: '/app/artist/$artistId'
-      preLoaderRoute: typeof AppArtistArtistIdRouteImport
+    '/app/artist/$ratingKey': {
+      id: '/app/artist/$ratingKey'
+      path: '/artist/$ratingKey'
+      fullPath: '/app/artist/$ratingKey'
+      preLoaderRoute: typeof AppArtistRatingKeyRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/album/$ratingKey': {
@@ -212,16 +212,16 @@ interface AppRouteRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAlbumRatingKeyRoute: typeof AppAlbumRatingKeyRoute
-  AppArtistArtistIdRoute: typeof AppArtistArtistIdRoute
-  AppPlaylistPlaylistIdRoute: typeof AppPlaylistPlaylistIdRoute
+  AppArtistRatingKeyRoute: typeof AppArtistRatingKeyRoute
+  AppPlaylistRatingKeyRoute: typeof AppPlaylistRatingKeyRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
   AppAlbumRatingKeyRoute: AppAlbumRatingKeyRoute,
-  AppArtistArtistIdRoute: AppArtistArtistIdRoute,
-  AppPlaylistPlaylistIdRoute: AppPlaylistPlaylistIdRoute,
+  AppArtistRatingKeyRoute: AppArtistRatingKeyRoute,
+  AppPlaylistRatingKeyRoute: AppPlaylistRatingKeyRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
