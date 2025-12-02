@@ -1,51 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute, Link, useParams } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { Play, Heart, Plus, MoreVertical, Clock } from 'lucide-react'
 
 export const Route = createFileRoute('/app/album/$ratingKey')({
   component: AlbumPage
 })
-
-const albumData: Record<string, any> = {
-  '1': {
-    id: 1,
-    name: 'VULTURES 1',
-    artist: '¥$',
-    artistId: 1,
-    year: 2024,
-    image: 'https://images.unsplash.com/photo-1644855640845-ab57a047320e?w=500',
-    tracks: [
-      { id: 1, number: 1, name: 'STARS', duration: '1:55' },
-      { id: 2, number: 2, name: 'KEYS TO MY LIFE', duration: '2:54' },
-      { id: 3, number: 3, name: 'PAID', duration: '3:15' },
-      { id: 4, number: 4, name: 'TALKING', duration: '3:05' },
-      { id: 5, number: 5, name: 'BACK TO ME', duration: '4:55' },
-      { id: 6, number: 6, name: 'HOODRAT', duration: '3:42' },
-      { id: 7, number: 7, name: 'DO IT', duration: '3:45' },
-      { id: 8, number: 8, name: 'PAPERWORK', duration: '2:25' },
-      { id: 9, number: 9, name: 'BURN', duration: '4:12' },
-      { id: 10, number: 10, name: 'VULTURES', duration: '3:56' }
-    ]
-  },
-  '2': {
-    id: 2,
-    name: 'VULTURES 2',
-    artist: '¥$',
-    artistId: 1,
-    year: 2024,
-    image: 'https://images.unsplash.com/photo-1647220419119-316822d9d053?w=500',
-    tracks: [
-      { id: 1, number: 1, name: 'FIELD TRIP', duration: '2:45' },
-      { id: 2, number: 2, name: 'SLIDE', duration: '3:22' },
-      { id: 3, number: 3, name: 'FOREVER ROLLING', duration: '3:48' },
-      { id: 4, number: 4, name: 'PROMOTION', duration: '2:58' },
-      { id: 5, number: 5, name: 'LIFESTYLE', duration: '4:15' },
-      { id: 6, number: 6, name: 'SKY CITY', duration: '3:33' }
-    ]
-  }
-}
 
 export function AlbumPage() {
   const { ratingKey } = Route.useParams()
