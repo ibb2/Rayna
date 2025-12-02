@@ -135,12 +135,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <a href="#">
+              <div className="flex flex-row gap-4">
                 <AudioLines className="!size-5" />
                 <span className="text-base font-semibold group-data-[collapsible=icon]:hidden">
                   pMusic
                 </span>
-              </a>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
