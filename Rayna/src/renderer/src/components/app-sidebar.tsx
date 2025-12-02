@@ -30,7 +30,7 @@ import { NavDocuments } from './nav-documents'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { NavUser } from './nav-user'
-import { Home, Library } from 'lucide-react'
+import { AudioLines, Heart, Home, Library, Music } from 'lucide-react'
 
 const data = {
   user: {
@@ -43,9 +43,9 @@ const data = {
       title: 'Home',
       url: '/app',
       icon: Home
-    },
-    { title: 'Your Library', url: '/app', icon: Library }
-  ]
+    }
+    // { title: 'Your Library', url: '/app', icon: Library }
+  ],
   // navClouds: [
   //   {
   //     title: 'Capture',
@@ -111,23 +111,18 @@ const data = {
   //     icon: IconSearch
   //   }
   // ],
-  // documents: [
-  //   {
-  //     name: 'Data Library',
-  //     url: '#',
-  //     icon: IconDatabase
-  //   },
-  //   {
-  //     name: 'Reports',
-  //     url: '#',
-  //     icon: IconReport
-  //   },
-  //   {
-  //     name: 'Word Assistant',
-  //     url: '#',
-  //     icon: IconFileWord
-  //   }
-  // ]
+  documents: [
+    {
+      name: 'Liked Songs',
+      url: '#',
+      icon: Heart
+    },
+    {
+      name: 'All Music',
+      url: '#',
+      icon: Music
+    }
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -135,14 +130,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0
 
   return (
-    <Sidebar collapsible="offcanvas" {...props} className={isMacOS ? 'sidebar-macos-offset' : ''}>
+    <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
               <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">pMusic</span>
+                <AudioLines className="!size-5" />
+                <span className="text-base font-semibold group-data-[collapsible=icon]:hidden">
+                  pMusic
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -150,12 +147,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+        <NavDocuments items={data.documents} />
+        {/*<NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
     </Sidebar>
   )
 }
