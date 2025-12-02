@@ -120,7 +120,10 @@ export function AlbumPage() {
             key={track.id}
             className="grid grid-cols-[auto_1fr_auto_auto] gap-4 px-4 py-3 rounded group hover:bg-slate-200/50 transition-colors cursor-pointer"
           >
-            <div className="text-center w-8 hover:hidden">{index + 1}</div>
+            <div className="text-center w-8 group-hover:hidden">{index + 1}</div>
+            <button className="hidden group-hover:block">
+              <Play size={16} className="text-shadow-black w-8" fill="black" />
+            </button>
             <div>{track.title}</div>
             <button className="opacity-0 group-hover:opacity-100 transition-opacity">
               <Heart size={16} className="hover:text-red-400" />
