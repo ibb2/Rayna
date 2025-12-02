@@ -130,8 +130,8 @@ def read_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]):
     tracks = album.tracks()
     print("Tracks title", tracks[0].originalTitle)
     # Extract numeric rating key from parentKey (e.g., '/library/metadata/123' -> '123')
-    artist_rating_key = album.parentKey.split('/')[-1] if album.parentKey else None
-    
+    artist_rating_key = album.parentKey.split("/")[-1] if album.parentKey else None
+
     return {
         "id": album.key,
         "title": album.title,
@@ -230,6 +230,39 @@ def read_playlists(plex: Annotated[PlexServer, Depends(get_plex)]):
         }
         for p in music_playlists
     ]
+
+
+@app.get("/music/playlist/{rating_key}")
+def read_playlist(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]):
+    playlist = plex.fetchItem(rating_key)
+    tracks = playlist.items()
+
+    return {
+        "id": playlist.key,
+        "title": playlist.title,
+        "summary": playlist.summary,
+        "addedAt": playlist.addedAt,
+        "ratingKey": playlist.ratingKey,
+        "composite": plex.url(playlist.composite, includeToken=True)
+        if playlist.composite is not None
+        else "",
+        "smart": playlist.smart,
+        "icon": playlist.icon,
+        "duration": playlist.duration,
+        "tracks": [
+            {
+                "number": t.trackNumber,
+                "title": t.title,
+                "duration": t.duration,
+                "albumThumb": plex.url(t.parentThumb, includeToken=True),
+                "albumTitle": t.parentTitle,
+                "albumRatingKey": t.parentRatingKey,
+                "artistTitle": t.grandparentTitle,
+                "artistRatingKey": t.grandparentRatingKey,
+            }
+            for t in tracks
+        ],
+    }
 
 
 @app.get("/music/library/top-eight")
