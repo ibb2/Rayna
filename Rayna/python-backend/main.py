@@ -58,13 +58,16 @@ def initialize(request: Init, token: Annotated[str, Depends(oauth2_scheme)]):
 def get_plex() -> PlexServer:
     plex = getattr(app.state, "plex", None)
     if plex is None:
-        raise HTTPException(status_code=400, detail="Plex is not initialized yet.")
+        raise HTTPException(
+            status_code=400, detail="Plex is not initialized yet.")
     return plex
+
 
 def get_player() -> AudioPlayer:
     player = getattr(app.state, "player", None)
     if player is None:
-        raise HTTPException(status_code=400, detail="Player is not initialized yet.")
+        raise HTTPException(
+            status_code=400, detail="Player is not initialized yet.")
     return player
 
 
@@ -73,7 +76,8 @@ def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.albums()
 
@@ -95,7 +99,8 @@ def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.searchAlbums(sort="lastViewedAt:desc")
 
@@ -117,7 +122,8 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.recentlyAddedAlbums()
 
@@ -141,7 +147,8 @@ def read_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]):
     tracks = album.tracks()
     print("Tracks title", tracks[0].originalTitle)
     # Extract numeric rating key from parentKey (e.g., '/library/metadata/123' -> '123')
-    artist_rating_key = album.parentKey.split("/")[-1] if album.parentKey else None
+    artist_rating_key = album.parentKey.split(
+        "/")[-1] if album.parentKey else None
 
     return {
         "id": album.key,
@@ -157,6 +164,7 @@ def read_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]):
                 "number": t.trackNumber,
                 "title": t.title,
                 "duration": t.duration,
+                'ratingKey': t.ratingKey
             }
             for t in tracks
         ],
@@ -222,9 +230,11 @@ def read_playlists(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
-    music_playlists = [p for p in plex.playlists() if p.playlistType == "audio"]
+    music_playlists = [
+        p for p in plex.playlists() if p.playlistType == "audio"]
 
     return [
         {
@@ -338,7 +348,7 @@ def play_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)], 
     print(rating_key)
     album = plex.fetchItem(rating_key)
     tracks = album.tracks()
-    
+
     track_dicts = []
     for t in tracks:
         track_dicts.append({
@@ -348,7 +358,7 @@ def play_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)], 
             "duration": t.duration,
             "thumb": plex.url(t.thumb, includeToken=True) if t.thumb else None
         })
-        
+
     player.stop()
     player.add_to_queue(track_dicts)
     return {"status": "playing", "count": len(track_dicts)}
@@ -358,7 +368,7 @@ def play_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)], 
 def play_track(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)], player: Annotated[AudioPlayer, Depends(get_player)]):
     print(rating_key)
     track = plex.fetchItem(rating_key)
-    
+
     track_dict = {
         "title": track.title,
         "artist": track.originalTitle or track.grandparentTitle,
@@ -366,8 +376,9 @@ def play_track(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)], 
         "duration": track.duration,
         "thumb": plex.url(track.thumb, includeToken=True) if track.thumb else None
     }
-    
+
     player.stop()
+    player.queue = deque()
     player.add_to_queue([track_dict])
     return {"status": "playing", "track": track.title}
 
@@ -377,7 +388,8 @@ def get_music_queues():
     played = getattr(app.state, "played", None)
 
     if queue is None or played is None:
-        raise HTTPException(status_code=400, detail="Queues are not yet created.")
+        raise HTTPException(
+            status_code=400, detail="Queues are not yet created.")
     return (queue, played)
 
 
@@ -385,20 +397,24 @@ def get_music_queues():
 def get_player_status(player: Annotated[AudioPlayer, Depends(get_player)]):
     return player.get_status()
 
+
 @app.post("/player/play")
 def player_play(player: Annotated[AudioPlayer, Depends(get_player)]):
     player.resume()
     return {"status": "resumed"}
+
 
 @app.post("/player/pause")
 def player_pause(player: Annotated[AudioPlayer, Depends(get_player)]):
     player.pause()
     return {"status": "paused"}
 
+
 @app.post("/player/next")
 def player_next(player: Annotated[AudioPlayer, Depends(get_player)]):
     player.play_next()
     return {"status": "next"}
+
 
 @app.post("/player/prev")
 def player_prev(player: Annotated[AudioPlayer, Depends(get_player)]):

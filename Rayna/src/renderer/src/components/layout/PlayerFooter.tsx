@@ -67,15 +67,13 @@ export function PlayerFooter() {
       {/* Now Playing Info */}
       <div className="flex flex-row items-center gap-2">
         <div className="h-14 w-14 bg-muted rounded-md flex items-center justify-center overflow-hidden">
-          {currentTrack?.thumb ? (
+          {currentTrack?.thumb && (
             <img src={currentTrack.thumb} alt="Cover" className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-xs text-muted-foreground">Cover</span>
           )}
         </div>
         <div className="flex flex-col ">
           <span className="text-sm font-semibold hover:underline cursor-pointer truncate max-w-[200px]">
-            {currentTrack?.title || 'Not Playing'}
+            {currentTrack?.title || ''}
           </span>
           <span className="text-xs text-muted-foreground hover:underline cursor-pointer truncate max-w-[200px]">
             {currentTrack?.artist || ''}
