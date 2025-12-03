@@ -32,26 +32,29 @@ There are 2 different methods to install pMusic
 
 (Probably in order)
 
-- [x]  Volume Controls
-- [x]  Add Screenshots
-- [x]  Artist page
-- [x]  Playlist page
-- [ ]  Search
-- [ ]  Queue's
-   - [x] Queue Albums
-   - [ ] Queue individual tracks
-   - [x] Display Queue
-- [ ]  Offline support
-- [ ]  Caching
-- [ ]  Database support
-- [ ]  Lyrics
-- [ ]  Performance Improvements
-- [ ]  Sever select
-- [ ]  Transcoding
-- [ ]  Sync
-- [ ]  TV Support
-- [ ]  Settings Page
-- [x]  Prev and Next functionality
+- [ ] Volume Controls
+- [x] Add Screenshots
+- [x] Artist page
+  - [ ] Play popular tracks
+- [x] Playlist page
+  - [ ] Play entire playlist
+  - [ ] Play individual track for playlist
+- [ ] Search
+- [ ] Queue's
+  - [ ] Queue Albums
+  - [ ] Queue individual tracks
+  - [ ] Display Queue
+- [ ] Offline support
+- [ ] Caching
+- [ ] Database support
+- [ ] Lyrics
+- [x] Performance Improvements
+- [ ] Sever select
+- [ ] Transcoding
+- [ ] Sync
+- [ ] TV Support
+- [ ] Settings Page
+- [x] Prev and Next functionality
 
 ## Contributing
 
