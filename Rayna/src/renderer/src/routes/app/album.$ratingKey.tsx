@@ -49,7 +49,12 @@ export function AlbumPage() {
 
       {/* Controls */}
       <div className="flex items-center gap-3 mb-6">
-        <Button className="px-8">
+        <Button
+          className="px-8"
+          onClick={() => {
+            fetch(`http://127.0.0.1:8000/music/play/album/${ratingKey}`)
+          }}
+        >
           <Play size={18} className="mr-2" fill={'white'} />
           Play
         </Button>
@@ -76,7 +81,7 @@ export function AlbumPage() {
           </div>
         </div>
 
-        {album.tracks.map((track: any, index: int) => (
+        {album.tracks.map((track: any, index: number) => (
           <div
             key={track.id}
             className="grid grid-cols-[auto_1fr_auto_auto] gap-4 px-4 py-3 rounded group hover:bg-slate-200/50 transition-colors cursor-pointer"

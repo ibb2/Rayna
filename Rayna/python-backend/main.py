@@ -1,3 +1,4 @@
+from collections import deque
 from datetime import datetime
 from typing import Annotated, Union, cast
 
@@ -8,9 +9,9 @@ from fastapi.params import Depends, Form
 from fastapi.security import OAuth2PasswordBearer
 from plexapi.server import PlexServer
 from pydantic import BaseModel
+from player import AudioPlayer
 
 app = FastAPI()
-app.plex = None
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -47,6 +48,10 @@ def initialize(request: Init, token: Annotated[str, Depends(oauth2_scheme)]):
     print("Initializing…")
     print(request.serverUrl)
     app.state.plex = cast(PlexServer, PlexServer(request.serverUrl, token))
+    app.state.player = AudioPlayer()
+    app.state.player.set_plex(app.state.plex)
+    app.state.queue = deque()
+    app.state.played = deque()
     return {"token": token}
 
 
@@ -55,6 +60,12 @@ def get_plex() -> PlexServer:
     if plex is None:
         raise HTTPException(status_code=400, detail="Plex is not initialized yet.")
     return plex
+
+def get_player() -> AudioPlayer:
+    player = getattr(app.state, "player", None)
+    if player is None:
+        raise HTTPException(status_code=400, detail="Player is not initialized yet.")
+    return player
 
 
 @app.get("/music/albums/all")
@@ -320,3 +331,76 @@ def read_top_eight(plex: Annotated[PlexServer, Depends(get_plex)]):
 
     # Return top 8
     return combined[:8]
+
+
+@app.get("/music/play/album/{rating_key}")
+def play_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)], player: Annotated[AudioPlayer, Depends(get_player)]):
+    print(rating_key)
+    album = plex.fetchItem(rating_key)
+    tracks = album.tracks()
+    
+    track_dicts = []
+    for t in tracks:
+        track_dicts.append({
+            "title": t.title,
+            "artist": t.originalTitle or t.grandparentTitle,
+            "ratingKey": t.ratingKey,
+            "duration": t.duration,
+            "thumb": plex.url(t.thumb, includeToken=True) if t.thumb else None
+        })
+        
+    player.stop()
+    player.add_to_queue(track_dicts)
+    return {"status": "playing", "count": len(track_dicts)}
+
+
+@app.get("/music/play/track/{rating_key}")
+def play_track(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)], player: Annotated[AudioPlayer, Depends(get_player)]):
+    print(rating_key)
+    track = plex.fetchItem(rating_key)
+    
+    track_dict = {
+        "title": track.title,
+        "artist": track.originalTitle or track.grandparentTitle,
+        "ratingKey": track.ratingKey,
+        "duration": track.duration,
+        "thumb": plex.url(track.thumb, includeToken=True) if track.thumb else None
+    }
+    
+    player.stop()
+    player.add_to_queue([track_dict])
+    return {"status": "playing", "track": track.title}
+
+
+def get_music_queues():
+    queue = getattr(app.state, "queue", None)
+    played = getattr(app.state, "played", None)
+
+    if queue is None or played is None:
+        raise HTTPException(status_code=400, detail="Queues are not yet created.")
+    return (queue, played)
+
+
+@app.get("/player/status")
+def get_player_status(player: Annotated[AudioPlayer, Depends(get_player)]):
+    return player.get_status()
+
+@app.post("/player/play")
+def player_play(player: Annotated[AudioPlayer, Depends(get_player)]):
+    player.resume()
+    return {"status": "resumed"}
+
+@app.post("/player/pause")
+def player_pause(player: Annotated[AudioPlayer, Depends(get_player)]):
+    player.pause()
+    return {"status": "paused"}
+
+@app.post("/player/next")
+def player_next(player: Annotated[AudioPlayer, Depends(get_player)]):
+    player.play_next()
+    return {"status": "next"}
+
+@app.post("/player/prev")
+def player_prev(player: Annotated[AudioPlayer, Depends(get_player)]):
+    player.play_prev()
+    return {"status": "prev"}
