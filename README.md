@@ -8,7 +8,7 @@ usage or caching.**
 
 ## Usage/Examples
 
-On install login to you Plex account [1] That is all.
+On install login to you Plex account, that is all.
 
 ## Installation
 
@@ -19,7 +19,6 @@ There are 2 different methods to install pMusic
 
 ## Features
 
-- Light/dark mode
 - Cross platform (macos, windows, linux)
 
 ## Screenshots
@@ -32,6 +31,7 @@ There are 2 different methods to install pMusic
 
 (Probably in order)
 
+- [ ] Light/Dark mode
 - [ ] Volume Controls
 - [x] Add Screenshots
 - [x] Artist page
@@ -49,7 +49,8 @@ There are 2 different methods to install pMusic
 - [ ] Database support
 - [ ] Lyrics
 - [x] Performance Improvements
-- [ ] Sever select
+- [x] Server select
+  - [ ] Change selected server
 - [ ] Transcoding
 - [ ] Sync
 - [ ] TV Support
@@ -74,5 +75,3 @@ Please adhere to this project's `code of conduct`.
 ## License
 
 ## Appendix
-
-[1] There is no current option to select connection or different servers
