@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
@@ -18,7 +19,7 @@ export function AlbumPage() {
       fetch(`http://127.0.0.1:8000/music/album/${Number(ratingKey)}`).then((res) => res.json())
   })
 
-  if (queryAlbum.isLoading) return 'Loading...'
+  if (queryAlbum.isLoading) return <div className='flex items-center justify-center w-full h-full'><Spinner className='size-8' /></div>
   if (queryAlbum.isError) return 'Error loading album' + queryAlbum.error.message
 
   const album = queryAlbum.data

@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { Clock, Heart, MoreVertical, Play, Plus } from 'lucide-react'
 
 import noPlaylistCover from '../../assets/no-playlist-cover.png'
+import { Spinner } from '@/components/ui/spinner'
 
 export const Route = createFileRoute('/app/playlist/$ratingKey')({
   component: PlaylistPage
@@ -20,7 +21,7 @@ function PlaylistPage() {
       fetch(`http://127.0.0.1:8000/music/playlist/${Number(ratingKey)}`).then((res) => res.json())
   })
 
-  if (queryPlaylist.isLoading) return 'Loading...'
+  if (queryPlaylist.isLoading) return <div className="flex items-center justify-center w-full h-full"><Spinner className='size-8' /></div>
   if (queryPlaylist.isError) return 'Error loading playlist' + queryPlaylist.error.message
 
   const playlist = queryPlaylist.data

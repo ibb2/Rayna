@@ -8,6 +8,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item'
 
 import noPlaylistCover from '../../assets/no-playlist-cover.png'
+import { Spinner } from '@/components/ui/spinner'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -21,7 +22,8 @@ export default function Home() {
   const queryTopEight = useQuery({
     queryKey: ['top-eight'],
     queryFn: () => fetch('http://127.0.0.1:8000/music/library/top-eight').then((res) => res.json()),
-    staleTime: 30 * 60 * 1000
+    staleTime: 30 * 60 * 1000,
+    retry: true
   })
 
   const queryRecentlyPlayedAlbums = useQuery({
@@ -50,7 +52,7 @@ export default function Home() {
     queryAllPlaylists.isLoading ||
     queryTopEight.isLoading
   )
-    return <div>Loading...</div>
+    return <div className='flex items-center justify-center w-full h-full'><Spinner className='size-8' /></div>
   if (
     queryRecentlyAddedAlbums.isError ||
     queryRecentlyPlayedAlbums.isError ||

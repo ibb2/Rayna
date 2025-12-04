@@ -154,8 +154,6 @@ class Authentication {
     const response = await fetch(url, { headers })
     const data = await response.json()
 
-    console.log(data['authToken'])
-
     if (data['authToken']) {
       this.plexUserAccessToken = data['authToken']
       this.store.set('plexUserAccessToken', this.encrypt(this.plexUserAccessToken))
@@ -190,20 +188,16 @@ class Authentication {
     const data = (await response.json()) as PlexServer[]
 
     const servers: PlexServer[] = data.filter((s) => s.product == 'Plex Media Server')
-    console.log(servers)
     return servers
   }
 
   public async selectServer(server: PlexServer) {
     this.selectedServer = server
     this.store.set('selectedServer', JSON.stringify(this.selectedServer))
-    console.log('Selected server: ', server)
   }
 
   public isServerSelected(): boolean {
     const selectedServer = this.store.get('selectedServer') as string | undefined
-
-    console.log('selected server: ', selectedServer)
 
     if (selectedServer !== undefined || selectedServer !== null) {
       return true
