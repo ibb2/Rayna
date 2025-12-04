@@ -35,7 +35,7 @@ code {
 .titlebar {
   height: 30px;
   width: 100%;
-  background-color: var(--color-sidebar);
+  /* background-color: var(--color-sidebar); */
   display: flex;
   justify-content: center;
   align-items: center;
