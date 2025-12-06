@@ -1,26 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from 'react'
 import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers
-} from '@tabler/icons-react'
-import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -28,9 +10,7 @@ import {
 } from './ui/sidebar'
 import { NavDocuments } from './nav-documents'
 import { NavMain } from './nav-main'
-import { NavSecondary } from './nav-secondary'
-import { NavUser } from './nav-user'
-import { AudioLines, Heart, Home, Library, Music } from 'lucide-react'
+import { AudioLines, Heart, Home, Music } from 'lucide-react'
 
 const data = {
   user: {
@@ -127,7 +107,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Check if running on macOS
-  const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+  // const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>

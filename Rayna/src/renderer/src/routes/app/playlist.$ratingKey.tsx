@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button'
-import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import dayjs from 'dayjs'
 import { Clock, Heart, MoreVertical, Play, Plus } from 'lucide-react'
 
 import noPlaylistCover from '../../assets/no-playlist-cover.png'
 import { Spinner } from '@/components/ui/spinner'
+import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
 
 export const Route = createFileRoute('/app/playlist/$ratingKey')({
   component: PlaylistPage
@@ -21,7 +21,12 @@ function PlaylistPage() {
       fetch(`http://127.0.0.1:8000/music/playlist/${Number(ratingKey)}`).then((res) => res.json())
   })
 
-  if (queryPlaylist.isLoading) return <div className="flex items-center justify-center w-full h-full"><Spinner className='size-8' /></div>
+  if (queryPlaylist.isLoading)
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Spinner className="size-8" />
+      </div>
+    )
   if (queryPlaylist.isError) return 'Error loading playlist' + queryPlaylist.error.message
 
   const playlist = queryPlaylist.data
@@ -81,7 +86,7 @@ function PlaylistPage() {
           </div>
         </div>
 
-        {playlist.tracks.map((track: any, index: int) => (
+        {playlist.tracks.map((track: any, index: number) => (
           <div
             key={track.id}
             className="grid grid-cols-[auto_auto_1fr_auto_auto] gap-4 px-4 py-3 rounded group hover:bg-slate-200/50 transition-colors cursor-pointer"
@@ -94,13 +99,13 @@ function PlaylistPage() {
             <div>
               <div>{track.title}</div>
               <div className="flex flex-row items-center gap-2">
-                <Link to={`/app/artist/${track.artistRatingKey}`}>
+                <Link to={'/app/artist/$ratingKey'} params={{ ratingKey: track.artistRatingKey }}>
                   <div className="text-slate-400 text-sm hover:text-slate-700/50 hover:underline">
                     {track.artistTitle}
                   </div>
                 </Link>
                 <div className="pb-1 text-slate-400 ">{'  -  '}</div>
-                <Link to={`/app/album/${track.albumRatingKey}`}>
+                <Link to={'/app/album/$ratingKey'} params={{ ratingKey: track.albumRatingKey }}>
                   <div className="text-slate-400 text-sm hover:text-slate-700/50 hover:underline">
                     {track.albumTitle}
                   </div>

@@ -19,7 +19,12 @@ export function AlbumPage() {
       fetch(`http://127.0.0.1:8000/music/album/${Number(ratingKey)}`).then((res) => res.json())
   })
 
-  if (queryAlbum.isLoading) return <div className='flex items-center justify-center w-full h-full'><Spinner className='size-8' /></div>
+  if (queryAlbum.isLoading)
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Spinner className="size-8" />
+      </div>
+    )
   if (queryAlbum.isError) return 'Error loading album' + queryAlbum.error.message
 
   const album = queryAlbum.data
@@ -34,7 +39,8 @@ export function AlbumPage() {
             <div className="text-slate-600 dark:text-slate-100 text-sm mb-2">ALBUM</div>
             <h1 className="text-4xl mb-3">{album.title}</h1>
             <Link
-              to={`/app/artist/${album.artistKey}`}
+              to={`/app/artist/$ratingKey`}
+              params={{ ratingKey: album.artistKey }}
               className="hover:text-slate-700/50 hover:underline text-lg"
             >
               {album.artist}

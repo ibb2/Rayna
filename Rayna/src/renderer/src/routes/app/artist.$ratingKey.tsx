@@ -118,7 +118,11 @@ export function ArtistPage() {
         <h2 className="text-2xl mb-4">Albums</h2>
         <div className="flex flex-row gap-4">
           {queryArtistAlbums.data.map((album: any) => (
-            <Link key={album.id} to={`/app/album/${album.ratingKey}`}>
+            <Link
+              key={album.id}
+              to={`/app/album/$ratingKey`}
+              params={{ ratingKey: album.ratingKey }}
+            >
               <Card key={album.id} className="flex p-4 justify-center min-w-36 h-48 shrink-0">
                 <CardHeader className="p-0">
                   <img

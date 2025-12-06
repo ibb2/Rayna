@@ -2,18 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Shuffle,
-  Repeat,
-  Mic2,
-  ListMusic,
-  Laptop2,
-  Volume2
-} from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export function PlayerFooter() {

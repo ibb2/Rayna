@@ -12,6 +12,7 @@ interface Window {
       generateKeyPair: () => Promise<[string, string]>
       generatePin: () => Promise<any>
       checkPin: () => Promise<{ authUrl: string; plexId: string; plexCode: string }>
+      checkPinStatus: (id: string) => Promise<any>
       getServers: () => Promise<PlexServer[]>
       selectServer: (server: PlexServer) => Promise<void>
       isServerSelected: () => boolean

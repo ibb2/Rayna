@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Link, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Search, Settings } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 export function TopBar() {
   const router = useRouter()

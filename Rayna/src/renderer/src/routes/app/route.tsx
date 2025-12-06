@@ -28,7 +28,8 @@ function AppLayoutComponent() {
         serverUrl: server.connections[0].uri
       })
     })
-    const res = await response.json()
+    await response.json()
+    onLoad(true)
   }
 
   useEffect(() => {

@@ -19,7 +19,7 @@ export const Route = createFileRoute('/app/settings')({
 })
 
 export function SettingsPage() {
-  const [volume, setVolume] = useState([70])
+  // const [volume, setVolume] = useState([70])
   const [crossfade, setCrossfade] = useState([0])
 
   return (

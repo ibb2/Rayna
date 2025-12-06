@@ -52,7 +52,11 @@ export default function Home() {
     queryAllPlaylists.isLoading ||
     queryTopEight.isLoading
   )
-    return <div className='flex items-center justify-center w-full h-full'><Spinner className='size-8' /></div>
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Spinner className="size-8" />
+      </div>
+    )
   if (
     queryRecentlyAddedAlbums.isError ||
     queryRecentlyPlayedAlbums.isError ||
@@ -73,9 +77,8 @@ export default function Home() {
         {queryTopEight.data.map((x) => (
           <Link
             key={x.id}
-            to={x.type === 'album' ? `/app/album/${x.ratingKey}` : `/app/playlist/${x.ratingKey}`}
-            params={x.ratingKey}
-            asChild
+            to={x.type === 'album' ? `/app/album/$ratingKey` : `/app/playlist/$ratingKey`}
+            params={{ ratingKey: x.ratingKey }}
           >
             <Item variant={'muted'} className="flex flex-row hover:bg-slate-300/40 overflow-hidden">
               <ItemMedia variant={'image'}>
@@ -96,9 +99,8 @@ export default function Home() {
           {queryRecentlyPlayedAlbums.data?.map((album) => (
             <Link
               key={album.id}
-              to={`/app/album/${album.ratingKey}`}
-              params={album.ratingKey}
-              asChild
+              to={`/app/album/$ratingKey`}
+              params={{ ratingKey: album.ratingKey }}
             >
               <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
                 <CardHeader className="p-0">
@@ -125,9 +127,8 @@ export default function Home() {
           {queryRecentlyAddedAlbums.data?.map((album) => (
             <Link
               key={album.id}
-              to={`/app/album/${album.ratingKey}`}
-              params={album.ratingKey}
-              asChild
+              to={`/app/album/$ratingKey`}
+              params={{ ratingKey: album.ratingKey }}
             >
               <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
                 <CardHeader className="p-0">
@@ -154,9 +155,8 @@ export default function Home() {
           {queryAllPlaylists.data.map((playlist) => (
             <Link
               key={playlist.id}
-              to={`/app/playlist/${playlist.ratingKey}`}
-              params={playlist.ratingKey}
-              asChild
+              to={`/app/playlist/$ratingKey`}
+              params={{ ratingKey: playlist.ratingKey }}
             >
               <Card key={playlist.id} className="flex p-4 justify-center min-w-36 h-48">
                 <CardHeader className="p-0">
