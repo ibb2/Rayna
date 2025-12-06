@@ -43,12 +43,11 @@ export default function SelectServer() {
         {servers.map((server: PlexServer) => (
           <Item key={server.name + server.createdAt} size="sm" variant={'outline'} asChild>
             <Button
-              onClick={() => {
-                window.api.auth.selectServer(server)
+              onClick={async () => {
+                await window.api.auth.selectServer(server)
                 navigate({
                   to: '/app',
-                  replace: true,
-                  reloadDocument: true
+                  replace: true
                 })
               }}
               className="w-full h-full"

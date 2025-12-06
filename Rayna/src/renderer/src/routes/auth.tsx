@@ -42,8 +42,7 @@ function Auth() {
             setTimeout(() => {
               navigate({
                 to: '/app',
-                replace: true,
-                reloadDocument: true
+                replace: true
               })
             }, 1500)
           }
