@@ -1,0 +1,89 @@
+name: Build Backend and Electron
+
+on:
+  push:
+    branches: [setup-github-actions, master, main]
+  pull_request:
+
+jobs:
+  build-backend:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "Rayna/python-backend/pyproject.toml"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+
+      - name: Install Python dependencies
+        run: |
+          cd Rayna/python-backend
+          uv sync --locked --all-extras --dev
+
+      - name: Build Python backend
+        run: |
+          cd Rayna/python-backend
+          uv run pyinstaller --onefile --name api main.py
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-backend-${{ matrix.os }}
+          path: Rayna/python-backend/dist/api*
+
+  build-electron:
+    needs: build-backend
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            build-script: build:win
+          - os: macos-latest
+            build-script: build:mac
+          - os: ubuntu-latest
+            build-script: build:linux
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        working-directory: Rayna
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download backend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-backend-${{ matrix.os }}
+          path: Rayna/resources
+
+      - name: Make backend executable (Unix)
+        if: matrix.os != 'windows-latest'
+        run: chmod +x resources/api
+
+      - name: Verify backend placement
+        shell: bash
+        run: |
+          echo "Contents of resources:"
+          ls -la resources
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build Electron App
+        run: npm run ${{ matrix.build-script }}
+
+      - name: Upload Electron Dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build-${{ matrix.os }}
+          path: Rayna/dist/

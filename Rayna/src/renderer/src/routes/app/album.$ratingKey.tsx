@@ -16,7 +16,10 @@ export function AlbumPage() {
   const queryAlbum = useQuery({
     queryKey: ['album', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:8000/music/album/${Number(ratingKey)}`).then((res) => res.json())
+      fetch(`http://127.0.0.1:11222/music/album/${Number(ratingKey)}`).then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      })
   })
 
   if (queryAlbum.isLoading)
@@ -59,7 +62,7 @@ export function AlbumPage() {
         <Button
           className="px-8"
           onClick={() => {
-            fetch(`http://127.0.0.1:8000/music/play/album/${ratingKey}`)
+            fetch(`http://127.0.0.1:11222/music/play/album/${ratingKey}`)
           }}
         >
           <Play size={18} className="mr-2" fill={'white'} />

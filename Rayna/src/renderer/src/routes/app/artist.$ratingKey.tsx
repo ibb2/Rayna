@@ -16,20 +16,27 @@ export function ArtistPage() {
   const queryArtist = useQuery({
     queryKey: ['artist', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:8000/music/artist/${Number(ratingKey)}`).then((res) => res.json())
+      fetch(`http://127.0.0.1:11222/music/artist/${Number(ratingKey)}`).then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      })
   })
   const queryArtistAlbums = useQuery({
     queryKey: ['artistAlbum', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:8000/music/artist/${Number(ratingKey)}/albums`).then((res) =>
-        res.json()
-      )
+      fetch(`http://127.0.0.1:11222/music/artist/${Number(ratingKey)}/albums`).then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      })
   })
   const queryArtistPopularTracks = useQuery({
     queryKey: ['artistPopularTrack', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:8000/music/artist/${Number(ratingKey)}/popular-tracks`).then((res) =>
-        res.json()
+      fetch(`http://127.0.0.1:8000/music/artist/${Number(ratingKey)}/popular-tracks`).then(
+        (res) => {
+          if (!res.ok) throw new Error('Network response was not ok')
+          return res.json()
+        }
       )
   })
 

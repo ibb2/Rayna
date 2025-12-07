@@ -8,7 +8,11 @@ import { useState, useEffect } from 'react'
 export function PlayerFooter() {
   const { data: status, refetch } = useQuery({
     queryKey: ['playerStatus'],
-    queryFn: () => fetch('http://127.0.0.1:8000/player/status').then((res) => res.json()),
+    queryFn: () =>
+      fetch('http://127.0.0.1:11222/player/status').then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      }),
     refetchInterval: 1000
   })
 
@@ -32,15 +36,15 @@ export function PlayerFooter() {
 
   const handlePlayPause = async () => {
     if (status?.is_playing) {
-      await fetch('http://127.0.0.1:8000/player/pause', { method: 'POST' })
+      await fetch('http://127.0.0.1:11222/player/pause', { method: 'POST' })
     } else {
-      await fetch('http://127.0.0.1:8000/player/play', { method: 'POST' })
+      await fetch('http://127.0.0.1:11222/player/play', { method: 'POST' })
     }
     refetch()
   }
 
   const handleNext = async () => {
-    await fetch('http://127.0.0.1:8000/player/next', { method: 'POST' })
+    await fetch('http://127.0.0.1:11222/player/next', { method: 'POST' })
     refetch()
   }
 

@@ -18,7 +18,10 @@ function PlaylistPage() {
   const queryPlaylist = useQuery({
     queryKey: ['playlist', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:8000/music/playlist/${Number(ratingKey)}`).then((res) => res.json())
+      fetch(`http://127.0.0.1:11222/music/playlist/${Number(ratingKey)}`).then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      })
   })
 
   if (queryPlaylist.isLoading)

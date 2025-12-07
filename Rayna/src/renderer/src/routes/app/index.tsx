@@ -21,7 +21,11 @@ export default function Home() {
   // queries
   const queryTopEight = useQuery({
     queryKey: ['top-eight'],
-    queryFn: () => fetch('http://127.0.0.1:8000/music/library/top-eight').then((res) => res.json()),
+    queryFn: () =>
+      fetch('http://127.0.0.1:11222/music/library/top-eight').then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      }),
     staleTime: 30 * 60 * 1000,
     retry: true
   })
@@ -29,20 +33,30 @@ export default function Home() {
   const queryRecentlyPlayedAlbums = useQuery({
     queryKey: ['albums'],
     queryFn: () =>
-      fetch('http://127.0.0.1:8000/music/albums/recently-played').then((res) => res.json()),
+      fetch('http://127.0.0.1:11222/music/albums/recently-played').then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      }),
     staleTime: 30 * 60 * 1000
   })
 
   const queryRecentlyAddedAlbums = useQuery({
     queryKey: ['album'],
     queryFn: () =>
-      fetch('http://127.0.0.1:8000/music/albums/recently-added').then((res) => res.json()),
+      fetch('http://127.0.0.1:11222/music/albums/recently-added').then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      }),
     staleTime: 30 * 60 * 1000
   })
 
   const queryAllPlaylists = useQuery({
     queryKey: ['playlist'],
-    queryFn: () => fetch('http://127.0.0.1:8000/music/playlists/all').then((res) => res.json()),
+    queryFn: () =>
+      fetch('http://127.0.0.1:11222/music/playlists/all').then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      }),
     staleTime: 30 * 60 * 1000
   })
 

@@ -8,6 +8,7 @@ dependencies = [
     "fastapi[standard]>=0.122.0",
     "numpy>=2.3.5",
     "plexapi[jwt]>=4.17.2",
+    "pyinstaller>=6.17.0",
     "sounddevice>=0.5.3",
     "soundfile>=0.13.1",
 ]
