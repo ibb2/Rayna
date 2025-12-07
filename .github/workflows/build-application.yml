@@ -2,7 +2,7 @@ name: Build Backend and Electron
 
 on:
   push:
-    branches: [setup-github-actions, master, main]
+    branches: [setup-github-actions, migrate-to-electron, master, main]
   pull_request:
 
 jobs:
