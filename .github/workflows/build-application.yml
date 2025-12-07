@@ -3,7 +3,12 @@ name: Build Backend and Electron
 on:
   push:
     branches: [setup-github-actions, migrate-to-electron, master, main]
+    tags:
+      - "v*"
   pull_request:
+
+permissions:
+  contents: write
 
 jobs:
   build-backend:
@@ -79,11 +84,30 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
+      - name: Set Version from Tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "Setting version to $VERSION"
+          npm version $VERSION --no-git-tag-version
+
       - name: Build Electron App
         run: npm run ${{ matrix.build-script }}
 
       - name: Upload Electron Dist
         uses: actions/upload-artifact@v4
         with:
-          name: electron-build-${{ matrix.os }}
+          name: Rayna-${{ github.ref_name }}-${{ matrix.os }}
           path: Rayna/dist/
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            Rayna/dist/*.exe
+            Rayna/dist/*.dmg
+            Rayna/dist/*.AppImage
+            Rayna/dist/*.snap
+            Rayna/dist/*.deb
