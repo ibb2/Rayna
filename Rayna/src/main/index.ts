@@ -127,7 +127,7 @@ app.on('window-all-closed', () => {
 function startApi(): void {
   const apiPath = is.dev
     ? join(__dirname, '../../python-backend/.venv/Scripts/python.exe')
-    : join(process.resourcesPath, 'api.exe')
+    : join(process.resourcesPath, process.platform === 'win32' ? 'api.exe' : 'api')
 
   const args = is.dev ? [join(__dirname, '../../python-backend/entry.py')] : []
 
