@@ -452,3 +452,11 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Electron
+node_modules
+dist
+out
+.DS_Store
+.eslintcache
+*.log*
