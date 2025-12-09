@@ -1,6 +1,0 @@
-﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StyleInclude Source="avares://pMusic/Styles/Menu.axaml" />
-    <StyleInclude Source="avares://pMusic/Styles/TextBlock.axaml" />
-    <StyleInclude Source="avares://pMusic/Styles/Tooltip.axaml" />
-    <StyleInclude Source="avares://pMusic/Styles/Window.axaml" />
-</Styles>

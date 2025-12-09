@@ -1,0 +1,56 @@
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Link, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
+import { ChevronLeft, ChevronRight, Search, Settings } from 'lucide-react'
+
+export function TopBar() {
+  const router = useRouter()
+  const canGoBack = useCanGoBack()
+  const routerState = useRouterState()
+
+  // Check if we can go forward by comparing current index with history length
+  const canGoForward =
+    routerState.resolvedLocation?.state?.__TSR_index !== undefined
+      ? (routerState.resolvedLocation?.state.__TSR_index as number) < router.history.length - 1
+      : false
+
+  return (
+    <div className="flex h-16 items-center justify-between py-4 bg-background/95 backdrop-blur sticky top-0 z-10 w-full">
+      <div className="flex items-center gap-2">
+        <Button
+          disabled={!canGoBack}
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => router.history.back()}
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+        <Button
+          disabled={!canGoForward}
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => router.history.forward()}
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
+
+      <div className="flex flex-1 max-w-md mx-4">
+        <div className="relative w-full">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="What do you want to play?"
+            className="pl-8 rounded-full bg-secondary border-0 w-full"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        {/* User profile or other actions */}
+        <Link to={'/app/settings'}>
+          <Settings className="w-5" /> {/* Change back to UserProfile image */}
+        </Link>
+      </div>
+    </div>
+  )
+}

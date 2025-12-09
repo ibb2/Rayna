@@ -1,0 +1,3 @@
+([('api',
+   '/Users/ibrahim/Developer/RiderProjects/pMusic-Avalonia/Rayna/python-backend/dist/api',
+   'EXECUTABLE')],)
