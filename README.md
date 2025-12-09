@@ -1,31 +1,38 @@
-# pMusic
+# Rayna
 
-pMusic is an alternative music player for Plex focusing on desktop usage. Inspired by Spotify, pMusic is an alternative
-to Plexamp, which has a less than stellar desktop interface.
+Rayna is a 3rd party music player client for Plex focusing on the desktop experience - Inspired by Spotify.
 
-**Note: this is currently completely online only and a major work in progress, but local. No support yet for offline
-usage or caching.**
-
-## Usage/Examples
-
-On install login to you Plex account, that is all.
+> [!IMPORTANT]
+> This is currently completely online only and a major work in progress, I recently migrated from Avalonia to Electron, but local. No support yet for offline usage or any advanced caching.
 
 ## Installation
 
-There are 2 different methods to install pMusic
+### Windows
+> [!IMPORTANT]
+> Windows on Arm is not natively supported.
 
-1. Clone the repo and build (If you choose this option you should know how to do this).
-2. Choose the right executable for your operating system from the releases page.
+1. Download the installer
+2. Run the downloaded installer and follow the instructions onscreen.
+
+### MacOS
+> [!WARNING]
+All installations on MacOS will need to be whitelisted due to MacOS blocking apps not signed with a paid developer license by default. This is a limitation as I currently do not have a paid Apple developer license.
+
+1. Download the installer.
+2. Open the downloaded .dmg file and drag the application to your Applications folder. You will you get a warning saying "Rayna" is damaged and can't be opened. You should move it to the Bin.
+3. Open your Terminal app
+4. Run the following command:
+`xattr -d com.apple.quarantine /Applications/Rayna.app`
+
+## Usage/Examples
+
+On install login to you Plex account and select your server[^1], that is all.
 
 ## Features
 
 - Cross platform (macos, windows, linux)
 
 ## Screenshots
-
-<img width="1238" height="964" alt="Screenshot 2025-11-06 at 8 13 19 PM" src="https://github.com/user-attachments/assets/11d84c00-dd60-48c6-a548-381c1e36af17" />
-
-<img width="1624" height="1060" alt="Screenshot 2025-11-06 at 8 13 43 PM" src="https://github.com/user-attachments/assets/8675e3ec-6afd-4b69-a975-d7640b00cfc7" />
 
 ## Roadmap
 
@@ -75,3 +82,4 @@ Please adhere to this project's `code of conduct`.
 ## License
 
 ## Appendix
+[^1]: Only a single server and library is supported currently.
