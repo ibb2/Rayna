@@ -6,6 +6,7 @@ on:
     branches: [main]
     tags:
       - "v*.*.*"
+  pull_request:
 
 permissions:
   contents: write
@@ -57,10 +58,6 @@ jobs:
             build-script: build:linux
 
     runs-on: ${{ matrix.os }}
-
-    defaults:
-      run:
-        working-directory: Rayna
 
     steps:
       - uses: actions/checkout@v4
