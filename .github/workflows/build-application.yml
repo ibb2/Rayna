@@ -5,7 +5,7 @@ on:
     # branches: [setup-github-actions, migrate-to-electron, master, main]
     # branches: [main]
     tags:
-      - "v*"
+      - "v*.*.*"
   pull_request:
 
 permissions:
