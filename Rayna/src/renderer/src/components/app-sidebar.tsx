@@ -10,7 +10,7 @@ import {
 } from './ui/sidebar'
 import { NavDocuments } from './nav-documents'
 import { NavMain } from './nav-main'
-import { AudioLines, Heart, Home, Music } from 'lucide-react'
+import { AudioLines, AudioWaveform, Heart, Home, Music } from 'lucide-react'
 
 const data = {
   user: {
@@ -116,9 +116,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
               <div className="flex flex-row gap-4">
-                <AudioLines className="!size-5" />
+                <AudioWaveform className="!size-5" />
                 <span className="text-base font-semibold group-data-[collapsible=icon]:hidden">
-                  pMusic
+                  Rayna
                 </span>
               </div>
             </SidebarMenuButton>
