@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: rayna
+appId: com.ib.rayna
+productName: Rayna
 directories:
   buildResources: build
 files:
@@ -17,7 +17,7 @@ extraResources:
     filter:
       - '**/*'
 win:
-  executableName: rayna
+  executableName: Rayna
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
