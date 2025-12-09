@@ -10,7 +10,7 @@ import {
 } from './ui/sidebar'
 import { NavDocuments } from './nav-documents'
 import { NavMain } from './nav-main'
-import { AudioLines, AudioWaveform, Heart, Home, Music } from 'lucide-react'
+import { AudioWaveform, Heart, Home, Music } from 'lucide-react'
 
 const data = {
   user: {
