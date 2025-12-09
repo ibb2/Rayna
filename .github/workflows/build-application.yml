@@ -24,26 +24,26 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version-file: "Rayna/python-backend/pyproject.toml"
+          python-version-file: "python-backend/pyproject.toml"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v2
 
       - name: Install Python dependencies
         run: |
-          cd Rayna/python-backend
+          cd python-backend
           uv sync --locked --all-extras --dev
 
       - name: Build Python backend
         run: |
-          cd Rayna/python-backend
+          cd python-backend
           uv run pyinstaller --onefile --name api main.py
 
       - name: Upload backend artifact
         uses: actions/upload-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
-          path: Rayna/python-backend/dist/api*
+          path: python-backend/dist/api*
 
   build-electron:
     needs: build-backend
@@ -70,7 +70,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
-          path: Rayna/resources
+          path: resources
 
       - name: Make backend executable (Unix)
         if: matrix.os != 'windows-latest'
@@ -100,15 +100,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Rayna-${{ github.ref_name }}-${{ matrix.os }}
-          path: Rayna/dist/
+          path: dist/
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            Rayna/dist/*.exe
-            Rayna/dist/*.dmg
-            Rayna/dist/*.AppImage
-            Rayna/dist/*.snap
-            Rayna/dist/*.deb
+            dist/*.exe
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.snap
+            dist/*.deb
