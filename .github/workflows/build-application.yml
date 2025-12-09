@@ -95,7 +95,7 @@ jobs:
       - name: Upload Electron Dist
         uses: actions/upload-artifact@v4
         with:
-          name: Rayna-${{ github.ref_name }}-${{ matrix.os }}
+          name: Rayna-${{ matrix.os }}
           path: dist/
 
       - name: Release
