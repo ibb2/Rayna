@@ -2,8 +2,8 @@ name: Build Backend and Electron
 
 on:
   push:
-    # branches: [setup-github-actions, migrate-to-electron, master, main]
-    branches: [main]
+    branches: [setup-github-actions, migrate-to-electron, master, main]
+    # branches: [main]
     tags:
       - "v*"
   pull_request:
