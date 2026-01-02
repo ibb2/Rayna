@@ -90,7 +90,6 @@ class AudioPlayer:
 
         try:
             # Get streaming URL
-            # Note: This assumes we can get a direct stream URL or download it.
             # For Plex, we might need to use the transcode url or direct file url if accessible.
             # Using plex.url() with includeToken=True should work for direct access if allowed.
             
@@ -99,12 +98,8 @@ class AudioPlayer:
             track = self.plex.fetchItem(rating_key)
             url = track.getStreamURL()
             
-            print(f"Streaming from: {url}")
-
             # Stream the audio
             # Using requests to get the stream and soundfile to read it is tricky for seeking/streaming
-            # A simpler approach for MVP is to download the file to memory or temp file, 
-            # OR use soundfile with a file-like object from requests.get(stream=True).raw
             
             response = requests.get(url, stream=True)
             
@@ -115,11 +110,13 @@ class AudioPlayer:
             # Optimization: Chunked streaming would be better.
             
             import io
-            data = io.BytesIO(response.content)
+            content = response.content
+            data = io.BytesIO(content)
             
             data_array, samplerate = sf.read(data)
             self.current_data = data_array
             self.current_samplerate = samplerate
+            duration = len(self.current_data) / self.current_samplerate
             self.position = 0
 
             def callback(outdata, frames, time, status):
