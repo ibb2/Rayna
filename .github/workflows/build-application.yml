@@ -51,8 +51,6 @@ jobs:
             build-script: build:win
           - os: macos-latest
             build-script: build:mac
-          - os: ubuntu-latest
-            build-script: build:linux
 
     runs-on: ${{ matrix.os }}
 
