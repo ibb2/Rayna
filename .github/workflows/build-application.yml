@@ -2,10 +2,8 @@ name: Build Backend and Electron
 
 on:
   push:
-    # branches: [setup-github-actions, migrate-to-electron, master, main]
-    branches: [main]
     tags:
-      - "v*.*.*"
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -14,7 +12,7 @@ jobs:
   build-backend:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -23,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version-file: "python-backend/pyproject.toml"
+          python-version-file: 'python-backend/pyproject.toml'
 
       - name: Install uv
         uses: astral-sh/setup-uv@v2
@@ -104,6 +102,3 @@ jobs:
           files: |
             dist/*.exe
             dist/*.dmg
-            dist/*.AppImage
-            dist/*.snap
-            dist/*.deb
