@@ -10,4 +10,4 @@ from main import app
 if __name__ == "__main__":
     # Run the uvicorn server
     # We use port 8000 as expected by the frontend
-    uvicorn.run(app, host="127.0.0.1", port=11222)
+    uvicorn.run(app, host="127.0.0.1", port=51034)

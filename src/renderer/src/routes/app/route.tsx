@@ -43,7 +43,7 @@ function AppLayoutComponent() {
           defaultOpen={false}
           className="[&_div[data-slot='sidebar-container']]:absolute! [&_div[data-slot='sidebar-container']]:h-full! [&_div[data-slot='sidebar-container']]:top-0! [&_div[data-slot='sidebar-container']]:bottom-0!"
         >
-          <AppSidebar variant="floating" collapsible="icon" />
+          <AppSidebar collapsible="icon" />
           <SidebarInset className="overflow-hidden h-screen">
             <SiteHeader />
             <Outlet />
