@@ -49,7 +49,7 @@ export function PlayerFooter() {
   }
 
   const handlePrev = async () => {
-    await fetch('http://127.0.0.1:8000/player/prev', { method: 'POST' })
+    await fetch('http://127.0.0.1:11222/player/prev', { method: 'POST' })
     refetch()
   }
 
