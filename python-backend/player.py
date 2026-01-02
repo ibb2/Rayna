@@ -98,14 +98,10 @@ class AudioPlayer:
             track = self.plex.fetchItem(rating_key)
             url = track.getStreamURL()
             
-            print(f"Streaming from: {url}")
-
             # Stream the audio
             # Using requests to get the stream and soundfile to read it is tricky for seeking/streaming
             
             response = requests.get(url, stream=True)
-            print(f"Response status: {response.status_code}")
-            print(f"Content length header: {response.headers.get('content-length')}")
             
             # soundfile requires a seekable file for some formats, so we might need to buffer it
             # For MVP, let's try reading into a BytesIO or temp file if needed.
@@ -115,14 +111,12 @@ class AudioPlayer:
             
             import io
             content = response.content
-            print(f"Downloaded content size: {len(content)} bytes")
             data = io.BytesIO(content)
             
             data_array, samplerate = sf.read(data)
             self.current_data = data_array
             self.current_samplerate = samplerate
             duration = len(self.current_data) / self.current_samplerate
-            print(f"Decoded audio info - Sample rate: {samplerate}, Shape: {data_array.shape}, Duration: {duration:.2f}s")
             self.position = 0
 
             def callback(outdata, frames, time, status):
