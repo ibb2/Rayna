@@ -190,8 +190,11 @@ class AudioPlayer:
                 
                 # 4. Wait for playback to finish or stop event
                 while not self.stop_event.is_set():
-                    # If we reached the end of the data, the callback will stop the stream
-                    if not self.stream.active:
+                    # If the stream is inactive AND we are supposed to be playing,
+                    # it means the callback raised CallbackStop (end of track).
+                    # If we are paused (is_playing=False), the stream will also be 
+                    # inactive, but we should stay in the loop to wait for resume.
+                    if not self.stream.active and self.is_playing:
                         break
                     time.sleep(0.1)
 
