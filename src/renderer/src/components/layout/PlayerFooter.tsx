@@ -2,7 +2,20 @@ import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2 } from 'lucide-react'
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Shuffle,
+  Repeat,
+  Volume2,
+  VolumeOff,
+  VolumeOffIcon,
+  Volume1,
+  Volume,
+  VolumeX
+} from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export function PlayerFooter() {
@@ -17,6 +30,7 @@ export function PlayerFooter() {
   })
 
   const [position, setPosition] = useState(0)
+  const [mute, toggleMute] = useState(false)
 
   useEffect(() => {
     if (status?.position) {
@@ -56,6 +70,17 @@ export function PlayerFooter() {
   const handleSeek = async (pos: number) => {
     await fetch(`http://127.0.0.1:11222/player/seek/${pos}`)
     setPosition(pos)
+    refetch()
+  }
+
+  const handleVolume = async (newVolume: number) => {
+    await fetch(`http://127.0.0.1:11222/player/volume/${newVolume}`)
+    refetch()
+  }
+
+  const handleMute = async () => {
+    await fetch(`http://127.0.0.1:11222/player/volume/mute/${!mute}`)
+    toggleMute(!mute)
     refetch()
   }
 
@@ -149,9 +174,32 @@ export function PlayerFooter() {
         <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
           <Laptop2 className="h-4 w-4" />
         </Button>*/}
-        <div className="flex items-center gap-2 w-32">
-          <Volume2 className="h-4 w-4 text-muted-foreground" />
-          <Slider defaultValue={[50]} max={100} step={1} className="w-20" />
+        <div className="flex items-center gap-x-1 w-32">
+          <div>
+            {status?.volume === 0 ? (
+              <Button variant={'ghost'} size={'icon-sm'} onClick={handleMute}>
+                <VolumeX className="h-4 w-4 text-muted-foreground" />
+              </Button>
+            ) : (
+              <Button variant={'ghost'} size={'icon-sm'} onClick={handleMute}>
+                {status?.volume < 0.3 ? (
+                  <Volume className="h-4 w-4 text-muted-foreground" />
+                ) : status?.volume < 0.7 ? (
+                  <Volume1 className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Volume2 className="h-4 w-4 text-muted-foreground" />
+                )}
+              </Button>
+            )}
+          </div>
+          <Slider
+            defaultValue={[1]}
+            value={[status?.volume]}
+            onValueChange={(value) => handleVolume(value[0])}
+            max={1}
+            step={1 / 100}
+            className="w-20"
+          />
         </div>
       </div>
     </div>
