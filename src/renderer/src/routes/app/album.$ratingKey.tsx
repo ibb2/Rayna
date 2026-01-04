@@ -33,14 +33,14 @@ export function AlbumPage() {
   const album = queryAlbum.data
 
   return (
-    <div className="flex flex-col overflow-y-scroll p-6 mb-30">
+    <div className="flex flex-col overflow-y-scroll p-6 mb-20">
       {/* Album Header */}
       <div className="flex gap-6 mb-6">
         <img src={album.thumb} alt={album.title} className="w-48 h-48 rounded-lg shadow-xl" />
         <div className="flex flex-col justify-between py-2">
           <div>
             <div className="text-slate-600 dark:text-slate-100 text-sm mb-2">ALBUM</div>
-            <h1 className="text-4xl mb-3">{album.title}</h1>
+            <h1 className="text-5xl font-bold mb-3">{album.title}</h1>
             <Link
               to={`/app/artist/$ratingKey`}
               params={{ ratingKey: album.artistKey }}

@@ -85,18 +85,21 @@ export default function Home() {
     )
 
   return (
-    <div className="flex flex-col overflow-y-scroll gap-12 p-6 mb-30">
+    <div className="flex flex-col overflow-y-scroll gap-2 p-6 mb-20">
       {/* Quick Access Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 mb-8 w-full">
         {queryTopEight.data.map((x) => (
           <Link
             key={x.id}
             to={x.type === 'album' ? `/app/album/$ratingKey` : `/app/playlist/$ratingKey`}
             params={{ ratingKey: x.ratingKey }}
           >
-            <Item variant={'muted'} className="flex flex-row hover:bg-slate-300/40 overflow-hidden">
-              <ItemMedia variant={'image'}>
-                <img src={x.thumb} alt={x.title} className="w-20 object-cover rounded-lg" />
+            <Item
+              variant={'muted'}
+              className="flex flex-row hover:bg-slate-300/40 overflow-hidden p-0"
+            >
+              <ItemMedia className="rounded-l-md rounded-r-none">
+                <img src={x.thumb} alt={x.title} className="w-13 object-cover" />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{x.title}</ItemTitle>
@@ -107,95 +110,100 @@ export default function Home() {
       </div>
 
       {/* Recently Played */}
-      <div>
-        <h2 className="text-2xl mb-4">Recently Played</h2>
-        <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
-          {queryRecentlyPlayedAlbums.data?.map((album) => (
-            <Link
-              key={album.id}
-              to={`/app/album/$ratingKey`}
-              params={{ ratingKey: album.ratingKey }}
-            >
-              <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
-                <CardHeader className="p-0">
-                  <img
-                    src={album.thumb}
-                    alt={album.title}
-                    className="w-full object-cover rounded-lg"
-                  />
-                  <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
-                    {album.title}
-                  </CardTitle>
-                  <CardDescription>{album.artist}</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
+      <div className="flex flex-col gap-12">
+        <div>
+          <h2 className="text-2xl mb-4 font-semibold">Recently Played</h2>
+          <div className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2">
+            {queryRecentlyPlayedAlbums.data?.map((album) => (
+              <Link
+                key={album.id}
+                to={`/app/album/$ratingKey`}
+                params={{ ratingKey: album.ratingKey }}
+              >
+                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-100 dark:hover:bg-zinc-800 p-2 rounded-md">
+                  <CardHeader className="p-0">
+                    <img
+                      src={album.thumb}
+                      alt={album.title}
+                      className="w-full object-cover rounded-lg"
+                    />
+                    <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                      {album.title}
+                    </CardTitle>
+                    <CardDescription>{album.artist}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Recently Added */}
-      <div>
-        <h2 className="text-2xl mb-4">Recently Added</h2>
-        <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
-          {queryRecentlyAddedAlbums.data?.map((album) => (
-            <Link
-              key={album.id}
-              to={`/app/album/$ratingKey`}
-              params={{ ratingKey: album.ratingKey }}
-            >
-              <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
-                <CardHeader className="p-0">
-                  <img
-                    src={album.thumb}
-                    alt={album.title}
-                    className="w-full object-cover rounded-lg"
-                  />
-                  <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
-                    {album.title}
-                  </CardTitle>
-                  <CardDescription>{album.artist}</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
+        {/* Recently Added */}
+        <div>
+          <h2 className="text-2xl font-semibold mb-4">Recently Added</h2>
+          <div className="flex flex-row overflow-x-auto overflow-y-hidden pb-2 -ml-2">
+            {queryRecentlyAddedAlbums.data?.map((album) => (
+              <Link
+                key={album.id}
+                to={`/app/album/$ratingKey`}
+                params={{ ratingKey: album.ratingKey }}
+              >
+                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800 p-2 rounded-md">
+                  <CardHeader className="p-0">
+                    <img
+                      src={album.thumb}
+                      alt={album.title}
+                      className="w-full object-cover rounded-lg"
+                    />
+                    <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                      {album.title}
+                    </CardTitle>
+                    <CardDescription>{album.artist}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Recommended */}
-      <div>
-        <h2 className="text-2xl mb-4">Recommended for You</h2>
-        <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
-          {queryAllPlaylists.data.map((playlist) => (
-            <Link
-              key={playlist.id}
-              to={`/app/playlist/$ratingKey`}
-              params={{ ratingKey: playlist.ratingKey }}
-            >
-              <Card key={playlist.id} className="flex p-4 justify-center min-w-36 h-48">
-                <CardHeader className="p-0">
-                  <img
-                    src={playlist.composite || noPlaylistCover}
-                    alt={playlist.title}
-                    className="w-full object-cover rounded-lg"
-                  />
-                  <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
-                    {playlist.title}
-                  </CardTitle>
-                  {playlist.duration !== null ? (
-                    <CardDescription>
-                      {dayjs.duration(playlist.duration).hours() + 'hr '}
-                      {dayjs.duration(playlist.duration).minutes() + 'min'}
-                    </CardDescription>
-                  ) : (
-                    <CardDescription>
-                      <p>0hr 0min</p>
-                    </CardDescription>
-                  )}
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
+        {/* Recommended */}
+        <div>
+          <h2 className="text-2xl font-semibold mb-4">Recommended for You</h2>
+          <div className="flex flex-row overflow-x-scroll overflow-y-hidden -ml-2">
+            {queryAllPlaylists.data.map((playlist) => (
+              <Link
+                key={playlist.id}
+                to={`/app/playlist/$ratingKey`}
+                params={{ ratingKey: playlist.ratingKey }}
+              >
+                <Card
+                  key={playlist.id}
+                  className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800 p-2 rounded-md"
+                >
+                  <CardHeader className="p-0">
+                    <img
+                      src={playlist.composite || noPlaylistCover}
+                      alt={playlist.title}
+                      className="w-full object-cover rounded-lg"
+                    />
+                    <CardTitle className="overflow-hidden text-ellipsis text-nowrap">
+                      {playlist.title}
+                    </CardTitle>
+                    {playlist.duration !== null ? (
+                      <CardDescription>
+                        {dayjs.duration(playlist.duration).hours() + 'hr '}
+                        {dayjs.duration(playlist.duration).minutes() + 'min'}
+                      </CardDescription>
+                    ) : (
+                      <CardDescription>
+                        <p>0hr 0min</p>
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

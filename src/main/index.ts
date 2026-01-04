@@ -18,8 +18,8 @@ function createWindow(): void {
       sandbox: false
     },
     // Customize title bar
-    titleBarStyle: 'hidden',
-    ...(process.platform !== 'darwin' ? { titleBarOverlay: true } : {})
+    // titleBarStyle: 'hidden',
+    // ...(process.platform !== 'darwin' ? { titleBarOverlay: true } : {})
   })
 
   mainWindow.on('ready-to-show', () => {
