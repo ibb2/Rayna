@@ -88,9 +88,9 @@ export function PlayerFooter() {
   const currentTrack = status?.current_track
 
   return (
-    <div className="grid grid-cols-[minmax(auto,0.5fr)_1fr_minmax(auto,0.5fr)] h-24 bg-card border-t p-2 border-border w-full mb-8">
+    <div className="grid grid-cols-[minmax(auto,0.5fr)_1fr_minmax(auto,0.5fr)] h-20 bg-card border-t border-border w-full">
       {/* Now Playing Info */}
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center gap-2 pl-2">
         <div className="h-14 w-14 bg-muted rounded-md flex items-center justify-center overflow-hidden">
           {currentTrack?.thumb && (
             <img src={currentTrack.thumb} alt="Cover" className="w-full h-full object-cover" />
@@ -107,7 +107,7 @@ export function PlayerFooter() {
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col justify-center items-center gap-2 w-full">
+      <div className="flex flex-col justify-center items-center w-full">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
