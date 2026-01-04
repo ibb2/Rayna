@@ -53,6 +53,12 @@ export function PlayerFooter() {
     refetch()
   }
 
+  const handleSeek = async (pos: number) => {
+    await fetch(`http://127.0.0.1:11222/player/seek/${pos}`)
+    setPosition(pos)
+    refetch()
+  }
+
   const currentTrack = status?.current_track
 
   return (
@@ -117,7 +123,15 @@ export function PlayerFooter() {
         </div>
         <div className="w-full max-w-md flex items-center gap-2 text-xs text-muted-foreground">
           <span className="w-8">{dayjs.duration(position * 1000).format('m:ss')}</span>
-          <Slider value={[position]} max={status?.duration || 100} step={0.1} className="w-full" />
+          <Slider
+            defaultValue={[position]}
+            value={[position]}
+            onValueChange={(pos) => setPosition(Math.round(pos[0]))}
+            max={status?.duration || 100}
+            step={0.1}
+            onValueCommit={(pos) => handleSeek(Math.round(pos[0]))}
+            className="w-full"
+          />
           <span className="w-8">
             {status?.duration ? dayjs.duration(status.duration * 1000).format('m:ss') : '0:00'}
           </span>
