@@ -17,6 +17,7 @@ import {
   VolumeX
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { Progress } from '../ui/progress'
 
 export function PlayerFooter() {
   const { data: status, refetch } = useQuery({
@@ -148,15 +149,27 @@ export function PlayerFooter() {
         </div>
         <div className="w-full max-w-md flex items-center gap-2 text-xs text-muted-foreground">
           <span className="w-8">{dayjs.duration(position * 1000).format('m:ss')}</span>
-          <Slider
-            defaultValue={[position]}
-            value={[position]}
-            onValueChange={(pos) => setPosition(Math.round(pos[0]))}
-            max={status?.duration || 100}
-            step={0.1}
-            onValueCommit={(pos) => handleSeek(Math.round(pos[0]))}
-            className="w-full"
-          />
+          <div className="group relative w-full flex items-center h-6 cursor-pointer">
+            {/* Progress bar - visible by default, hidden on hover */}
+            <div className="w-full group-hover:hidden">
+              <Progress
+                value={(position / (status?.duration || 1)) * 100}
+                className="w-full h-1.5"
+              />
+            </div>
+
+            {/* Slider - hidden by default, visible on hover */}
+            <div className="w-full hidden group-hover:block">
+              <Slider
+                value={[position]}
+                onValueChange={(pos) => setPosition(pos[0])}
+                max={status?.duration || 100}
+                step={0.1}
+                onValueCommit={(pos) => handleSeek(Math.round(pos[0]))}
+                className="w-full"
+              />
+            </div>
+          </div>
           <span className="w-8">
             {status?.duration ? dayjs.duration(status.duration * 1000).format('m:ss') : '0:00'}
           </span>
@@ -192,14 +205,16 @@ export function PlayerFooter() {
               </Button>
             )}
           </div>
-          <Slider
-            defaultValue={[1]}
-            value={[status?.volume]}
-            onValueChange={(value) => handleVolume(value[0])}
-            max={1}
-            step={1 / 100}
-            className="w-20"
-          />
+          <>
+            <Slider
+              defaultValue={[1]}
+              value={[status?.volume]}
+              onValueChange={(value) => handleVolume(value[0])}
+              max={1}
+              step={1 / 100}
+              className="w-20"
+            />
+          </>
         </div>
       </div>
     </div>
