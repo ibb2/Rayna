@@ -87,16 +87,19 @@ export default function Home() {
   return (
     <div className="flex flex-col overflow-y-scroll gap-12 p-6 mb-30">
       {/* Quick Access Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 w-full">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 mb-8 w-full">
         {queryTopEight.data.map((x) => (
           <Link
             key={x.id}
             to={x.type === 'album' ? `/app/album/$ratingKey` : `/app/playlist/$ratingKey`}
             params={{ ratingKey: x.ratingKey }}
           >
-            <Item variant={'muted'} className="flex flex-row hover:bg-slate-300/40 overflow-hidden">
-              <ItemMedia variant={'image'}>
-                <img src={x.thumb} alt={x.title} className="w-20 object-cover rounded-lg" />
+            <Item
+              variant={'muted'}
+              className="flex flex-row hover:bg-slate-300/40 overflow-hidden p-0"
+            >
+              <ItemMedia className="rounded-l-md rounded-r-none">
+                <img src={x.thumb} alt={x.title} className="w-13 object-cover" />
               </ItemMedia>
               <ItemContent>
                 <ItemTitle>{x.title}</ItemTitle>
