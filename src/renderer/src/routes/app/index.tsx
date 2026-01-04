@@ -112,15 +112,15 @@ export default function Home() {
       {/* Recently Played */}
       <div className="flex flex-col gap-12">
         <div>
-          <h2 className="text-2xl mb-4">Recently Played</h2>
-          <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
+          <h2 className="text-2xl mb-4 font-semibold">Recently Played</h2>
+          <div className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2">
             {queryRecentlyPlayedAlbums.data?.map((album) => (
               <Link
                 key={album.id}
                 to={`/app/album/$ratingKey`}
                 params={{ ratingKey: album.ratingKey }}
               >
-                <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
+                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-100 dark:hover:bg-zinc-800 p-2 rounded-md">
                   <CardHeader className="p-0">
                     <img
                       src={album.thumb}
@@ -140,15 +140,15 @@ export default function Home() {
 
         {/* Recently Added */}
         <div>
-          <h2 className="text-2xl mb-4">Recently Added</h2>
-          <div className="flex flex-row gap-4 overflow-x-auto overflow-y-hidden pb-2">
+          <h2 className="text-2xl font-semibold mb-4">Recently Added</h2>
+          <div className="flex flex-row overflow-x-auto overflow-y-hidden pb-2 -ml-2">
             {queryRecentlyAddedAlbums.data?.map((album) => (
               <Link
                 key={album.id}
                 to={`/app/album/$ratingKey`}
                 params={{ ratingKey: album.ratingKey }}
               >
-                <Card className="flex p-4 justify-center min-w-36 h-48 shrink-0">
+                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800 p-2 rounded-md">
                   <CardHeader className="p-0">
                     <img
                       src={album.thumb}
@@ -168,15 +168,18 @@ export default function Home() {
 
         {/* Recommended */}
         <div>
-          <h2 className="text-2xl mb-4">Recommended for You</h2>
-          <div className="flex flex-row gap-4 overflow-x-scroll overflow-y-hidden">
+          <h2 className="text-2xl font-semibold mb-4">Recommended for You</h2>
+          <div className="flex flex-row overflow-x-scroll overflow-y-hidden -ml-2">
             {queryAllPlaylists.data.map((playlist) => (
               <Link
                 key={playlist.id}
                 to={`/app/playlist/$ratingKey`}
                 params={{ ratingKey: playlist.ratingKey }}
               >
-                <Card key={playlist.id} className="flex p-4 justify-center min-w-36 h-48">
+                <Card
+                  key={playlist.id}
+                  className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800 p-2 rounded-md"
+                >
                   <CardHeader className="p-0">
                     <img
                       src={playlist.composite || noPlaylistCover}
