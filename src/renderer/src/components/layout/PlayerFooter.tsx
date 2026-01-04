@@ -11,7 +11,10 @@ import {
   Repeat,
   Volume2,
   VolumeOff,
-  VolumeOffIcon
+  VolumeOffIcon,
+  Volume1,
+  Volume,
+  VolumeX
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -175,11 +178,17 @@ export function PlayerFooter() {
           <div>
             {status?.volume === 0 ? (
               <Button variant={'ghost'} size={'icon-sm'} onClick={handleMute}>
-                <VolumeOffIcon className="h-4 w-4 text-muted-foreground" />
+                <VolumeX className="h-4 w-4 text-muted-foreground" />
               </Button>
             ) : (
               <Button variant={'ghost'} size={'icon-sm'} onClick={handleMute}>
-                <Volume2 className="h-4 w-4 text-muted-foreground" />
+                {status?.volume < 0.3 ? (
+                  <Volume className="h-4 w-4 text-muted-foreground" />
+                ) : status?.volume < 0.7 ? (
+                  <Volume1 className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <Volume2 className="h-4 w-4 text-muted-foreground" />
+                )}
               </Button>
             )}
           </div>
