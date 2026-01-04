@@ -35,7 +35,7 @@ function PlaylistPage() {
   const playlist = queryPlaylist.data
 
   return (
-    <div className="flex flex-col overflow-y-scroll p-6 mb-30">
+    <div className="flex flex-col overflow-y-scroll p-6 mb-20">
       {/* playlist Header */}
       <div className="flex gap-6 mb-6">
         <img
