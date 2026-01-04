@@ -17,6 +17,7 @@ export function PlayerFooter() {
   })
 
   const [position, setPosition] = useState(0)
+  const [volume, setVolume] = useState(1)
 
   useEffect(() => {
     if (status?.position) {
@@ -57,6 +58,11 @@ export function PlayerFooter() {
     await fetch(`http://127.0.0.1:11222/player/seek/${pos}`)
     setPosition(pos)
     refetch()
+  }
+
+  const handleVolume = async (volume: number) => {
+    await fetch(`http://127.0.0.1:11222/player/volume/${volume}`)
+    setVolume(volume)
   }
 
   const currentTrack = status?.current_track
@@ -151,7 +157,13 @@ export function PlayerFooter() {
         </Button>*/}
         <div className="flex items-center gap-2 w-32">
           <Volume2 className="h-4 w-4 text-muted-foreground" />
-          <Slider defaultValue={[50]} max={100} step={1} className="w-20" />
+          <Slider
+            defaultValue={[1]}
+            onValueChange={(value) => handleVolume(value[0])}
+            max={1}
+            step={1 / 100}
+            className="w-20"
+          />
         </div>
       </div>
     </div>

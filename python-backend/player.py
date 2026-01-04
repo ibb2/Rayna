@@ -160,7 +160,7 @@ class AudioPlayer:
                 # Normal chunk
                 outdata[:] = self.current_data[
                     self.position_frames : self.position_frames + chunk_size
-                ]
+                ] * self.volume
                 self.position_frames += chunk_size
 
     def _play_thread(self):

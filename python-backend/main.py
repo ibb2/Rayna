@@ -426,3 +426,8 @@ def player_seek(pos: int, player: Annotated[AudioPlayer, Depends(get_player)]):
     print(pos)
     player.seek(pos)
     return {"status": "seek"}
+
+@app.get("/player/volume/{volume}")
+def player_adjust_volume(volume: float, player: Annotated[AudioPlayer, Depends(get_player)]):
+    player.volume = volume
+    return {"status": "volume"}
