@@ -48,7 +48,7 @@ function PlaylistPage() {
             <div className="text-slate-600 dark:text-slate-100 text-sm mb-2 uppercase">
               playlist
             </div>
-            <h1 className="text-4xl mb-3">{playlist.title}</h1>
+            <h1 className="text-5xl font-bold mb-3">{playlist.title}</h1>
             <div>{playlist.summary}</div>
           </div>
           <div className="flex items-center gap-2 text-sm">

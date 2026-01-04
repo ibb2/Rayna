@@ -40,7 +40,7 @@ export function AlbumPage() {
         <div className="flex flex-col justify-between py-2">
           <div>
             <div className="text-slate-600 dark:text-slate-100 text-sm mb-2">ALBUM</div>
-            <h1 className="text-4xl mb-3">{album.title}</h1>
+            <h1 className="text-5xl font-bold mb-3">{album.title}</h1>
             <Link
               to={`/app/artist/$ratingKey`}
               params={{ ratingKey: album.artistKey }}

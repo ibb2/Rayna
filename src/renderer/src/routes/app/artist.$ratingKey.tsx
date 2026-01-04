@@ -64,7 +64,7 @@ export function ArtistPage() {
               <div className="text-blue-400 text-sm mb-2">✓ VERIFIED ARTIST</div>
             )}
             <div className="text-blue-400 text-sm mb-2">✓ VERIFIED ARTIST</div>
-            <h1 className="text-5xl mb-2">{queryArtist.data.title}</h1>
+            <h1 className="text-5xl font-bold mb-2">{queryArtist.data.title}</h1>
             {/*<div className="text-zinc-400">{queryArtist.data.followers} monthly listeners</div>*/}
             <div className="text-muted-foreground">{queryArtist.data.viewCount} plays</div>
           </div>
