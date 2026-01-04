@@ -8,6 +8,7 @@ Rayna is a 3rd party music player client for Plex focusing on the desktop experi
 ## Installation
 
 ### Windows
+
 > [!IMPORTANT]
 > Windows on Arm is not natively supported.
 
@@ -15,14 +16,15 @@ Rayna is a 3rd party music player client for Plex focusing on the desktop experi
 2. Run the downloaded installer and follow the instructions onscreen.
 
 ### MacOS
+
 > [!WARNING]
-All installations on MacOS will need to be whitelisted due to MacOS blocking apps not signed with a paid developer license by default. This is a limitation as I currently do not have a paid Apple developer license.
+> All installations on MacOS will need to be whitelisted due to MacOS blocking apps not signed with a paid developer license by default. This is a limitation as I currently do not have a paid Apple developer license.
 
 1. Download the installer.
 2. Open the downloaded .dmg file and drag the application to your Applications folder. You will you get a warning saying "Rayna" is damaged and can't be opened. You should move it to the Bin.
 3. Open your Terminal app
 4. Run the following command:
-`xattr -d com.apple.quarantine /Applications/Rayna.app`
+   `xattr -d com.apple.quarantine /Applications/Rayna.app`
 
 ## Usage/Examples
 
@@ -39,7 +41,7 @@ On install login to you Plex account and select your server[^1], that is all.
 (Probably in order)
 
 - [ ] Light/Dark mode
-- [ ] Volume Controls
+- [x] Volume Controls
 - [x] Add Screenshots
 - [x] Artist page
   - [ ] Play popular tracks
@@ -82,4 +84,5 @@ Please adhere to this project's `code of conduct`.
 ## License
 
 ## Appendix
+
 [^1]: Only a single server and library is supported currently.
