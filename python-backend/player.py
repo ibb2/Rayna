@@ -24,6 +24,7 @@ class AudioPlayer:
         self.position_frames: int = 0  # Current frame position
         self.position_lock: threading.Lock = threading.Lock()
         self.volume: float = 1.0
+        self.volume_pre_mute: float = 1.0
 
         # --- Threading/Control State ---
         self.stop_event: threading.Event = threading.Event()
@@ -91,13 +92,13 @@ class AudioPlayer:
         # Convert frame position back to seconds for the UI
         pos_seconds = self.position_frames / self.current_samplerate if self.current_samplerate else 0
         duration_seconds = len(self.current_data) / self.current_samplerate if self.current_data is not None else 0
-        
         return {
             "is_playing": self.is_playing,
             "current_track": self.current_track,
             "queue_len": len(self.queue),
             "position": pos_seconds,
             "duration": duration_seconds,
+            "volume": self.volume
         }
 
     # --- Internal Engine Methods ---
