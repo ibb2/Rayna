@@ -2,11 +2,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Link, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Search, Settings } from 'lucide-react'
+import { ModeToggle } from '../mode-toggle'
+import { createPortal } from 'react-dom'
+import React from 'react'
+import { useTheme } from 'next-themes'
 
 export function TopBar() {
   const router = useRouter()
   const canGoBack = useCanGoBack()
   const routerState = useRouterState()
+  const { setTheme } = useTheme()
 
   // Check if we can go forward by comparing current index with history length
   const canGoForward =
@@ -47,9 +52,10 @@ export function TopBar() {
 
       <div className="flex gap-4">
         {/* User profile or other actions */}
-        <Link to={'/app/settings'}>
-          <Settings className="w-5" /> {/* Change back to UserProfile image */}
-        </Link>
+        <ModeToggle />
+        {/* <Link to={'/app/settings'}> */}
+        {/* <Settings className="w-5" /> Change back to UserProfile image */}
+        {/* </Link> */}
       </div>
     </div>
   )
