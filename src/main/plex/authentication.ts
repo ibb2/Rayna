@@ -206,14 +206,15 @@ class Authentication {
     return false
   }
 
-  public async getUserSelectedServer(): Promise<PlexServer> {
+  public async getUserSelectedServer(): Promise<PlexServer | null> {
     const selectedServer = this.selectedServer
 
     if (selectedServer != null) {
       return selectedServer
     }
 
-    throw new Error('No server selected')
+    console.log("No server seleted returning null")
+    return null
   }
 
   public async getUserAccessToken(): Promise<string> {
