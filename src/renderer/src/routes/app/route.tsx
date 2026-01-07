@@ -3,7 +3,7 @@ import { PlayerFooter } from '@/components/layout/PlayerFooter'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { PlexServer } from '@/types'
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
 export const Route = createFileRoute('/app')({
@@ -12,9 +12,23 @@ export const Route = createFileRoute('/app')({
 
 function AppLayoutComponent() {
   const [load, onLoad] = useState(false)
+  const navigate = useNavigate()
 
   const initializeFastApiBackend = async () => {
-    const server: PlexServer = await window.api.auth.getUserSelectedServer()
+    let server: PlexServer | null = await window.api.auth.getUserSelectedServer()
+
+    console.log("Server: ", server)
+
+    if (server == null) {
+      console.log("Server is null")
+      navigate({
+                to: '/server',
+                replace: true,
+                reloadDocument: true,
+              })
+      return
+    }
+
     const accessToken = await window.api.auth.getUserAccessToken()
     console.log('serverUrl:', server.connections)
 
