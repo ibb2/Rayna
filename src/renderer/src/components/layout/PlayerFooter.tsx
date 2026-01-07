@@ -10,8 +10,6 @@ import {
   Shuffle,
   Repeat,
   Volume2,
-  VolumeOff,
-  VolumeOffIcon,
   Volume1,
   Volume,
   VolumeX
