@@ -211,6 +211,7 @@ def read_artist_popular_tracks(
                 "title": t.title,
                 "duration": t.duration,
                 "ratingCount": t.ratingCount,
+                "ratingKey": t.ratingKey
             }
             for t in artist_popular_tracks
         ],
