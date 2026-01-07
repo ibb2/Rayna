@@ -5,6 +5,9 @@ Rayna is a 3rd party music player client for Plex focusing on the desktop experi
 > [!IMPORTANT]
 > This is currently completely online only and a major work in progress, I recently migrated from Avalonia to Electron, but local. No support yet for offline usage or any advanced caching.
 
+<img width="1012" height="782" alt="Screenshot 2026-01-07 at 12 36 52 PM" src="https://github.com/user-attachments/assets/29cb7279-5c22-4c53-8b5a-9989f1abff26" />
+
+
 ## Installation
 
 ### Windows
@@ -35,16 +38,18 @@ On install login to you Plex account and select your server[^1], that is all.
 - Cross platform (macos, windows, linux)
 
 ## Screenshots
+<img width="1012" height="782" alt="Screenshot 2026-01-07 at 12 36 58 PM" src="https://github.com/user-attachments/assets/15d2f81e-0f02-4646-ad6f-d5bf5ebb2541" />
+<img width="1012" height="782" alt="Screenshot 2026-01-07 at 12 37 08 PM" src="https://github.com/user-attachments/assets/95f0e5ff-3bac-407a-a07d-72e39d60ec7b" />
 
 ## Roadmap
 
 (Probably in order)
 
-- [ ] Light/Dark mode
+- [x] Light/Dark mode
 - [x] Volume Controls
-- [ ] Add Screenshots
+- [x] Add Screenshots
 - [x] Artist page
-  - [ ] Play popular tracks
+  - [x] Play popular tracks
 - [x] Playlist page
   - [ ] Play entire playlist
   - [ ] Play individual track for playlist

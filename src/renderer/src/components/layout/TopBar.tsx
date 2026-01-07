@@ -1,17 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Link, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight, Search, Settings } from 'lucide-react'
+import { useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { ModeToggle } from '../mode-toggle'
-import { createPortal } from 'react-dom'
-import React from 'react'
-import { useTheme } from 'next-themes'
 
 export function TopBar() {
   const router = useRouter()
   const canGoBack = useCanGoBack()
   const routerState = useRouterState()
-  const { setTheme } = useTheme()
 
   // Check if we can go forward by comparing current index with history length
   const canGoForward =
