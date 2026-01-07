@@ -100,7 +100,7 @@ export function AlbumPage() {
             <button
               className="hidden group-hover:block"
               onClick={() => {
-                fetch(`http://127.0.0.1:8000/music/play/track/${track.ratingKey}`)
+                fetch(`http://127.0.0.1:11222/music/play/track/${track.ratingKey}`)
               }}
             >
               <Play size={16} className="text-shadow-black w-8" fill="black" />
