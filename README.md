@@ -45,11 +45,11 @@ On install login to you Plex account and select your server[^1], that is all.
 
 (Probably in order)
 
-- [ ] Light/Dark mode
+- [x] Light/Dark mode
 - [x] Volume Controls
-- [ ] Add Screenshots
+- [x] Add Screenshots
 - [x] Artist page
-  - [ ] Play popular tracks
+  - [x] Play popular tracks
 - [x] Playlist page
   - [ ] Play entire playlist
   - [ ] Play individual track for playlist

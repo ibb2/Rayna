@@ -107,7 +107,8 @@ export function ArtistPage() {
               }}
             >
             <Play size={16} className="text-shadow-black w-8" fill="black" />
-            </button>              <div className="flex-1">
+            </button>              
+            <div className="flex-1">
                 <div className="">{track.title}</div>
                 <div className="text-zinc-400 text-sm">
                   {Intl.NumberFormat('en-US', {
