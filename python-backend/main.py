@@ -36,6 +36,15 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.get("/health")
+def health_check():
+    """Health check endpoint - returns OK when API is ready to accept connections."""
+
+    if ()
+
+    return {"status": "ok"}
+
+
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}

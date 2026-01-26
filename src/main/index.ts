@@ -24,6 +24,8 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    // Open DevTools in production for debugging (remove when done)
+    mainWindow.webContents.openDevTools()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -98,6 +100,8 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('auth:getUserAccessToken', () => auth.getUserAccessToken())
 
+  // Wait for API to be ready before creating window
+  await waitForApi()
   createWindow()
 
   app.on('activate', function () {
@@ -157,6 +161,31 @@ function startApi(): void {
   apiProcess.stderr?.on('data', (data) => {
     console.error(`API Error: ${data}`)
   })
+}
+
+async function waitForApi(maxRetries = 60, initialDelayMs = 100): Promise<void> {
+  const API_URL = 'http://127.0.0.1:11222/health'
+  let delay = initialDelayMs
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(API_URL)
+      if (response.ok) {
+        console.log(`API is ready after ${i + 1} attempts`)
+        return
+      }
+    } catch {
+      // API not ready yet, continue retrying
+    }
+
+    console.log(`Waiting for API... attempt ${i + 1}/${maxRetries}`)
+    await new Promise((resolve) => setTimeout(resolve, delay))
+    // Cap delay at 1 second
+    delay = Math.min(delay * 1.5, 1000)
+  }
+
+  console.error('API failed to start within timeout')
+  throw new Error('API failed to start')
 }
 
 // Ensure startApi is called
