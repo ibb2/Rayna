@@ -8,7 +8,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from './ui/sidebar'
-import { NavDocuments } from './nav-documents'
 import { NavMain } from './nav-main'
 import { AudioWaveform, Heart, Home, Music } from 'lucide-react'
 
