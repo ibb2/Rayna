@@ -39,9 +39,6 @@ def read_root():
 @app.get("/health")
 def health_check():
     """Health check endpoint - returns OK when API is ready to accept connections."""
-
-    if ()
-
     return {"status": "ok"}
 
 
