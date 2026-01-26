@@ -115,12 +115,15 @@ let apiProcess: ChildProcess | null = null
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('before-quit', () => {
   if (apiProcess) {
     apiProcess.kill()
     apiProcess = null
-  }
-  if (process.platform !== 'darwin') {
-    app.quit()
   }
 })
 
@@ -137,8 +140,8 @@ function startApi(): void {
   if (is.dev) {
     console.log('Starting API in dev mode...', apiPath, args)
     apiProcess = spawn(apiPath, args, {
-      cwd: join(__dirname, '../../python-backend'),
-      shell: true
+      cwd: join(__dirname, '../../python-backend')
+      // shell: true // Removed to ensure the child process is directly attached and killable
     })
   } else {
     console.log('Starting API in production mode...', apiPath)
