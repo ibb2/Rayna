@@ -128,7 +128,6 @@ class Authentication {
       qs.stringify({
         clientID: this.plexClientId,
         code: this.plexCode,
-        forwardUrl: 'https://app.plex.tv/desktop', // Redirect to Plex Desktop on success
         context: {
           device: {
             product: this.plexProduct
