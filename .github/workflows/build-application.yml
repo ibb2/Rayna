@@ -36,11 +36,19 @@ jobs:
           cd python-backend
           uv run pyinstaller api.spec
 
-      - name: Upload backend artifact
+      - name: Upload backend artifact (Windows)
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
-          path: python-backend/dist/api*
+          path: python-backend/dist/api.exe
+
+      - name: Upload backend artifact (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-backend-${{ matrix.os }}
+          path: python-backend/dist/api
 
   build-electron:
     needs: build-backend
