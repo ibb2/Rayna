@@ -2,17 +2,13 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { PlayerFooter } from '@/components/layout/PlayerFooter'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { PlexServer } from '@/types'
-import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/app')({
   component: AppLayoutComponent
 })
 
 function AppLayoutComponent() {
-  const [load, onLoad] = useState(false)
-  const navigate = useNavigate()
 
   // const initializeFastApiBackend = async () => {
   //   let server: PlexServer | null = await window.api.auth.getUserSelectedServer()
