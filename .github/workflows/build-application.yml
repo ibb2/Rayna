@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
-          path: python-backend/dist/api.exe
+          path: python-backend/dist/api
 
       - name: Upload backend artifact (macOS)
         if: matrix.os == 'macos-latest'
@@ -69,11 +69,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
-          path: resources
+          path: resources/api
 
       - name: Make backend executable (Unix)
         if: matrix.os != 'windows-latest'
-        run: chmod +x resources/api
+        run: chmod +x resources/api/api
 
       - name: Verify backend placement
         shell: bash
