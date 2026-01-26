@@ -2,8 +2,8 @@ name: Build Backend and Electron
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    # tags:
+    #   - "v*.*.*"
 
 permissions:
   contents: write
@@ -34,7 +34,7 @@ jobs:
       - name: Build Python backend
         run: |
           cd python-backend
-          uv run pyinstaller api.spec
+          uv run pyinstaller api.spec --noconfirm
 
       - name: Upload backend artifact (Windows)
         if: matrix.os == 'windows-latest'
@@ -65,21 +65,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create resources/api directory
+        run: mkdir -p resources/api
+
       - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
           path: resources/api
 
-      - name: Make backend executable (Unix)
-        if: matrix.os != 'windows-latest'
-        run: chmod +x resources/api/api
-
-      - name: Verify backend placement
+      - name: List resources before permissions
         shell: bash
         run: |
-          echo "Contents of resources:"
-          ls -la resources
+          find resources/api -maxdepth 2
+
+      - name: Make backend executable (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          chmod -R +x resources/api
+          chmod +x resources/api/api
+
+      - name: Verify backend binary
+        if: matrix.os != 'windows-latest'
+        run: ls -la resources/api/api && file resources/api/api
 
       - name: Install Node dependencies
         run: npm install

@@ -138,51 +138,74 @@ app.on('before-quit', () => {
 })
 
 function startApi(): void {
+  const binaryName = process.platform === 'win32' ? 'api.exe' : 'api'
   const apiPath = is.dev
     ? join(
       __dirname,
       `../../python-backend/.venv/${process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'}`
     )
-    : join(process.resourcesPath, 'api', process.platform === 'win32' ? 'api.exe' : 'api')
+    : join(process.resourcesPath, 'api', binaryName)
 
   const args = is.dev ? [join(__dirname, '../../python-backend/entry.py')] : []
+  const cwd = is.dev ? join(__dirname, '../../python-backend') : join(process.resourcesPath, 'api')
 
-  if (is.dev) {
-    console.log('Starting API in dev mode...', apiPath, args)
-    apiProcess = spawn(apiPath, args, {
-      cwd: join(__dirname, '../../python-backend')
-      // shell: true // Removed to ensure the child process is directly attached and killable
-    })
-  } else {
-    console.log('Starting API in production mode...', apiPath)
-    apiProcess = spawn(apiPath, [], {
-      cwd: join(process.resourcesPath, 'api')
-    })
+  const logPrefix = `[API Start] Binary: ${apiPath} | CWD: ${cwd}\n`
+  console.log(logPrefix)
+  apiLogs += logPrefix
+
+  // Check if file exists in production
+  if (!is.dev) {
+    const fs = require('fs')
+    if (!fs.existsSync(apiPath)) {
+      const err = `CRITICAL: API binary not found at ${apiPath}\n`
+      console.error(err)
+      apiLogs += err
+    } else {
+      try {
+        fs.accessSync(apiPath, fs.constants.X_OK)
+        apiLogs += `API binary is executable.\n`
+      } catch (e) {
+        apiLogs += `WARNING: API binary is NOT executable or accessible.\n`
+      }
+    }
+
+    if (!fs.existsSync(cwd)) {
+      apiLogs += `CRITICAL: API CWD does not exist: ${cwd}\n`
+    }
   }
 
-  apiProcess.stdout?.on('data', (data) => {
-    const log = data.toString()
-    console.log(`API: ${log}`)
-    apiLogs += log
-  })
+  try {
+    apiProcess = spawn(apiPath, args, { cwd })
 
-  apiProcess.stderr?.on('data', (data) => {
-    const log = data.toString()
-    console.error(`API Error: ${log}`)
-    apiLogs += log
-  })
+    apiProcess.stdout?.on('data', (data) => {
+      const log = data.toString()
+      console.log(`API: ${log}`)
+      apiLogs += log
+    })
 
-  apiProcess.on('error', (err) => {
-    const log = `Failed to start API process: ${err.message}\n`
+    apiProcess.stderr?.on('data', (data) => {
+      const log = data.toString()
+      console.error(`API Error: ${log}`)
+      apiLogs += log
+    })
+
+    apiProcess.on('error', (err) => {
+      const log = `Failed to spawn API process: ${err.message}\n`
+      console.error(log)
+      apiLogs += log
+    })
+
+    apiProcess.on('exit', (code, signal) => {
+      const log = `API process exited with code ${code} and signal ${signal}\n`
+      console.log(log)
+      apiLogs += log
+      apiProcess = null
+    })
+  } catch (err: any) {
+    const log = `CRITICAL: Exception when spawning API: ${err.message}\n`
     console.error(log)
     apiLogs += log
-  })
-
-  apiProcess.on('exit', (code, signal) => {
-    const log = `API process exited with code ${code} and signal ${signal}\n`
-    console.log(log)
-    apiLogs += log
-  })
+  }
 }
 
 
