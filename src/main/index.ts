@@ -100,8 +100,15 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('auth:getUserAccessToken', () => auth.getUserAccessToken())
 
+  // API Diagnostic IPC handlers
+  ipcMain.handle('api:get-logs', () => apiLogs)
+  ipcMain.handle('api:get-status', () => {
+    if (!apiProcess) return 'not_started'
+    if (apiProcess.exitCode !== null) return `exited_code_${apiProcess.exitCode}`
+    return 'running'
+  })
+
   // Wait for API to be ready before creating window
-  await waitForApi()
   createWindow()
 
   app.on('activate', function () {
@@ -114,6 +121,7 @@ app.whenReady().then(async () => {
 import { spawn, ChildProcess } from 'child_process'
 
 let apiProcess: ChildProcess | null = null
+let apiLogs = ''
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -155,38 +163,31 @@ function startApi(): void {
   }
 
   apiProcess.stdout?.on('data', (data) => {
-    console.log(`API: ${data}`)
+    const log = data.toString()
+    console.log(`API: ${log}`)
+    apiLogs += log
   })
 
   apiProcess.stderr?.on('data', (data) => {
-    console.error(`API Error: ${data}`)
+    const log = data.toString()
+    console.error(`API Error: ${log}`)
+    apiLogs += log
+  })
+
+  apiProcess.on('error', (err) => {
+    const log = `Failed to start API process: ${err.message}\n`
+    console.error(log)
+    apiLogs += log
+  })
+
+  apiProcess.on('exit', (code, signal) => {
+    const log = `API process exited with code ${code} and signal ${signal}\n`
+    console.log(log)
+    apiLogs += log
   })
 }
 
-async function waitForApi(maxRetries = 60, initialDelayMs = 100): Promise<void> {
-  const API_URL = 'http://127.0.0.1:11222/health'
-  let delay = initialDelayMs
 
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const response = await fetch(API_URL)
-      if (response.ok) {
-        console.log(`API is ready after ${i + 1} attempts`)
-        return
-      }
-    } catch {
-      // API not ready yet, continue retrying
-    }
-
-    console.log(`Waiting for API... attempt ${i + 1}/${maxRetries}`)
-    await new Promise((resolve) => setTimeout(resolve, delay))
-    // Cap delay at 1 second
-    delay = Math.min(delay * 1.5, 1000)
-  }
-
-  console.error('API failed to start within timeout')
-  throw new Error('API failed to start')
-}
 
 // Ensure startApi is called
 

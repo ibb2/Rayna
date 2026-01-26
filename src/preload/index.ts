@@ -20,6 +20,10 @@ const api = {
     isServerSelected: () => ipcRenderer.invoke('auth:isServerSelected'),
     getUserSelectedServer: () => ipcRenderer.invoke('auth:getUserSelectedServer'),
     getUserAccessToken: () => ipcRenderer.invoke('auth:getUserAccessToken')
+  },
+  server: {
+    getStatus: () => ipcRenderer.invoke('api:get-status'),
+    getLogs: () => ipcRenderer.invoke('api:get-logs')
   }
 }
 

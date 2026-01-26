@@ -12,7 +12,14 @@ from pydantic import BaseModel
 
 from player import AudioPlayer
 
+import time
+
+start = time.time()
+
+
 app = FastAPI()
+
+print(f"FastAPI import: {time.time() - start}")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
