@@ -24,8 +24,6 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-    // Open DevTools in production for debugging (remove when done)
-    mainWindow.webContents.openDevTools()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -145,7 +143,7 @@ function startApi(): void {
       __dirname,
       `../../python-backend/.venv/${process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'}`
     )
-    : join(process.resourcesPath, process.platform === 'win32' ? 'api.exe' : 'api')
+    : join(process.resourcesPath, 'api', process.platform === 'win32' ? 'api.exe' : 'api')
 
   const args = is.dev ? [join(__dirname, '../../python-backend/entry.py')] : []
 
@@ -158,7 +156,7 @@ function startApi(): void {
   } else {
     console.log('Starting API in production mode...', apiPath)
     apiProcess = spawn(apiPath, [], {
-      cwd: join(process.resourcesPath)
+      cwd: join(process.resourcesPath, 'api')
     })
   }
 

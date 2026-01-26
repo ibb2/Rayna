@@ -11,34 +11,27 @@ export const Route = createFileRoute('/')({
     const isUserLoggedIn = await window.api.auth.isUserSignedIn()
     const hasUserSelectedAServer = await window.api.auth.isServerSelected()
 
-    console.log('Is user logged in: ', isUserLoggedIn)
-
     if (!isUserLoggedIn) {
       throw redirect({
         to: '/auth'
       })
-    } else {
-      console.log('Has user selected a server: ', hasUserSelectedAServer)
-      if (!hasUserSelectedAServer) {
-        return redirect({
-          to: '/server'
-        })
-      }
+    }
 
-      let server: PlexServer | null = await window.api.auth.getUserSelectedServer()
+    if (!hasUserSelectedAServer) {
+      throw redirect({
+        to: '/server'
+      })
+    }
 
-      console.log("Server: ", server)
+    const server: PlexServer | null = await window.api.auth.getUserSelectedServer()
+    if (!server) {
+      throw redirect({
+        to: '/server'
+      })
+    }
 
-      if (server == null) {
-        console.log("Server is null")
-      return redirect({
-            to: '/server'
-          })
-      }
-
-      const accessToken = await window.api.auth.getUserAccessToken()
-      console.log('serverUrl:', server.connections)
-
+    const accessToken = await window.api.auth.getUserAccessToken()
+    try {
       const response = await fetch(`http://127.0.0.1:11222/init`, {
         method: 'POST',
         headers: {
@@ -50,11 +43,14 @@ export const Route = createFileRoute('/')({
         })
       })
       await response.json()
-
-      return redirect({
-        to: '/app'
-      })
+    } catch (e) {
+      console.error('Failed to init API:', e)
+      // We don't redirect here to allow the loader to show the error state if needed
     }
+
+    throw redirect({
+      to: '/app'
+    })
   }
 })
 
