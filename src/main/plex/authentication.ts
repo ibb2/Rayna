@@ -199,11 +199,14 @@ class Authentication {
   public isServerSelected(): boolean {
     const selectedServer = this.store.get('selectedServer') as string | undefined
 
-    if (selectedServer !== undefined || selectedServer !== null) {
-      return true
-    }
+    console.log('Selected Server,', selectedServer)
 
-    return false
+    if (selectedServer === undefined || selectedServer === null) {
+      console.log('No server selected')
+      return false
+    }
+    console.log('Server selected')
+    return true
   }
 
   public async getUserSelectedServer(): Promise<PlexServer | null> {
@@ -213,7 +216,7 @@ class Authentication {
       return selectedServer
     }
 
-    console.log("No server seleted returning null")
+    console.log('No server seleted returning null')
     return null
   }
 

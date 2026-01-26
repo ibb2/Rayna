@@ -16,6 +16,7 @@ declare global {
         checkPinStatus: (id: string) => Promise<any>
         getUserSelectedServer: () => Promise<PlexServer | null>
         getUserAccessToken: () => Promise<string>
+        isServerSelected: () => Promise<boolean>
       }
     }
   }

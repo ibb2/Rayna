@@ -17,6 +17,7 @@ export const Route = createFileRoute('/')({
         to: '/auth'
       })
     } else {
+      console.log('Has user selected a server: ', hasUserSelectedAServer)
       if (!hasUserSelectedAServer) {
         return redirect({
           to: '/server'
