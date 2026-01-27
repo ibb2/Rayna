@@ -2,8 +2,8 @@ name: Build Backend and Electron
 
 on:
   push:
-    # tags:
-    #   - "v*.*.*"
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version-file: "python-backend/pyproject.toml"
+          python-version-file: 'python-backend/pyproject.toml'
 
       - name: Install uv
         uses: astral-sh/setup-uv@v2
