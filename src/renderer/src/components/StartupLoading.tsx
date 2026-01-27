@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
+import { Spinner } from './ui/spinner'
 
 const API_HEALTH_URL = 'http://127.0.0.1:11222/health'
 
 export function StartupLoading({ children }: { children: React.ReactNode }): React.ReactElement {
   const [isReady, setIsReady] = useState(false)
-  const [error, setError] = useState<string|null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [logs, setLogs] = useState<string>('')
-  const [retryCount, setRetryCount] = useState(0)
-  const [lastCheck, setLastCheck] = useState<string>('')
+  // const [retryCount, setRetryCount] = useState(0)
+  // const [lastCheck, setLastCheck] = useState<string>('')
 
   const checkApi = async (count = 0, delay = 100): Promise<void> => {
-    setRetryCount(count)
-    setLastCheck(new Date().toLocaleTimeString())
-    
+    // setRetryCount(count)
+    // setLastCheck(new Date().toLocaleTimeString())
+
     try {
       const response = await fetch(API_HEALTH_URL)
       if (response.ok) {
@@ -33,7 +34,8 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
       return
     }
 
-    if (count >= 120) { // Increase to 2 minutes
+    if (count >= 120) {
+      // Increase to 2 minutes
       setError('Connection timeout: Background service is taking too long to respond.')
       return
     }
@@ -65,17 +67,19 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
               <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
               {error}
             </div>
-            
+
             <div className="w-full flex justify-between items-center px-2">
-              <span className="text-xs text-white/40 uppercase tracking-widest font-semibold">Service Logs</span>
+              <span className="text-xs text-white/40 uppercase tracking-widest font-semibold">
+                Service Logs
+              </span>
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={() => setLogs('')}
                   className="text-[10px] px-2 py-1 bg-white/5 hover:bg-white/10 rounded transition-colors text-white/50"
                 >
                   Clear
                 </button>
-                <button 
+                <button
                   onClick={handleRetry}
                   className="text-xs px-4 py-1 bg-indigo-600 hover:bg-indigo-500 rounded font-medium transition-all shadow-lg shadow-indigo-500/20"
                 >
@@ -91,12 +95,13 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
         ) : (
           <div className="flex flex-col items-center gap-8">
             <div className="relative">
-               <div className="h-16 w-16 animate-spin rounded-full border-4 border-indigo-500/20 border-t-indigo-500 shadow-xl" />
-               <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-indigo-500/50">
-                 {retryCount}
-               </div>
+              {/*<div className="h-16 w-16 animate-spin rounded-full border-4 border-indigo-500/20 border-t-indigo-500 shadow-xl" />*/}
+              <Spinner className="size-16" />
+              {/*<div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-indigo-500/50">
+                {retryCount}
+              </div>*/}
             </div>
-            
+
             <div className="flex flex-col items-center gap-3 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">Initialising Rayna</h1>
               <p className="text-white/40 text-sm max-w-xs leading-relaxed">
@@ -104,15 +109,13 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
               </p>
             </div>
 
-            <div className="mt-4 flex items-center gap-2 text-xs text-white/20 font-mono">
+            {/*<div className="mt-4 flex items-center gap-2 text-xs text-white/20 font-mono">
               <span className="h-1 w-1 rounded-full bg-white/20" />
               Last check: {lastCheck || 'Starting...'}
-            </div>
+            </div>*/}
           </div>
         )}
       </div>
     </div>
   )
 }
-
-
