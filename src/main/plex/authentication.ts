@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import Store from 'electron-store'
+import { LoopbackAuthServer } from './loopback'
 import { v4 as uuidv4 } from 'uuid'
 import crypto from 'crypto'
 import qs from 'qs'
@@ -12,6 +13,7 @@ class Authentication {
   plexUserAccessToken = ''
   plexId = ''
   plexCode = ''
+  private loopbackServer: LoopbackAuthServer | null = null
   privateKey: string | null = null
   publicKey: string | null = null
   selectedServer: PlexServer | null = null
@@ -123,11 +125,29 @@ class Authentication {
   public async checkPin() {
     // Using the Forwarding method to authenticate
 
+    // Start the loopback server
+    this.loopbackServer = new LoopbackAuthServer()
+    this.loopbackServer.onRedirect = () => {
+      console.log('Loopback server hit, checking PIN status...')
+      this.checkPinStatus(this.plexId)
+    }
+
+    let port = 0
+    try {
+      port = await this.loopbackServer.listen()
+    } catch (e) {
+      console.error('Failed to start loopback server:', e)
+      // Fallback or error handling? For now, we proceed but without forwardingUrl likely failing the improved flow
+    }
+
+    const forwardUrl = `http://127.0.0.1:${port}/callback`
+
     const authAppUrl =
       'https://app.plex.tv/auth#?' +
       qs.stringify({
         clientID: this.plexClientId,
         code: this.plexCode,
+        forwardUrl: forwardUrl,
         context: {
           device: {
             product: this.plexProduct
@@ -139,6 +159,13 @@ class Authentication {
       authUrl: authAppUrl,
       plexId: this.plexId,
       plexCode: this.plexCode
+    }
+  }
+
+  public async closeLoopbackServer() {
+    if (this.loopbackServer) {
+      this.loopbackServer.close()
+      this.loopbackServer = null
     }
   }
 
@@ -156,6 +183,7 @@ class Authentication {
     if (data['authToken']) {
       this.plexUserAccessToken = data['authToken']
       this.store.set('plexUserAccessToken', this.encrypt(this.plexUserAccessToken))
+      this.closeLoopbackServer()
     }
 
     return data

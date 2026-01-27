@@ -5,7 +5,29 @@ import icon from '../../resources/icon.png?asset'
 import { DatabaseManager } from './database'
 import { PlexServer } from './types'
 
-function createWindow(): void {
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+if (require('electron-squirrel-startup')) {
+  app.quit()
+}
+
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('rayna', process.execPath, [join(process.cwd(), '.')])
+  }
+} else {
+  app.setAsDefaultProtocolClient('rayna')
+}
+
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  app.quit()
+} // We will handle the second-instance event inside whenReady or global scope ensuring we don't start duplicate apps.
+// Actually, standard pattern is to quit immediately if no lock.
+// Moving the rest of the logic inside the lock check or just above.
+
+
+function createWindow(): BrowserWindow {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -38,6 +60,8 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  return mainWindow
 }
 
 // This method will be called when Electron has finished
@@ -98,6 +122,8 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('auth:getUserAccessToken', () => auth.getUserAccessToken())
 
+  ipcMain.handle('auth:closeLoopbackServer', () => auth.closeLoopbackServer())
+
   // API Diagnostic IPC handlers
   ipcMain.handle('api:get-logs', () => apiLogs)
   ipcMain.handle('api:get-status', () => {
@@ -107,12 +133,33 @@ app.whenReady().then(async () => {
   })
 
   // Wait for API to be ready before creating window
-  createWindow()
+  const mainWindow = createWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+
+  // Protocol handler for Windows/Linux
+  app.on('second-instance', () => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+    // Parse commandLine for deep link if needed, but for now we just focus.
+    // url usually in commandLine.pop()
+  })
+
+  // Protocol handler for macOS
+  app.on('open-url', (event) => {
+    event.preventDefault()
+    // dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`)
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
   })
 })
 
