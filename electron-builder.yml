@@ -46,6 +46,10 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
+protocols:
+  - name: Rayna Protocol
+    schemes:
+      - rayna
 publish:
   provider: generic
   url: https://example.com/auto-updates

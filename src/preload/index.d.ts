@@ -14,8 +14,13 @@ declare global {
         generatePin: () => Promise<any>
         checkPin: () => Promise<any>
         checkPinStatus: (id: string) => Promise<any>
-        getUserSelectedServer: () => Promise<PlexServer | null>
+        isUserSignedIn: () => Promise<boolean>
+        getServers: () => Promise<any[]>
+        selectServer: (server: any) => Promise<void>
+        getUserSelectedServer: () => Promise<any | null>
         getUserAccessToken: () => Promise<string>
+        isServerSelected: () => Promise<boolean>
+        closeLoopbackServer: () => Promise<void>
       }
     }
   }

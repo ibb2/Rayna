@@ -19,7 +19,12 @@ const api = {
     selectServer: (server: PlexServer) => ipcRenderer.invoke('auth:selectServer', server),
     isServerSelected: () => ipcRenderer.invoke('auth:isServerSelected'),
     getUserSelectedServer: () => ipcRenderer.invoke('auth:getUserSelectedServer'),
-    getUserAccessToken: () => ipcRenderer.invoke('auth:getUserAccessToken')
+    getUserAccessToken: () => ipcRenderer.invoke('auth:getUserAccessToken'),
+    closeLoopbackServer: () => ipcRenderer.invoke('auth:closeLoopbackServer')
+  },
+  server: {
+    getStatus: () => ipcRenderer.invoke('api:get-status'),
+    getLogs: () => ipcRenderer.invoke('api:get-logs')
   }
 }
 

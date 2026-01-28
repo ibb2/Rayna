@@ -19,5 +19,9 @@ interface Window {
       getUserSelectedServer: () => Promise<PlexServer | null>
       getUserAccessToken: () => Promise<string>
     }
+    server: {
+      getStatus: () => Promise<string>
+      getLogs: () => Promise<string>
+    }
   }
 }

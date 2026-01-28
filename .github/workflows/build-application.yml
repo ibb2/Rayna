@@ -3,7 +3,7 @@ name: Build Backend and Electron
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 permissions:
   contents: write
@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version-file: 'python-backend/pyproject.toml'
+          python-version-file: "python-backend/pyproject.toml"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v2
@@ -34,13 +34,21 @@ jobs:
       - name: Build Python backend
         run: |
           cd python-backend
-          uv run pyinstaller --onefile --name api main.py
+          uv run pyinstaller api.spec --noconfirm
 
-      - name: Upload backend artifact
+      - name: Upload backend artifact (Windows)
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
-          path: python-backend/dist/api*
+          path: python-backend/dist/api
+
+      - name: Upload backend artifact (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-backend-${{ matrix.os }}
+          path: python-backend/dist/api
 
   build-electron:
     needs: build-backend
@@ -57,21 +65,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create resources/api directory
+        run: mkdir -p resources/api
+
       - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
           name: python-backend-${{ matrix.os }}
-          path: resources
+          path: resources/api
+
+      - name: List resources before permissions
+        shell: bash
+        run: |
+          find resources/api -maxdepth 2
 
       - name: Make backend executable (Unix)
         if: matrix.os != 'windows-latest'
-        run: chmod +x resources/api
-
-      - name: Verify backend placement
-        shell: bash
         run: |
-          echo "Contents of resources:"
-          ls -la resources
+          chmod -R +x resources/api
+          chmod +x resources/api/api
+
+      - name: Verify backend binary
+        if: matrix.os != 'windows-latest'
+        run: ls -la resources/api/api && file resources/api/api
 
       - name: Install Node dependencies
         run: npm install

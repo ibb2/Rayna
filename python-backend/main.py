@@ -12,7 +12,14 @@ from pydantic import BaseModel
 
 from player import AudioPlayer
 
+import time
+
+start = time.time()
+
+
 app = FastAPI()
+
+print(f"FastAPI import: {time.time() - start}")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -34,6 +41,12 @@ class Init(BaseModel):
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint - returns OK when API is ready to accept connections."""
+    return {"status": "ok"}
 
 
 @app.get("/items/{item_id}")

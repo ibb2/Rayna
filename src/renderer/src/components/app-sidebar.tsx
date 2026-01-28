@@ -8,7 +8,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from './ui/sidebar'
-import { NavDocuments } from './nav-documents'
 import { NavMain } from './nav-main'
 import { AudioWaveform, Heart, Home, Music } from 'lucide-react'
 
@@ -114,7 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
+            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
               <div className="flex flex-row gap-4">
                 <AudioWaveform className="size-5!" />
                 <span className="text-base font-semibold group-data-[collapsible=icon]:hidden">
@@ -127,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        {/*<NavDocuments items={data.documents} />*/}
         {/*<NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
     </Sidebar>

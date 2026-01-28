@@ -460,3 +460,7 @@ out
 .DS_Store
 .eslintcache
 *.log*
+resources/api
+
+# Python
+python-backend/build/api
