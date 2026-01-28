@@ -65,7 +65,7 @@ export class LoopbackAuthServer {
             // Optional: Close window after a short delay (might be blocked by browser)
             setTimeout(() => {
               window.close();
-            }, 3000);
+            }, 1000);
           </script>
         </body>
         </html>

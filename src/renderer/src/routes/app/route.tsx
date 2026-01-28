@@ -12,7 +12,7 @@ export const Route = createFileRoute('/app')({
 function AppLayoutComponent() {
 
   return (
-    <StartupLoading>
+    // <StartupLoading>
       <div className="flex flex-col h-screen w-screen">
         <div className="flex-1 min-h-0 overflow-hidden relative">
           <SidebarProvider
@@ -28,6 +28,6 @@ function AppLayoutComponent() {
         </div>
         <PlayerFooter />
       </div>
-    </StartupLoading>
+    // </StartupLoading>
   )
 }
