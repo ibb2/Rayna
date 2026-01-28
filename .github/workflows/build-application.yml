@@ -2,8 +2,8 @@ name: Build Backend and Electron
 
 on:
   push:
-    # tags:
-    #   - 'v*.*.*'
+    tags:
+      - "v*.*.*"
 
 permissions:
   contents: write
