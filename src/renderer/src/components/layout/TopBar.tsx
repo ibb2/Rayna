@@ -26,6 +26,18 @@ export function TopBar() {
       ? (routerState.resolvedLocation?.state.__TSR_index as number) < router.history.length - 1
       : false
 
+  const logout = async () => {
+    console.log('Logging out')
+    const logoutSuccessful = await window.api.auth.logout()
+    if (logoutSuccessful) {
+      router.navigate({
+        to: '/auth',
+        replace: true
+      })
+    }
+    console.log('Logged out')
+  }
+
   return (
     <div className="flex h-16 items-center justify-between py-4 bg-background/95 backdrop-blur sticky top-0 z-10 w-full">
       <div className="flex items-center gap-2">
@@ -77,8 +89,11 @@ export function TopBar() {
             </DropdownMenuGroup>*/}
             <DropdownMenuGroup>
               <DropdownMenuLabel>Personalisation</DropdownMenuLabel>
-              <DropdownMenuItem className="flex flex-row gap-2">
-                <Icon name="Moon" />
+              <DropdownMenuItem className="flex flex-row justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <Icon name="Moon" />
+                  <span>Theme</span>
+                </div>
                 <ModeToggle />
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -89,7 +104,7 @@ export function TopBar() {
             </DropdownMenuGroup> */}
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => logout()}>
                 <Icon name="LogOut"></Icon>Logout
               </DropdownMenuItem>
             </DropdownMenuGroup>

@@ -23,8 +23,7 @@ export function ModeToggle() {
     return () => setTheme('dark')
   }, [setTheme])
   return (
-    <div className="flex items-center justify-between gap-x-12">
-      <p>Theme</p>
+    <div className="flex items-center justify-between gap-x-2">
       <div className="flex flex-row items-center gap-1">
         <div className="flex items-center bg-black/5 dark:bg-white/5 rounded-lg">
           <Toolbar.Button

@@ -113,6 +113,8 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('auth:isUserSignedIn', () => auth.isUserSignedIn())
 
+  ipcMain.handle('auth:logout', async () => await auth.logout())
+
   ipcMain.handle('auth:getServers', () => auth.getServers())
 
   ipcMain.handle('auth:selectServer', (_, server: PlexServer) => auth.selectServer(server))
@@ -189,9 +191,9 @@ function startApi(): void {
   const binaryName = process.platform === 'win32' ? 'api.exe' : 'api'
   const apiPath = is.dev
     ? join(
-        __dirname,
-        `../../python-backend/.venv/${process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'}`
-      )
+      __dirname,
+      `../../python-backend/.venv/${process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'}`
+    )
     : join(process.resourcesPath, 'api', binaryName)
 
   const args = is.dev ? [join(__dirname, '../../python-backend/entry.py')] : []

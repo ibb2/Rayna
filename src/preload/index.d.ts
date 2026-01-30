@@ -15,6 +15,7 @@ declare global {
         checkPin: () => Promise<any>
         checkPinStatus: (id: string) => Promise<any>
         isUserSignedIn: () => Promise<boolean>
+        logout: () => Promise<boolean>
         getServers: () => Promise<any[]>
         selectServer: (server: any) => Promise<void>
         getUserSelectedServer: () => Promise<any | null>
