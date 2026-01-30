@@ -1,15 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from 'react'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem
-} from './ui/sidebar'
+import { Sidebar, SidebarContent } from './ui/sidebar'
 import { NavMain } from './nav-main'
-import { AudioWaveform, Heart, Home, Music } from 'lucide-react'
+import { Heart, Home, Music } from 'lucide-react'
 
 const data = {
   user: {
@@ -110,7 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      {/*<SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
@@ -123,8 +116,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
+      </SidebarHeader>*/}
+      <SidebarContent className="mt-2.5">
         <NavMain items={data.navMain} />
         {/*<NavDocuments items={data.documents} />*/}
         {/*<NavSecondary items={data.navSecondary} className="mt-auto" /> */}
