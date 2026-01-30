@@ -14,11 +14,30 @@ import {
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
 import { Icon } from '../ui/Icon'
+import { useQuery } from '@tanstack/react-query'
 
 export function TopBar() {
   const router = useRouter()
   const canGoBack = useCanGoBack()
   const routerState = useRouterState()
+
+  // Queries
+  const { isPending, error, data } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: async () => {
+      const accessToken = await window.api.auth.getUserAccessToken()
+
+      const response = await fetch(`https://plex.tv/api/v2/user?X-Plex-Token=${accessToken}`, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) throw new Error('Network response was not ok')
+      return response.json()
+    }
+  })
 
   // Check if we can go forward by comparing current index with history length
   const canGoForward =
@@ -36,6 +55,14 @@ export function TopBar() {
       })
     }
     console.log('Logged out')
+  }
+
+  if (isPending) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>
   }
 
   return (
@@ -74,7 +101,7 @@ export function TopBar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="mb-1">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src={data.thumb} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>

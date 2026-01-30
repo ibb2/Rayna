@@ -230,6 +230,7 @@ class Authentication {
     return servers
   }
 
+
   public async selectServer(server: PlexServer) {
     this.selectedServer = server
     this.store.set('selectedServer', JSON.stringify(this.selectedServer))
