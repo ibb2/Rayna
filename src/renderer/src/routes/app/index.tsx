@@ -120,7 +120,7 @@ export default function Home() {
                 to={`/app/album/$ratingKey`}
                 params={{ ratingKey: album.ratingKey }}
               >
-                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-100 dark:hover:bg-zinc-800 p-2 rounded-md">
+                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-100 dark:hover:bg-zinc-800/30 dark:bg-transparent p-2 rounded-md">
                   <CardHeader className="p-0">
                     <img
                       src={album.thumb}
@@ -148,7 +148,7 @@ export default function Home() {
                 to={`/app/album/$ratingKey`}
                 params={{ ratingKey: album.ratingKey }}
               >
-                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800 p-2 rounded-md">
+                <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800/30 dark:bg-transparent p-2 rounded-md">
                   <CardHeader className="p-0">
                     <img
                       src={album.thumb}
@@ -178,7 +178,7 @@ export default function Home() {
               >
                 <Card
                   key={playlist.id}
-                  className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800 p-2 rounded-md"
+                  className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-zinc-800/30 dark:bg-transparent p-2 rounded-md"
                 >
                   <CardHeader className="p-0">
                     <img
