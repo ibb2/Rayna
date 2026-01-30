@@ -57,12 +57,60 @@ code {
 /* Scroll button */
 .carousel {
   flex: 1;
-  anchor-name: --homepage-carousel;
+  anchor-name: --carousel-recently-played;
+}
+
+.carouselRecentlyAdded {
+  flex: 1;
+  anchor-name: --carousel-recently-added;
+}
+
+.carouselRecommended {
+  flex: 1;
+  anchor-name: --carousel-recommended;
 }
 
 .carousel::scroll-button(*) {
   position: absolute;
-  position-anchor: --homepage-carousel;
+  position-anchor: --carousel-recently-played;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  align-self: anchor-center;
+  border: 0;
+  font-size: 2rem;
+  background: #18181b;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+  width: 30px;
+  height: 30px;
+  padding-bottom: 10px;
+}
+
+.carouselRecentlyAdded::scroll-button(*) {
+  position: absolute;
+  position-anchor: --carousel-recently-added;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  align-self: anchor-center;
+  border: 0;
+  font-size: 2rem;
+  background: #18181b;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+  width: 30px;
+  height: 30px;
+  padding-bottom: 10px;
+}
+
+.carouselRecommended::scroll-button(*) {
+  position: absolute;
+  position-anchor: --carousel-recommended;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease-in-out;
@@ -85,12 +133,42 @@ code {
   pointer-events: auto !important;
 }
 
+.carouselRecentlyAdded:hover::scroll-button(*) {
+  opacity: 1 !important;
+  background: #18181b;
+  pointer-events: auto !important;
+}
+
+.carouselRecommended:hover::scroll-button(*) {
+  opacity: 1 !important;
+  background: #18181b;
+  pointer-events: auto !important;
+}
+
 .carousel::scroll-button(*):hover {
   opacity: 1 !important;
   background: oklch(0.27 0.01 286);
 }
 
+.carouselRecentlyAdded::scroll-button(*):hover {
+  opacity: 1 !important;
+  background: oklch(0.27 0.01 286);
+}
+
+.carouselRecommended::scroll-button(*):hover {
+  opacity: 1 !important;
+  background: oklch(0.27 0.01 286);
+}
+
 .carousel::scroll-button(*):disabled {
+  display: none !important;
+}
+
+.carouselRecentlyAdded::scroll-button(*):disabled {
+  display: none !important;
+}
+
+.carouselRecommended::scroll-button(*):disabled {
   display: none !important;
 }
 
@@ -100,7 +178,31 @@ code {
   padding-right: 12px;
 }
 
+.carouselRecentlyAdded::scroll-button(left) {
+  content: '🢐';
+  left: 10px;
+  padding-right: 12px;
+}
+
+.carouselRecommended::scroll-button(left) {
+  content: '🢐';
+  left: 10px;
+  padding-right: 12px;
+}
+
 .carousel::scroll-button(right) {
+  content: '🢒';
+  right: 4px;
+  padding-left: 12px;
+}
+
+.carouselRecentlyAdded::scroll-button(right) {
+  content: '🢒';
+  right: 4px;
+  padding-left: 12px;
+}
+
+.carouselRecommended::scroll-button(right) {
   content: '🢒';
   right: 4px;
   padding-left: 12px;

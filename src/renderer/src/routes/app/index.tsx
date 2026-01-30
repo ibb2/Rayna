@@ -141,7 +141,7 @@ export default function Home() {
         {/* Recently Added */}
         <div>
           <h2 className="text-2xl font-semibold mb-4">Recently Added</h2>
-          <div className="flex flex-row overflow-x-auto overflow-y-hidden pb-2 -ml-2 scrollbar-hidden scroll-smooth">
+          <div className="flex flex-row overflow-x-auto overflow-y-hidden pb-2 -ml-2 scrollbar-hidden scroll-smooth carouselRecentlyAdded">
             {queryRecentlyAddedAlbums.data?.map((album) => (
               <Link
                 key={album.id}
@@ -169,7 +169,7 @@ export default function Home() {
         {/* Recommended */}
         <div>
           <h2 className="text-2xl font-semibold mb-4">Recommended for You</h2>
-          <div className="flex flex-row overflow-x-scroll overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth">
+          <div className="flex flex-row overflow-x-scroll overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth carouselRecommended">
             {queryAllPlaylists.data.map((playlist) => (
               <Link
                 key={playlist.id}
