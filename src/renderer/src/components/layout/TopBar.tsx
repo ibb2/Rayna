@@ -3,6 +3,16 @@ import { Input } from '@/components/ui/input'
 import { useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { ModeToggle } from '../mode-toggle'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '../ui/dropdown-menu'
 
 export function TopBar() {
   const router = useRouter()
@@ -47,9 +57,30 @@ export function TopBar() {
       </div>
 
       <div className="flex gap-4">
-        {/* User profile or other actions */}
-        <ModeToggle />
         {/* <Link to={'/app/settings'}> */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="mb-1">
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="mb-1">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>
+                <ModeToggle />
+              </DropdownMenuItem>
+              <DropdownMenuItem>Billing</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Team</DropdownMenuItem>
+              <DropdownMenuItem>Subscription</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
         {/* <Settings className="w-5" /> Change back to UserProfile image */}
         {/* </Link> */}
       </div>
