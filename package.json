@@ -1,7 +1,7 @@
 {
   "name": "rayna",
   "version": "0.4.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "Rayna",
   "main": "./out/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",

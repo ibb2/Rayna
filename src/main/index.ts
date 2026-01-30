@@ -223,7 +223,10 @@ function startApi(): void {
   }
 
   try {
-    apiProcess = spawn(apiPath, args, { cwd, env: { ...process.env, API_PORT } })
+    apiProcess = spawn(apiPath, args, {
+      cwd,
+      env: { ...process.env, API_PORT: API_PORT!.toString() }
+    })
 
     apiProcess.stdout?.on('data', (data) => {
       const log = data.toString()
