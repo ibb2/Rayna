@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Spinner } from './ui/spinner'
 
-const API_HEALTH_URL = 'http://127.0.0.1:11222/health'
+const API_HEALTH_URL = 'http://127.0.0.1:34567/health'
 
 export function StartupLoading({ children }: { children: React.ReactNode }): React.ReactElement {
   const [isReady, setIsReady] = useState(false)
@@ -17,7 +17,25 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
     try {
       const response = await fetch(API_HEALTH_URL)
       if (response.ok) {
+        const accessToken = await window.api.auth.getUserAccessToken()
+        const server = await window.api.auth.getUserSelectedServer()
+
+        console.log('serverUrl:', server.connections)
+
+        const response = await fetch(`http://127.0.0.1:34567/init`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            serverUrl: server.connections[0].uri
+          })
+        })
+        await response.json()
+
         setIsReady(true)
+
         return
       }
     } catch (e: any) {
@@ -46,6 +64,7 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
 
   useEffect(() => {
     checkApi()
+    console.log('isReady:', isReady)
   }, [])
 
   const handleRetry = () => {

@@ -22,7 +22,7 @@ export default function Home() {
   const queryTopEight = useQuery({
     queryKey: ['top-eight'],
     queryFn: () =>
-      fetch('http://127.0.0.1:11222/music/library/top-eight').then((res) => {
+      fetch('http://127.0.0.1:34567/music/library/top-eight').then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       }),
@@ -33,7 +33,7 @@ export default function Home() {
   const queryRecentlyPlayedAlbums = useQuery({
     queryKey: ['albums'],
     queryFn: () =>
-      fetch('http://127.0.0.1:11222/music/albums/recently-played').then((res) => {
+      fetch('http://127.0.0.1:34567/music/albums/recently-played').then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       }),
@@ -43,7 +43,7 @@ export default function Home() {
   const queryRecentlyAddedAlbums = useQuery({
     queryKey: ['album'],
     queryFn: () =>
-      fetch('http://127.0.0.1:11222/music/albums/recently-added').then((res) => {
+      fetch('http://127.0.0.1:34567/music/albums/recently-added').then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       }),
@@ -53,7 +53,7 @@ export default function Home() {
   const queryAllPlaylists = useQuery({
     queryKey: ['playlist'],
     queryFn: () =>
-      fetch('http://127.0.0.1:11222/music/playlists/all').then((res) => {
+      fetch('http://127.0.0.1:34567/music/playlists/all').then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       }),
@@ -85,7 +85,7 @@ export default function Home() {
     )
 
   return (
-    <div className="flex flex-col overflow-y-scroll gap-2 p-6 mb-20">
+    <div className="flex flex-col overflow-y-scroll scrollbar-hidden gap-2 p-6 mb-20">
       {/* Quick Access Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 mb-8 w-full">
         {queryTopEight.data.map((x) => (

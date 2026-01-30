@@ -5,6 +5,8 @@ import icon from '../../resources/icon.png?asset'
 import { DatabaseManager } from './database'
 import { PlexServer } from './types'
 
+const API_PORT = process.env.API_PORT || 34567
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit()
@@ -26,7 +28,6 @@ if (!gotTheLock) {
 // Actually, standard pattern is to quit immediately if no lock.
 // Moving the rest of the logic inside the lock check or just above.
 
-
 function createWindow(): BrowserWindow {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -38,7 +39,7 @@ function createWindow(): BrowserWindow {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
-    },
+    }
     // Customize title bar
     // titleBarStyle: 'hidden',
     // ...(process.platform !== 'darwin' ? { titleBarOverlay: true } : {})
@@ -188,9 +189,9 @@ function startApi(): void {
   const binaryName = process.platform === 'win32' ? 'api.exe' : 'api'
   const apiPath = is.dev
     ? join(
-      __dirname,
-      `../../python-backend/.venv/${process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'}`
-    )
+        __dirname,
+        `../../python-backend/.venv/${process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python'}`
+      )
     : join(process.resourcesPath, 'api', binaryName)
 
   const args = is.dev ? [join(__dirname, '../../python-backend/entry.py')] : []
@@ -222,7 +223,10 @@ function startApi(): void {
   }
 
   try {
-    apiProcess = spawn(apiPath, args, { cwd })
+    apiProcess = spawn(apiPath, args, {
+      cwd,
+      env: { ...process.env, API_PORT: API_PORT!.toString() }
+    })
 
     apiProcess.stdout?.on('data', (data) => {
       const log = data.toString()
@@ -254,8 +258,6 @@ function startApi(): void {
     apiLogs += log
   }
 }
-
-
 
 // Ensure startApi is called
 

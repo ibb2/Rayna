@@ -32,7 +32,7 @@ export const Route = createFileRoute('/')({
 
     const accessToken = await window.api.auth.getUserAccessToken()
     try {
-      const response = await fetch(`http://127.0.0.1:11222/init`, {
+      const response = await fetch(`http://127.0.0.1:34567/init`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
