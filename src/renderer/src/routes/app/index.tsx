@@ -85,7 +85,7 @@ export default function Home() {
     )
 
   return (
-    <div className="flex flex-col overflow-y-scroll gap-2 p-6 mb-20">
+    <div className="flex flex-col overflow-y-scroll scrollbar-hidden gap-2 p-6 mb-20">
       {/* Quick Access Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 mb-8 w-full">
         {queryTopEight.data.map((x) => (
