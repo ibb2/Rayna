@@ -54,6 +54,58 @@ code {
   flex: 1;
 }
 
+/* Scroll button */
+.carousel {
+  flex: 1;
+  anchor-name: --homepage-carousel;
+}
+
+.carousel::scroll-button(*) {
+  position: absolute;
+  position-anchor: --homepage-carousel;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  align-self: anchor-center;
+  border: 0;
+  font-size: 2rem;
+  background: #18181b;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+  width: 30px;
+  height: 30px;
+  padding-bottom: 10px;
+}
+
+.carousel:hover::scroll-button(*) {
+  opacity: 1 !important;
+  background: #18181b;
+  pointer-events: auto !important;
+}
+
+.carousel::scroll-button(*):hover {
+  opacity: 1 !important;
+  background: oklch(0.27 0.01 286);
+}
+
+.carousel::scroll-button(*):disabled {
+  display: none !important;
+}
+
+.carousel::scroll-button(left) {
+  content: '🢐';
+  left: 10px;
+  padding-right: 12px;
+}
+
+.carousel::scroll-button(right) {
+  content: '🢒';
+  right: 4px;
+  padding-left: 12px;
+}
+
 @theme {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
