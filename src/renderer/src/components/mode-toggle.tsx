@@ -23,14 +23,14 @@ export function ModeToggle() {
     return () => setTheme('dark')
   }, [setTheme])
   return (
-    <div className="flex items-center justify-between gap-x-2">
+    <div className="flex flex-row items-center justify-between">
       <div className="flex flex-row items-center gap-1">
-        <div className="flex items-center bg-black/5 dark:bg-white/5 rounded-lg">
+        <div className="flex items-center justify-around gap-1 bg-black/5 dark:bg-white/5 rounded-lg">
           <Toolbar.Button
             onClick={lightTheme}
             active={theme === 'light'}
             activeClassName="bg-black/5 dark:bg-white/5"
-            className="m-1 h-7"
+            className="m-1 mr-0 h-6"
           >
             <Icon name="Sun" className="size-3" />
           </Toolbar.Button>
@@ -38,7 +38,7 @@ export function ModeToggle() {
             onClick={darkTheme}
             active={theme === 'dark'}
             activeClassName="bg-black/5 dark:bg-white/5"
-            className="m-1 h-7"
+            className="m-1 ml-0 h-6"
           >
             <Icon name="Moon" className="size-3" />
           </Toolbar.Button>
@@ -46,7 +46,7 @@ export function ModeToggle() {
         <Toolbar.Button
           onClick={() => setTheme('system')}
           active={theme === 'system'}
-          className="hover:bg-black/5 dark:hover:bg-white/5 h-7"
+          className="hover:bg-black/5 dark:hover:bg-white/5 h-8"
         >
           <Icon name="Monitor" className="size-3" />
         </Toolbar.Button>

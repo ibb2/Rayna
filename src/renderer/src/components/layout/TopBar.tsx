@@ -89,7 +89,7 @@ export function TopBar() {
             </DropdownMenuGroup>*/}
             <DropdownMenuGroup>
               <DropdownMenuLabel>Personalisation</DropdownMenuLabel>
-              <DropdownMenuItem className="flex flex-row justify-between w-full">
+              <DropdownMenuItem className="flex flex-row justify-between w-full gap-8">
                 <div className="flex items-center gap-2">
                   <Icon name="Moon" />
                   <span>Theme</span>
