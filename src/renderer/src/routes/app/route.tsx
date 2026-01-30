@@ -1,6 +1,7 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { PlayerFooter } from '@/components/layout/PlayerFooter'
 import { SiteHeader } from '@/components/site-header'
+import { StartupLoading } from '@/components/StartupLoading'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 
@@ -9,9 +10,8 @@ export const Route = createFileRoute('/app')({
 })
 
 function AppLayoutComponent() {
-
   return (
-    // <StartupLoading>
+    <StartupLoading>
       <div className="flex flex-col h-screen w-screen">
         <div className="flex-1 min-h-0 overflow-hidden relative">
           <SidebarProvider
@@ -27,6 +27,7 @@ function AppLayoutComponent() {
         </div>
         <PlayerFooter />
       </div>
-    // </StartupLoading>
+      //{' '}
+    </StartupLoading>
   )
 }

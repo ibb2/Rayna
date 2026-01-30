@@ -21,7 +21,7 @@ export function PlayerFooter() {
   const { data: status, refetch } = useQuery({
     queryKey: ['playerStatus'],
     queryFn: () =>
-      fetch('http://127.0.0.1:11222/player/status').then((res) => {
+      fetch('http://127.0.0.1:34567/player/status').then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       }),
@@ -49,36 +49,36 @@ export function PlayerFooter() {
 
   const handlePlayPause = async () => {
     if (status?.is_playing) {
-      await fetch('http://127.0.0.1:11222/player/pause', { method: 'POST' })
+      await fetch('http://127.0.0.1:34567/player/pause', { method: 'POST' })
     } else {
-      await fetch('http://127.0.0.1:11222/player/play', { method: 'POST' })
+      await fetch('http://127.0.0.1:34567/player/play', { method: 'POST' })
     }
     refetch()
   }
 
   const handleNext = async () => {
-    await fetch('http://127.0.0.1:11222/player/next', { method: 'POST' })
+    await fetch('http://127.0.0.1:34567/player/next', { method: 'POST' })
     refetch()
   }
 
   const handlePrev = async () => {
-    await fetch('http://127.0.0.1:11222/player/prev', { method: 'POST' })
+    await fetch('http://127.0.0.1:34567/player/prev', { method: 'POST' })
     refetch()
   }
 
   const handleSeek = async (pos: number) => {
-    await fetch(`http://127.0.0.1:11222/player/seek/${pos}`)
+    await fetch(`http://127.0.0.1:34567/player/seek/${pos}`)
     setPosition(pos)
     refetch()
   }
 
   const handleVolume = async (newVolume: number) => {
-    await fetch(`http://127.0.0.1:11222/player/volume/${newVolume}`)
+    await fetch(`http://127.0.0.1:34567/player/volume/${newVolume}`)
     refetch()
   }
 
   const handleMute = async () => {
-    await fetch(`http://127.0.0.1:11222/player/volume/mute/${!mute}`)
+    await fetch(`http://127.0.0.1:34567/player/volume/mute/${!mute}`)
     toggleMute(!mute)
     refetch()
   }

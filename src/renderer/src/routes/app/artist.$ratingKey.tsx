@@ -16,7 +16,7 @@ export function ArtistPage() {
   const queryArtist = useQuery({
     queryKey: ['artist', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:11222/music/artist/${Number(ratingKey)}`).then((res) => {
+      fetch(`http://127.0.0.1:34567/music/artist/${Number(ratingKey)}`).then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       })
@@ -24,7 +24,7 @@ export function ArtistPage() {
   const queryArtistAlbums = useQuery({
     queryKey: ['artistAlbum', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:11222/music/artist/${Number(ratingKey)}/albums`).then((res) => {
+      fetch(`http://127.0.0.1:34567/music/artist/${Number(ratingKey)}/albums`).then((res) => {
         if (!res.ok) throw new Error('Network response was not ok')
         return res.json()
       })
@@ -32,7 +32,7 @@ export function ArtistPage() {
   const queryArtistPopularTracks = useQuery({
     queryKey: ['artistPopularTrack', ratingKey],
     queryFn: () =>
-      fetch(`http://127.0.0.1:11222/music/artist/${Number(ratingKey)}/popular-tracks`).then(
+      fetch(`http://127.0.0.1:34567/music/artist/${Number(ratingKey)}/popular-tracks`).then(
         (res) => {
           if (!res.ok) throw new Error('Network response was not ok')
           return res.json()
@@ -99,16 +99,16 @@ export function ArtistPage() {
               key={track.id}
               className="flex items-center gap-4 px-4 py-3 rounded group hover:bg-slate-200/50 transition-colors cursor-pointer"
             >
-            <div className="text-center w-8 group-hover:hidden">{index + 1}</div>
-            <button
-              className="hidden group-hover:block"
-              onClick={() => {
-                fetch(`http://127.0.0.1:11222/music/play/track/${track.ratingKey}`)
-              }}
-            >
-            <Play size={16} className="text-shadow-black w-8" fill="black" />
-            </button>              
-            <div className="flex-1">
+              <div className="text-center w-8 group-hover:hidden">{index + 1}</div>
+              <button
+                className="hidden group-hover:block"
+                onClick={() => {
+                  fetch(`http://127.0.0.1:34567/music/play/track/${track.ratingKey}`)
+                }}
+              >
+                <Play size={16} className="text-shadow-black w-8" fill="black" />
+              </button>
+              <div className="flex-1">
                 <div className="">{track.title}</div>
                 <div className="text-zinc-400 text-sm">
                   {Intl.NumberFormat('en-US', {
