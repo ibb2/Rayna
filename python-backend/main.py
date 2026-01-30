@@ -1,3 +1,4 @@
+import time
 from collections import deque
 from datetime import datetime
 from typing import Annotated, Union, cast
@@ -11,8 +12,6 @@ from plexapi.server import PlexServer
 from pydantic import BaseModel
 
 from player import AudioPlayer
-
-import time
 
 start = time.time()
 
@@ -78,7 +77,6 @@ def get_player() -> AudioPlayer:
     if player is None:
         raise HTTPException(status_code=400, detail="Player is not initialized yet.")
     return player
-   
 
 
 @app.get("/music/albums/all")
@@ -225,7 +223,7 @@ def read_artist_popular_tracks(
                 "title": t.title,
                 "duration": t.duration,
                 "ratingCount": t.ratingCount,
-                "ratingKey": t.ratingKey
+                "ratingKey": t.ratingKey,
             }
             for t in artist_popular_tracks
         ],
@@ -442,21 +440,27 @@ def player_seek(pos: int, player: Annotated[AudioPlayer, Depends(get_player)]):
     player.seek(pos)
     return {"status": "seek"}
 
+
 @app.get("/player/volume/{volume}")
-def player_adjust_volume(volume: float, player: Annotated[AudioPlayer, Depends(get_player)]):
+def player_adjust_volume(
+    volume: float, player: Annotated[AudioPlayer, Depends(get_player)]
+):
     player.volume = volume
     return {"status": "volume"}
 
+
 @app.get("/player/volume/mute/{status}")
-def player_adjust_volume(status: bool, player: Annotated[AudioPlayer, Depends(get_player)]):
-    print(f'Volume before {player.volume}')
-    if (status is True):
+def player_adjust_volume(
+    status: bool, player: Annotated[AudioPlayer, Depends(get_player)]
+):
+    print(f"Volume before {player.volume}")
+    if status is True:
         player.volume_pre_mute = player.volume
         player.volume = 0.0
     else:
         player.volume = player.volume_pre_mute
         player.volume_pre_mute = 1.0
 
-    print(f'Volume after {player.volume}')
+    print(f"Volume after {player.volume}")
 
     return {"status": "volume"}

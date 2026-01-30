@@ -32,20 +32,31 @@ export function PlayerFooter() {
   const [mute, toggleMute] = useState(false)
 
   useEffect(() => {
-    if (status?.position) {
-      setPosition(status.position)
+    // Reset position immediately when the track changes to avoid showing old progress
+    setPosition(0)
+  }, [status?.current_track?.ratingKey])
+
+  useEffect(() => {
+    if (status?.position !== undefined && status.is_playing) {
+      // Only sync with backend position if it's "fresh" (i.e. we have a duration)
+      // This prevents jumping back to old position if the backend hasn't updated its status object yet
+      if (status.duration > 0) {
+        setPosition(status.position)
+      }
     }
-  }, [status?.position])
+  }, [status?.position, status?.duration])
 
   useEffect(() => {
     let interval: NodeJS.Timeout
-    if (status?.is_playing) {
+    // Only run optimistic timer if we are playing AND we have a valid duration
+    // This avoids progressing before the track is actually loaded and ready
+    if (status?.is_playing && status?.duration && status.duration > 0) {
       interval = setInterval(() => {
         setPosition((prev) => prev + 0.1)
       }, 100)
     }
     return () => clearInterval(interval)
-  }, [status?.is_playing])
+  }, [status?.is_playing, status?.duration])
 
   const handlePlayPause = async () => {
     if (status?.is_playing) {
