@@ -201,6 +201,18 @@ class Authentication {
     return false
   }
 
+  public async logout(): Promise<boolean> {
+    try {
+      this.store.delete('plexUserAccessToken')
+      this.store.delete('plexCode')
+      this.plexUserAccessToken = ''
+      this.plexCode = ''
+      return true
+    } catch {
+      return false
+    }
+  }
+
   public async getServers(): Promise<PlexServer[]> {
     const url =
       'https://clients.plex.tv/api/v2/resources?includeHttps=1&includeRelay=1&includeIPv6=1'
@@ -217,6 +229,7 @@ class Authentication {
     const servers: PlexServer[] = data.filter((s) => s.product == 'Plex Media Server')
     return servers
   }
+
 
   public async selectServer(server: PlexServer) {
     this.selectedServer = server

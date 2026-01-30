@@ -78,6 +78,7 @@ def get_player() -> AudioPlayer:
     if player is None:
         raise HTTPException(status_code=400, detail="Player is not initialized yet.")
     return player
+   
 
 
 @app.get("/music/albums/all")

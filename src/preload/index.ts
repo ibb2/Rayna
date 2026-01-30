@@ -15,6 +15,7 @@ const api = {
     checkPin: () => ipcRenderer.invoke('auth:checkPin'),
     checkPinStatus: (id: string) => ipcRenderer.invoke('auth:checkPinStatus', id),
     isUserSignedIn: () => ipcRenderer.invoke('auth:isUserSignedIn'),
+    logout: () => ipcRenderer.invoke('auth:logout'),
     getServers: () => ipcRenderer.invoke('auth:getServers'),
     selectServer: (server: PlexServer) => ipcRenderer.invoke('auth:selectServer', server),
     isServerSelected: () => ipcRenderer.invoke('auth:isServerSelected'),

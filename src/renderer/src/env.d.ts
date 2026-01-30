@@ -7,7 +7,8 @@ interface Window {
       set: (key: string, value: any) => Promise<void>
     }
     auth: {
-      isUserSignedIn(): () => boolean
+      isUserSignedIn: () => Promise<boolean>
+      logout: () => Promise<boolean>
       generateClientIdentifier: () => Promise<string>
       generateKeyPair: () => Promise<[string, string]>
       generatePin: () => Promise<any>
