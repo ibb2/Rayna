@@ -78,7 +78,7 @@ export function TopBar() {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="mb-1">
+          <DropdownMenuContent className="mb-1 mr-2" sideOffset={8}>
             {/*<DropdownMenuGroup>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuItem>Profile</DropdownMenuItem>
