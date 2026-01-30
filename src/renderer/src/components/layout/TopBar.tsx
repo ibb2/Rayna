@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
+import { Icon } from '../ui/Icon'
 
 export function TopBar() {
   const router = useRouter()
@@ -66,18 +67,31 @@ export function TopBar() {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="mb-1">
-            <DropdownMenuGroup>
+            {/*<DropdownMenuGroup>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>
                 <ModeToggle />
               </DropdownMenuItem>
               <DropdownMenuItem>Billing</DropdownMenuItem>
-            </DropdownMenuGroup>
+            </DropdownMenuGroup>*/}
             <DropdownMenuGroup>
+              <DropdownMenuLabel>Personalisation</DropdownMenuLabel>
+              <DropdownMenuItem className="flex flex-row gap-2">
+                <Icon name="Moon" />
+                <ModeToggle />
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            {/* <DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Team</DropdownMenuItem>
               <DropdownMenuItem>Subscription</DropdownMenuItem>
+            </DropdownMenuGroup> */}
+            <DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Icon name="LogOut"></Icon>Logout
+              </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
