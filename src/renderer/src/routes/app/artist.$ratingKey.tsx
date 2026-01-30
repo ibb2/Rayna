@@ -50,7 +50,7 @@ export function ArtistPage() {
     )
 
   return (
-    <div className="flex flex-col overflow-y-scroll h-full p-6 mb-20">
+    <div className="flex flex-col overflow-y-scroll scrollbar-hidden h-full p-6 mb-20">
       {/* Artist Header */}
       <div className="flex gap-6 mb-6">
         <img
