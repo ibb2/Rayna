@@ -1,3 +1,4 @@
+import Libraries from '@/components/setup/libraries'
 import SelectServer from '@/components/setup/server'
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { createFileRoute } from '@tanstack/react-router'
@@ -31,9 +32,11 @@ function RouteComponent() {
     <Carousel className="w-full max-w-[12rem] sm:max-w-xs" setApi={setApi}>
       <CarouselContent className='w-full'>
         <CarouselItem>    
-            <SelectServer progress={progressForwards} />
+          <SelectServer progress={progressForwards} />
         </CarouselItem>
-        <CarouselItem>...</CarouselItem>
+        <CarouselItem>
+          <Libraries progress={progressBackwards} />
+        </CarouselItem>
         <CarouselItem>...</CarouselItem>
       </CarouselContent>
       <CarouselPrevious />

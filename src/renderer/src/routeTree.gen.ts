@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SetupRouteImport } from './routes/setup'
 import { Route as ServerRouteImport } from './routes/server'
-import { Route as LibrariesRouteImport } from './routes/libraries'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -29,11 +28,6 @@ const SetupRoute = SetupRouteImport.update({
 const ServerRoute = ServerRouteImport.update({
   id: '/server',
   path: '/server',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LibrariesRoute = LibrariesRouteImport.update({
-  id: '/libraries',
-  path: '/libraries',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -81,7 +75,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/libraries': typeof LibrariesRoute
   '/server': typeof ServerRoute
   '/setup': typeof SetupRoute
   '/app/settings': typeof AppSettingsRoute
@@ -93,7 +86,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/libraries': typeof LibrariesRoute
   '/server': typeof ServerRoute
   '/setup': typeof SetupRoute
   '/app/settings': typeof AppSettingsRoute
@@ -107,7 +99,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/libraries': typeof LibrariesRoute
   '/server': typeof ServerRoute
   '/setup': typeof SetupRoute
   '/app/settings': typeof AppSettingsRoute
@@ -122,7 +113,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/libraries'
     | '/server'
     | '/setup'
     | '/app/settings'
@@ -134,7 +124,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/libraries'
     | '/server'
     | '/setup'
     | '/app/settings'
@@ -147,7 +136,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/libraries'
     | '/server'
     | '/setup'
     | '/app/settings'
@@ -161,7 +149,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  LibrariesRoute: typeof LibrariesRoute
   ServerRoute: typeof ServerRoute
   SetupRoute: typeof SetupRoute
 }
@@ -180,13 +167,6 @@ declare module '@tanstack/react-router' {
       path: '/server'
       fullPath: '/server'
       preLoaderRoute: typeof ServerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/libraries': {
-      id: '/libraries'
-      path: '/libraries'
-      fullPath: '/libraries'
-      preLoaderRoute: typeof LibrariesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -272,7 +252,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  LibrariesRoute: LibrariesRoute,
   ServerRoute: ServerRoute,
   SetupRoute: SetupRoute,
 }

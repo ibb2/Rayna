@@ -79,6 +79,33 @@ def get_player() -> AudioPlayer:
     return player
 
 
+@app.get("/library/sections/all")
+def get_all_library_sections(plex: Annotated[PlexServer, Depends(get_plex)]):
+    sections = plex.library.sections()
+    print(f'All sections \n ${sections}')
+    # musicSection = next((x for x in sections if x.type == "artist"), None)
+    # if musicSection is None:
+    #     raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+
+    # albums = musicSection.albums()
+
+    return [
+        {
+            "uuid": s.uuid,
+            "key": s.key,
+            "title": s.title,
+            "year": s.year,
+            "artist": s.parentTitle,
+            "ratingKey": s.ratingKey,
+            "thumb": plex.url(s.thumb, includeToken=True),
+            "allowSync": s.allowSync,
+            "art": plex.url(s.art, includeToken=True),
+            "composite": plex.url(s.composite, includeToken=True),
+
+        }
+        for s in sections 
+    ]
+
 @app.get("/music/albums/all")
 def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()

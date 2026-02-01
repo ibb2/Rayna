@@ -260,6 +260,8 @@ class Authentication {
     return null
   }
 
+
+
   public async getUserAccessToken(): Promise<string> {
     return this.plexUserAccessToken
   }
