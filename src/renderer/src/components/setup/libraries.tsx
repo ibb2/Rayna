@@ -10,8 +10,11 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { useQuery } from "@tanstack/react-query";
 import { BadgeCheckIcon, Check, ChevronRightIcon, Music } from "lucide-react";
+import { useState } from "react";
 
 export default function Libraries({ progress }) {
+  const [selectedLibraries, setSelectedLibraries] = useState<string[]>([]);
+
   const { isPending, error, data } = useQuery({
     queryKey: ["libraries"],
     queryFn: async () => {
@@ -22,6 +25,19 @@ export default function Libraries({ progress }) {
     staleTime: 30 * 60 * 1000,
     retry: true,
   });
+
+  const selectLibrary = (id: string) => {
+    if (selectedLibraries.includes(id)) {
+      const selectedItemRemoved = selectedLibraries.filter((s) => {
+        return s !== id;
+      });
+      setSelectedLibraries([...selectedItemRemoved]);
+
+      return;
+    }
+
+    setSelectedLibraries([...selectedLibraries, id]);
+  };
 
   if (isPending)
     return (
@@ -43,7 +59,16 @@ export default function Libraries({ progress }) {
                 className="flex w-full max-w-md flex-col gap-6"
                 key={library.uuid}
               >
-                <Item variant="outline" size="sm" asChild>
+                <Item
+                  variant={
+                    selectedLibraries.includes(library.uuid)
+                      ? "muted"
+                      : "outline"
+                  }
+                  size="sm"
+                  asChild
+                  onClick={() => selectLibrary(library.uuid)}
+                >
                   <a href="#">
                     <ItemMedia>
                       <Music className="size-5" />
@@ -53,7 +78,9 @@ export default function Libraries({ progress }) {
                       <ItemDescription>{library.type}</ItemDescription>
                     </ItemContent>
                     <ItemActions>
-                      <Check className="size-4" />
+                      {selectedLibraries.includes(library.uuid) && (
+                        <Check className="size-4" />
+                      )}
                     </ItemActions>
                   </a>
                 </Item>
