@@ -49,7 +49,7 @@ export const Route = createFileRoute('/')({
     }
 
     throw redirect({
-      to: '/app'
+      to: '/setup' //Change back to /app
     })
   }
 })
