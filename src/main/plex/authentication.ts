@@ -205,8 +205,10 @@ class Authentication {
     try {
       this.store.delete('plexUserAccessToken')
       this.store.delete('plexCode')
+      this.store.delete("selectedServer")
       this.plexUserAccessToken = ''
       this.plexCode = ''
+      this.selectedServer = null
       return true
     } catch {
       return false
