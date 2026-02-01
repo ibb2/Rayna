@@ -91,20 +91,26 @@ def get_all_library_sections(plex: Annotated[PlexServer, Depends(get_plex)]):
 
     return [
         {
-            "uuid": s.uuid,
-            "key": s.key,
-            "title": s.title,
-            "year": s.year,
-            "artist": s.parentTitle,
-            "ratingKey": s.ratingKey,
-            "thumb": plex.url(s.thumb, includeToken=True),
+            "agent": s.agent,
             "allowSync": s.allowSync,
-            "art": plex.url(s.art, includeToken=True),
-            "composite": plex.url(s.composite, includeToken=True),
-
+            "art": plex.url(s.art, includeToken=True) if s.art else None,
+            "composite": plex.url(s.composite, includeToken=True) if s.composite else None,
+            "createdAt": s.createdAt,
+            "filters": s.filters,
+            "key": s.key,
+            "language": s.language,
+            "locations": s.locations,
+            "refreshing": s.refreshing,
+            "scanner": s.scanner,
+            "thumb": plex.url(s.thumb, includeToken=True) if s.thumb else None,
+            "title": s.title,
+            "type": s.type,
+            "updatedAt": s.updatedAt,
+            "uuid": s.uuid,
         }
-        for s in sections 
+        for s in sections
     ]
+
 
 @app.get("/music/albums/all")
 def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
