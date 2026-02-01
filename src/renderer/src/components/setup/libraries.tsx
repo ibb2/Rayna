@@ -26,17 +26,17 @@ export default function Libraries({ progress }) {
     retry: true,
   });
 
-  const selectLibrary = (id: string) => {
-    if (selectedLibraries.includes(id)) {
+  const selectLibrary = (key: string) => {
+    if (selectedLibraries.includes(key)) {
       const selectedItemRemoved = selectedLibraries.filter((s) => {
-        return s !== id;
+        return s !== key;
       });
       setSelectedLibraries([...selectedItemRemoved]);
 
       return;
     }
 
-    setSelectedLibraries([...selectedLibraries, id]);
+    setSelectedLibraries([...selectedLibraries, key]);
   };
 
   if (isPending)
