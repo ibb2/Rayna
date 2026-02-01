@@ -55,13 +55,12 @@ function RouteComponent() {
           <CarouselItem>
             <Libraries progress={progressBackwards} />
           </CarouselItem>
-          <CarouselItem>...</CarouselItem>
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
       <div className="flex flex-row gap-1 text-muted-foreground py-2 text-center text-sm">
-        {[1, 2, 3].map((item: number, index) => (
+        {[1, 2].map((item: number, index) => (
           <div
             className={cn(
               "h-2 w-8 rounded-2xl",
