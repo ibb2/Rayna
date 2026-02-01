@@ -38,25 +38,29 @@ export default function Libraries({ progress }) {
       <div>
         {data.map((library) => (
           <>
-            <div
-              className="flex w-full max-w-md flex-col gap-6"
-              key={library.uuid}
-            >
-              <Item variant="outline" size="sm" asChild>
-                <a href="#">
-                  <ItemMedia>
-                    <Music className="size-5" />
-                  </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle>{library.title}</ItemTitle>
-                    <ItemDescription>{library.type}</ItemDescription>
-                  </ItemContent>
-                  <ItemActions>
-                    <Check className="size-4" />
-                  </ItemActions>
-                </a>
-              </Item>
-            </div>
+            {library.type === "artist" ? (
+              <div
+                className="flex w-full max-w-md flex-col gap-6"
+                key={library.uuid}
+              >
+                <Item variant="outline" size="sm" asChild>
+                  <a href="#">
+                    <ItemMedia>
+                      <Music className="size-5" />
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle>{library.title}</ItemTitle>
+                      <ItemDescription>{library.type}</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                      <Check className="size-4" />
+                    </ItemActions>
+                  </a>
+                </Item>
+              </div>
+            ) : (
+              <div></div>
+            )}
           </>
         ))}
       </div>
