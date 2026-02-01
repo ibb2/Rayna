@@ -143,7 +143,7 @@ export default function Home() {
             {/* Scrollable container */}
             <div
               ref={recentRef}
-              className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth gap-4 px-2"
+              className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth gap-1 px-2"
             >
               {queryRecentlyPlayedAlbums.data?.map((album) => (
                 <Link
@@ -192,7 +192,7 @@ export default function Home() {
           <div className="relative group">
             <div
               ref={addedRef}
-              className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth gap-4 px-2"
+              className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth gap-1 px-2"
             >
               {queryRecentlyAddedAlbums.data?.map((album) => (
                 <Link
@@ -238,7 +238,7 @@ export default function Home() {
           <div className="relative group">
             <div
               ref={recommendedRef}
-              className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth gap-4 px-2"
+              className="flex flex-row overflow-x-auto overflow-y-hidden -ml-2 scrollbar-hidden scroll-smooth gap-1 px-2"
             >
               {queryAllPlaylists.data.map((playlist) => (
                 <Link
