@@ -39,6 +39,12 @@ export default function Libraries({ progress }) {
     setSelectedLibraries([...selectedLibraries, key]);
   };
 
+  const complete = () => {
+    if (selectedLibraries.length > 0) {
+      console.log("complete");
+    }
+  };
+
   if (isPending)
     return (
       <div className="flex items-center justify-center w-full h-full">
@@ -53,12 +59,9 @@ export default function Libraries({ progress }) {
       <p>Select your libraries</p>
       <div>
         {data.map((library) => (
-          <>
+          <div key={library.uuid}>
             {library.type === "artist" ? (
-              <div
-                className="flex w-full max-w-md flex-col gap-6"
-                key={library.uuid}
-              >
+              <div className="flex w-full max-w-md flex-col gap-6">
                 <Item
                   variant={
                     selectedLibraries.includes(library.uuid)
@@ -88,8 +91,9 @@ export default function Libraries({ progress }) {
             ) : (
               <div></div>
             )}
-          </>
+          </div>
         ))}
+        <Button onClick={complete}>Complete</Button>
       </div>
     </div>
   );
