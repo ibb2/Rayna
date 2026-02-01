@@ -41,7 +41,7 @@ function Auth() {
             // Wait a moment to show success message before redirecting
             setTimeout(() => {
               navigate({
-                to: '/server',
+                to: '/setup',
                 replace: true
               })
             }, 1500)

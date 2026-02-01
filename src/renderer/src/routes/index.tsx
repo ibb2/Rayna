@@ -19,14 +19,14 @@ export const Route = createFileRoute('/')({
 
     if (!hasUserSelectedAServer) {
       throw redirect({
-        to: '/server'
+        to: '/setup'
       })
     }
 
     const server: PlexServer | null = await window.api.auth.getUserSelectedServer()
     if (!server) {
       throw redirect({
-        to: '/server'
+        to: '/setup'
       })
     }
 

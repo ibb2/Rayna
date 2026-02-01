@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SetupRouteImport } from './routes/setup'
 import { Route as ServerRouteImport } from './routes/server'
+import { Route as LibrariesRouteImport } from './routes/libraries'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -19,9 +21,19 @@ import { Route as AppPlaylistRatingKeyRouteImport } from './routes/app/playlist.
 import { Route as AppArtistRatingKeyRouteImport } from './routes/app/artist.$ratingKey'
 import { Route as AppAlbumRatingKeyRouteImport } from './routes/app/album.$ratingKey'
 
+const SetupRoute = SetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServerRoute = ServerRouteImport.update({
   id: '/server',
   path: '/server',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibrariesRoute = LibrariesRouteImport.update({
+  id: '/libraries',
+  path: '/libraries',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -69,7 +81,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/libraries': typeof LibrariesRoute
   '/server': typeof ServerRoute
+  '/setup': typeof SetupRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
@@ -79,7 +93,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/libraries': typeof LibrariesRoute
   '/server': typeof ServerRoute
+  '/setup': typeof SetupRoute
   '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
   '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
@@ -91,7 +107,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/libraries': typeof LibrariesRoute
   '/server': typeof ServerRoute
+  '/setup': typeof SetupRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/app/album/$ratingKey': typeof AppAlbumRatingKeyRoute
@@ -104,7 +122,9 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/libraries'
     | '/server'
+    | '/setup'
     | '/app/settings'
     | '/app/'
     | '/app/album/$ratingKey'
@@ -114,7 +134,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/libraries'
     | '/server'
+    | '/setup'
     | '/app/settings'
     | '/app'
     | '/app/album/$ratingKey'
@@ -125,7 +147,9 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/libraries'
     | '/server'
+    | '/setup'
     | '/app/settings'
     | '/app/'
     | '/app/album/$ratingKey'
@@ -137,16 +161,32 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LibrariesRoute: typeof LibrariesRoute
   ServerRoute: typeof ServerRoute
+  SetupRoute: typeof SetupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/setup': {
+      id: '/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof SetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/server': {
       id: '/server'
       path: '/server'
       fullPath: '/server'
       preLoaderRoute: typeof ServerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/libraries': {
+      id: '/libraries'
+      path: '/libraries'
+      fullPath: '/libraries'
+      preLoaderRoute: typeof LibrariesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -232,7 +272,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LibrariesRoute: LibrariesRoute,
   ServerRoute: ServerRoute,
+  SetupRoute: SetupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
