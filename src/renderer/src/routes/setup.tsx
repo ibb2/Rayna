@@ -5,17 +5,11 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { PlexServer } from "@/types";
-import {
-  createFileRoute,
-  Navigate,
-  redirect,
-  useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/setup")({
@@ -28,7 +22,6 @@ function RouteComponent() {
   const [progression, setProgression] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
   const [load, onLoad] = useState(false);
   const [servers, setServers] = useState<PlexServer[]>([]);
   const [selectedServer, setSelectedServer] = useState<PlexServer | null>(null);
@@ -63,13 +56,6 @@ function RouteComponent() {
     }
   };
 
-  const progressBackwards = () => {
-    if (progression > 0) {
-      setProgression(progression - 1);
-      api?.scrollPrev();
-    }
-  };
-
   const complete = async () => {
     if (selectedLibraries.length > 0) {
       console.log("complete");
@@ -99,7 +85,6 @@ function RouteComponent() {
     if (!api) {
       return;
     }
-    setCount(api.scrollSnapList().length);
     setCurrent(api.selectedScrollSnap() + 1);
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1);
@@ -136,8 +121,6 @@ function RouteComponent() {
           </CarouselItem>
           <CarouselItem>
             <Libraries
-              progress={progressBackwards}
-              server={selectedServer}
               complete={complete}
               selectedLibraries={selectedLibraries}
               selectLibrary={selectLibrary}

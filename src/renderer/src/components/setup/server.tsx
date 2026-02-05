@@ -8,9 +8,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { PlexServer } from "@/types";
-import { useNavigate } from "@tanstack/react-router";
 import { Server } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function SelectServer({ progress, servers, selectServer }) {
   return (

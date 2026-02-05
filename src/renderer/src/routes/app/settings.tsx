@@ -1,6 +1,3 @@
-import Libraries from "@/components/settings/libraries";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Item,
   ItemActions,
@@ -9,21 +6,11 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Slider } from "@/components/ui/slider";
 import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { PlexServer } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Music, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -32,9 +19,6 @@ export const Route = createFileRoute("/app/settings")({
 });
 
 export function SettingsPage() {
-  const router = useRouter();
-  // const [volume, setVolume] = useState([70])
-  const [crossfade, setCrossfade] = useState([0]);
   const [selectedLibraries, setSelectedLibraries] = useState<any[] | null>(
     null,
   );

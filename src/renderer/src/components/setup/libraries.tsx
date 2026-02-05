@@ -9,12 +9,9 @@ import {
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 import { useQuery } from "@tanstack/react-query";
-import { BadgeCheckIcon, Check, ChevronRightIcon, Music } from "lucide-react";
-import { useState } from "react";
+import { Check, Music } from "lucide-react";
 
 export default function Libraries({
-  progress,
-  server,
   complete,
   selectedLibraries,
   selectLibrary,

@@ -9,7 +9,6 @@ export const Route = createFileRoute("/")({
   component: Index,
   beforeLoad: async () => {
     const isUserLoggedIn = await window.api.auth.isUserSignedIn();
-    const hasUserSelectedAServer = await window.api.auth.isServerSelected();
     const server: PlexServer | null =
       await window.api.auth.getUserSelectedServer();
 
@@ -19,35 +18,11 @@ export const Route = createFileRoute("/")({
       });
     }
 
-    // if (!hasUserSelectedAServer) {
-    //   throw redirect({
-    //     to: "/setup",
-    //   });
-    // }
-
     if (!server) {
       throw redirect({
         to: "/setup",
       });
     }
-
-    const accessToken = await window.api.auth.getUserAccessToken();
-    // try {
-    //   const response = await fetch(`http://127.0.0.1:34567/init`, {
-    //     method: 'POST',
-    //     headers: {
-    //       Authorization: `Bearer ${accessToken}`,
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({
-    //       serverUrl: server.connections[0].uri
-    //     })
-    //   })
-    //   await response.json()
-    // } catch (e) {
-    //   console.error('Failed to init API:', e)
-    //   // We don't redirect here to allow the loader to show the error state if needed
-    // }
 
     throw redirect({
       to: "/app", //Change back to /app
