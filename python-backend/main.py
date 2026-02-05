@@ -89,11 +89,11 @@ def get_player() -> AudioPlayer:
 def get_selected_music_sections(plex: PlexServer) -> list:
     """Get music library sections based on selected library UUIDs."""
     selected_libs = getattr(app.state, "selected_libraries", [])
-    if not selected_libs:
-        raise HTTPException(
-            status_code=400, detail="No libraries selected.")
-
     sections = plex.library.sections()
+
+    if not selected_libs:
+        return [x for x in sections if x.type == "artist"]
+
     # Support stored formats: list of uuid strings or list of objects with a 'uuid' key
     selected_uuids = []
     for lib in selected_libs:
