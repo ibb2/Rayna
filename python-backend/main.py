@@ -94,7 +94,8 @@ def get_selected_music_sections(plex: PlexServer) -> list:
             status_code=400, detail="No libraries selected.")
 
     sections = plex.library.sections()
-    selected_sections = [s for s in sections if s.uuid in selected_libs]
+    selected_uuids = [lib["uuid"] for lib in selected_libs]
+    selected_sections = [s for s in sections if s.uuid in selected_uuids]
 
     if not selected_sections:
         raise HTTPException(

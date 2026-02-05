@@ -9,16 +9,20 @@ import {
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { BadgeCheckIcon, Check, ChevronRightIcon, Music } from "lucide-react";
 import { useState } from "react";
 
 export default function Libraries({
-  progress,
+  cancel,
+  save,
   server,
-  complete,
   selectedLibraries,
   selectLibrary,
 }) {
+  const router = useRouter();
+  const [loading, isLoading] = useState(false);
+
   const { isPending, error, data } = useQuery({
     queryKey: ["libraries"],
     queryFn: async () => {
@@ -40,36 +44,36 @@ export default function Libraries({
   if (error) return "An error has occurred: " + error?.message;
 
   return (
-    <div className="flex flex-1 flex-col gap-12 overflow-y-auto p-4 h-full">
-      <h1 className="scroll-m-20 text-center text-4xl font-bold tracking-tight text-balance">
-        Libraries
-      </h1>
+    <div className="flex flex-1 flex-col gap-12 overflow-y-auto h-full">
       <div className="flex flex-col gap-2">
         {data.map((library) => (
           <div key={library.uuid}>
             {library.type === "artist" ? (
               <Item
+                onClick={() => selectLibrary(library)}
                 variant={
-                  selectedLibraries.some((l) => l.uuid === library.uuid)
+                  selectedLibraries.some((l) => {
+                    return l.uuid === library.uuid;
+                  })
                     ? "muted"
                     : "outline"
                 }
                 size="sm"
                 asChild
-                onClick={() => selectLibrary(library)}
               >
                 <div className="w-full h-full">
                   <ItemMedia>
                     <Music className="size-5" />
                   </ItemMedia>
                   <ItemContent>
-                    <ItemTitle>{library.title}</ItemTitle>
-                    <ItemDescription>{library.type}</ItemDescription>
+                    <ItemTitle className="justify-self-start">
+                      {library.title}
+                    </ItemTitle>
                   </ItemContent>
                   <ItemActions>
-                    {selectedLibraries.some(library.uuid) && (
-                      <Check className="size-4" />
-                    )}
+                    {selectedLibraries.some((l) => {
+                      return l.uuid === library.uuid;
+                    }) && <Check className="size-4" />}
                   </ItemActions>
                 </div>
               </Item>
@@ -79,7 +83,12 @@ export default function Libraries({
           </div>
         ))}
       </div>
-      <Button onClick={complete}>Complete</Button>
+      <div className="flex w-full gap-2 justify-end">
+        <Button onClick={cancel} variant={"secondary"}>
+          Cancel
+        </Button>
+        <Button onClick={save}>Save</Button>
+      </div>
     </div>
   );
 }
