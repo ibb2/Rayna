@@ -18,7 +18,7 @@ class AudioPlayer:
         self.queue: deque = deque()
         self.current_track: Optional[Dict[str, Any]] = None
         self.is_playing: bool = False
-        self.libraries: List = []
+        self.selected_libraries: List = []
 
         # --- Audio Engine State ---
         self.current_data: Optional[np.ndarray] = None

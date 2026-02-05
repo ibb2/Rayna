@@ -62,6 +62,7 @@ def initialize(request: Init, token: Annotated[str, Depends(oauth2_scheme)]):
     print(request.libraries)
     print("---------")
     app.state.plex = cast(PlexServer, PlexServer(request.serverUrl, token))
+    app.state.selected_libraries = request.libraries
     app.state.player = AudioPlayer()
     app.state.player.set_plex(app.state.plex)
     app.state.queue = deque()
@@ -83,6 +84,23 @@ def get_player() -> AudioPlayer:
         raise HTTPException(
             status_code=400, detail="Player is not initialized yet.")
     return player
+
+
+def get_selected_music_sections(plex: PlexServer) -> list:
+    """Get music library sections based on selected library UUIDs."""
+    selected_libs = getattr(app.state, "selected_libraries", [])
+    if not selected_libs:
+        raise HTTPException(
+            status_code=400, detail="No libraries selected.")
+
+    sections = plex.library.sections()
+    selected_sections = [s for s in sections if s.uuid in selected_libs]
+
+    if not selected_sections:
+        raise HTTPException(
+            status_code=404, detail="No selected libraries found.")
+
+    return selected_sections
 
 
 @app.get("/library/sections/all")
@@ -120,13 +138,11 @@ def get_all_library_sections(plex: Annotated[PlexServer, Depends(get_plex)]):
 
 @app.get("/music/albums/all")
 def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
-    sections = plex.library.sections()
-    musicSection = next((x for x in sections if x.type == "artist"), None)
-    if musicSection is None:
-        raise HTTPException(
-            status_code=404, detail="No Music section(s) not found.")
+    sections = get_selected_music_sections(plex)
 
-    albums = musicSection.albums()
+    albums = []
+    for section in sections:
+        albums.extend(section.albums())
 
     return [
         {
@@ -143,13 +159,11 @@ def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
 
 @app.get("/music/albums/recently-played")
 def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
-    sections = plex.library.sections()
-    musicSection = next((x for x in sections if x.type == "artist"), None)
-    if musicSection is None:
-        raise HTTPException(
-            status_code=404, detail="No Music section(s) not found.")
+    sections = get_selected_music_sections(plex)
 
-    albums = musicSection.searchAlbums(sort="lastViewedAt:desc")
+    albums = []
+    for section in sections:
+        albums.extend(section.searchAlbums(sort="lastViewedAt:desc"))
 
     return [
         {
@@ -166,13 +180,11 @@ def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
 
 @app.get("/music/albums/recently-added")
 def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
-    sections = plex.library.sections()
-    musicSection = next((x for x in sections if x.type == "artist"), None)
-    if musicSection is None:
-        raise HTTPException(
-            status_code=404, detail="No Music section(s) not found.")
+    sections = get_selected_music_sections(plex)
 
-    albums = musicSection.recentlyAddedAlbums()
+    albums = []
+    for section in sections:
+        albums.extend(section.recentlyAddedAlbums())
 
     return [
         {
@@ -275,11 +287,7 @@ def read_artist_popular_tracks(
 
 @app.get("/music/playlists/all")
 def read_playlists(plex: Annotated[PlexServer, Depends(get_plex)]):
-    sections = plex.library.sections()
-    musicSection = next((x for x in sections if x.type == "artist"), None)
-    if musicSection is None:
-        raise HTTPException(
-            status_code=404, detail="No Music section(s) not found.")
+    get_selected_music_sections(plex)  # Validate selection exists
 
     music_playlists = [
         p for p in plex.playlists() if p.playlistType == "audio"]
@@ -336,14 +344,20 @@ def read_playlist(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)
 
 @app.get("/music/library/top-eight")
 def read_top_eight(plex: Annotated[PlexServer, Depends(get_plex)]):
-    # Get music section
-    sections = plex.library.sections()
-    musicSection = next((x for x in sections if x.type == "artist"), None)
-    if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section found.")
+    # Get music sections
+    sections = get_selected_music_sections(plex)
 
-    # Get recently viewed albums
-    albums = musicSection.searchAlbums(sort="lastViewedAt:desc", limit=20)
+    # Get recently viewed albums from all selected sections
+    albums = []
+    for section in sections:
+        albums.extend(section.searchAlbums(sort="lastViewedAt:desc", limit=20))
+
+    # Sort by lastViewedAt and limit to 20 across all sections
+    albums.sort(
+        key=lambda x: x.lastViewedAt or x.addedAt or datetime.min,
+        reverse=True,
+    )
+    albums = albums[:20]
 
     # Get all playlists (filter for audio if needed)
     all_playlists = plex.playlists()
