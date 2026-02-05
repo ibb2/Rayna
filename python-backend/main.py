@@ -94,7 +94,14 @@ def get_selected_music_sections(plex: PlexServer) -> list:
             status_code=400, detail="No libraries selected.")
 
     sections = plex.library.sections()
-    selected_uuids = [lib["uuid"] for lib in selected_libs]
+    # Support stored formats: list of uuid strings or list of objects with a 'uuid' key
+    selected_uuids = []
+    for lib in selected_libs:
+        if isinstance(lib, dict) and "uuid" in lib:
+            selected_uuids.append(lib["uuid"])
+        elif isinstance(lib, str):
+            selected_uuids.append(lib)
+
     selected_sections = [s for s in sections if s.uuid in selected_uuids]
 
     if not selected_sections:
@@ -102,6 +109,36 @@ def get_selected_music_sections(plex: PlexServer) -> list:
             status_code=404, detail="No selected libraries found.")
 
     return selected_sections
+
+
+class LibrariesUpdate(BaseModel):
+    libraries: list = []
+
+
+@app.post("/library/selected")
+def update_selected_libraries(request: LibrariesUpdate):
+    """Update the selected library UUIDs stored in app state.
+
+    Accepts either a list of UUID strings or a list of objects containing a 'uuid' key.
+    """
+    # Normalize to list of uuids
+    selected_uuids = []
+    for lib in request.libraries:
+        if isinstance(lib, dict) and "uuid" in lib:
+            selected_uuids.append(lib["uuid"])
+        elif isinstance(lib, str):
+            selected_uuids.append(lib)
+
+    # Validate uuids exist on the Plex server
+    # sections = plex.library.sections()
+    # found = [s for s in sections if s.uuid in selected_uuids]
+    # if not found:
+    #     raise HTTPException(
+    #         status_code=404, detail="No matching libraries found on server.")
+
+    # Store the original payload so other code paths that expect objects/strings continue to work
+    app.state.selected_libraries = request.libraries
+    return {"status": "ok", "updated": len(found)}
 
 
 @app.get("/library/sections/all")
