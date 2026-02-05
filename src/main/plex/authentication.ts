@@ -17,6 +17,7 @@ class Authentication {
   privateKey: string | null = null
   publicKey: string | null = null
   selectedServer: PlexServer | null = null
+  selectedLibraries: any[] | null = null
 
   store = new Store()
 
@@ -238,6 +239,12 @@ class Authentication {
     this.store.set('selectedServer', JSON.stringify(this.selectedServer))
   }
 
+  public async selectLibraries(libraries: any[]) {
+    this.selectedLibraries = libraries
+    this.store.set('selectedLibraries', JSON.stringify(this.selectedLibraries))
+  }
+
+
   public isServerSelected(): boolean {
     const selectedServer = this.store.get('selectedServer') as string | undefined
 
@@ -263,6 +270,26 @@ class Authentication {
   }
 
 
+  public async getUserSelectedLibraries(): Promise<any[] | null> {
+    if (this.selectedLibraries != null) {
+      return this.selectedLibraries
+    }
+
+    const stored = this.store.get('selectedLibraries') as string | undefined
+    if (stored) {
+      try {
+        this.selectedLibraries = JSON.parse(stored) as any[]
+        return this.selectedLibraries
+      } catch (e) {
+        console.error('Failed to parse stored selectedLibraries:', e)
+        return null
+      }
+    }
+
+    return null
+  }
+
+
 
   public async getUserAccessToken(): Promise<string> {
     return this.plexUserAccessToken
@@ -278,6 +305,9 @@ class Authentication {
       const selectedServer = this.store.get('selectedServer') as string | undefined
       this.selectedServer =
         selectedServer != undefined ? (JSON.parse(selectedServer) as PlexServer) : null
+      const selectedLibraries = this.store.get('selectedLibraries') as string | undefined
+      this.selectedLibraries =
+        selectedLibraries != undefined ? (JSON.parse(selectedLibraries) as any[]) : null
     } catch (e) {
       console.error('User not authenticated: ', e)
     }

@@ -35,6 +35,7 @@ app.add_middleware(
 
 class Init(BaseModel):
     serverUrl: str
+    libraries: list = []
 
 
 @app.get("/")
@@ -57,6 +58,9 @@ def read_item(item_id: int, q: Union[str, None] = None):
 def initialize(request: Init, token: Annotated[str, Depends(oauth2_scheme)]):
     print("Initializing…")
     print(request.serverUrl)
+    print("---------")
+    print(request.libraries)
+    print("---------")
     app.state.plex = cast(PlexServer, PlexServer(request.serverUrl, token))
     app.state.player = AudioPlayer()
     app.state.player.set_plex(app.state.plex)
@@ -68,14 +72,16 @@ def initialize(request: Init, token: Annotated[str, Depends(oauth2_scheme)]):
 def get_plex() -> PlexServer:
     plex = getattr(app.state, "plex", None)
     if plex is None:
-        raise HTTPException(status_code=400, detail="Plex is not initialized yet.")
+        raise HTTPException(
+            status_code=400, detail="Plex is not initialized yet.")
     return plex
 
 
 def get_player() -> AudioPlayer:
     player = getattr(app.state, "player", None)
     if player is None:
-        raise HTTPException(status_code=400, detail="Player is not initialized yet.")
+        raise HTTPException(
+            status_code=400, detail="Player is not initialized yet.")
     return player
 
 
@@ -117,7 +123,8 @@ def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.albums()
 
@@ -139,7 +146,8 @@ def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.searchAlbums(sort="lastViewedAt:desc")
 
@@ -161,7 +169,8 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
     albums = musicSection.recentlyAddedAlbums()
 
@@ -185,7 +194,8 @@ def read_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]):
     tracks = album.tracks()
     print("Tracks title", tracks[0].originalTitle)
     # Extract numeric rating key from parentKey (e.g., '/library/metadata/123' -> '123')
-    artist_rating_key = album.parentKey.split("/")[-1] if album.parentKey else None
+    artist_rating_key = album.parentKey.split(
+        "/")[-1] if album.parentKey else None
 
     return {
         "id": album.key,
@@ -268,9 +278,11 @@ def read_playlists(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = plex.library.sections()
     musicSection = next((x for x in sections if x.type == "artist"), None)
     if musicSection is None:
-        raise HTTPException(status_code=404, detail="No Music section(s) not found.")
+        raise HTTPException(
+            status_code=404, detail="No Music section(s) not found.")
 
-    music_playlists = [p for p in plex.playlists() if p.playlistType == "audio"]
+    music_playlists = [
+        p for p in plex.playlists() if p.playlistType == "audio"]
 
     return [
         {
@@ -434,7 +446,8 @@ def get_music_queues():
     played = getattr(app.state, "played", None)
 
     if queue is None or played is None:
-        raise HTTPException(status_code=400, detail="Queues are not yet created.")
+        raise HTTPException(
+            status_code=400, detail="Queues are not yet created.")
     return (queue, played)
 
 

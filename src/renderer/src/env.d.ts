@@ -16,8 +16,10 @@ interface Window {
       checkPinStatus: (id: string) => Promise<any>
       getServers: () => Promise<PlexServer[]>
       selectServer: (server: PlexServer) => Promise<void>
+      selectLibraries: (libraries) => Promise<void>
       isServerSelected: () => boolean
       getUserSelectedServer: () => Promise<PlexServer | null>
+      getUserSelectedLibraries: () => Promise<any | null>
       getUserAccessToken: () => Promise<string>
     }
     server: {

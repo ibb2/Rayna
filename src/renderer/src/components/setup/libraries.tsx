@@ -12,9 +12,13 @@ import { useQuery } from "@tanstack/react-query";
 import { BadgeCheckIcon, Check, ChevronRightIcon, Music } from "lucide-react";
 import { useState } from "react";
 
-export default function Libraries({ progress }) {
-  const [selectedLibraries, setSelectedLibraries] = useState<string[]>([]);
-
+export default function Libraries({
+  progress,
+  server,
+  complete,
+  selectedLibraries,
+  selectLibrary,
+}) {
   const { isPending, error, data } = useQuery({
     queryKey: ["libraries"],
     queryFn: async () => {
@@ -26,25 +30,6 @@ export default function Libraries({ progress }) {
     retry: true,
   });
 
-  const selectLibrary = (key: string) => {
-    if (selectedLibraries.includes(key)) {
-      const selectedItemRemoved = selectedLibraries.filter((s) => {
-        return s !== key;
-      });
-      setSelectedLibraries([...selectedItemRemoved]);
-
-      return;
-    }
-
-    setSelectedLibraries([...selectedLibraries, key]);
-  };
-
-  const complete = () => {
-    if (selectedLibraries.length > 0) {
-      console.log("complete");
-    }
-  };
-
   if (isPending)
     return (
       <div className="flex items-center justify-center w-full h-full">
@@ -55,46 +40,44 @@ export default function Libraries({ progress }) {
   if (error) return "An error has occurred: " + error?.message;
 
   return (
-    <div>
-      <p>Select your libraries</p>
-      <div>
+    <div className="flex flex-1 flex-col gap-12 overflow-y-auto p-4 h-full">
+      <h1 className="scroll-m-20 text-center text-4xl font-bold tracking-tight text-balance">
+        Libraries
+      </h1>
+      <div className="flex flex-col gap-2">
         {data.map((library) => (
           <div key={library.uuid}>
             {library.type === "artist" ? (
-              <div className="flex w-full max-w-md flex-col gap-6">
-                <Item
-                  variant={
-                    selectedLibraries.includes(library.uuid)
-                      ? "muted"
-                      : "outline"
-                  }
-                  size="sm"
-                  asChild
-                  onClick={() => selectLibrary(library.uuid)}
-                >
-                  <a href="#">
-                    <ItemMedia>
-                      <Music className="size-5" />
-                    </ItemMedia>
-                    <ItemContent>
-                      <ItemTitle>{library.title}</ItemTitle>
-                      <ItemDescription>{library.type}</ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                      {selectedLibraries.includes(library.uuid) && (
-                        <Check className="size-4" />
-                      )}
-                    </ItemActions>
-                  </a>
-                </Item>
-              </div>
+              <Item
+                variant={
+                  selectedLibraries.includes(library.uuid) ? "muted" : "outline"
+                }
+                size="sm"
+                asChild
+                onClick={() => selectLibrary(library.uuid)}
+              >
+                <div className="w-full h-full">
+                  <ItemMedia>
+                    <Music className="size-5" />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>{library.title}</ItemTitle>
+                    <ItemDescription>{library.type}</ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    {selectedLibraries.includes(library.uuid) && (
+                      <Check className="size-4" />
+                    )}
+                  </ItemActions>
+                </div>
+              </Item>
             ) : (
               <div></div>
             )}
           </div>
         ))}
-        <Button onClick={complete}>Complete</Button>
       </div>
+      <Button onClick={complete}>Complete</Button>
     </div>
   );
 }

@@ -9,7 +9,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { createFileRoute } from "@tanstack/react-router";
+import { PlexServer } from "@/types";
+import {
+  createFileRoute,
+  Navigate,
+  redirect,
+  useRouter,
+} from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/setup")({
@@ -17,20 +23,75 @@ export const Route = createFileRoute("/setup")({
 });
 
 function RouteComponent() {
+  const router = useRouter();
+
   const [progression, setProgression] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+  const [load, onLoad] = useState(false);
+  const [servers, setServers] = useState<PlexServer[]>([]);
+  const [selectedServer, setSelectedServer] = useState<PlexServer | null>(null);
+  const [selectedLibraries, setSelectedLibraries] = useState<string[]>([]);
+
+  const getServers = async () => {
+    const s = await window.api.auth.getServers();
+    setServers(s);
+  };
+
+  const selectServer = (server: PlexServer) => {
+    setSelectedServer(server);
+  };
+
+  const selectLibrary = (key: string) => {
+    if (selectedLibraries.includes(key)) {
+      const selectedItemRemoved = selectedLibraries.filter((s) => {
+        return s !== key;
+      });
+      setSelectedLibraries([...selectedItemRemoved]);
+
+      return;
+    }
+
+    setSelectedLibraries([...selectedLibraries, key]);
+  };
 
   const progressForwards = () => {
-    setProgression(progression + 1);
-    api?.scrollNext();
+    if (selectedServer !== null || selectedServer !== undefined) {
+      setProgression(progression + 1);
+      api?.scrollNext();
+    }
   };
 
   const progressBackwards = () => {
     if (progression > 0) {
       setProgression(progression - 1);
       api?.scrollPrev();
+    }
+  };
+
+  const complete = async () => {
+    if (selectedLibraries.length > 0) {
+      console.log("complete");
+      await window.api.auth.selectServer(selectedServer);
+      await window.api.auth.selectLibraries(selectedLibraries);
+
+      const accessToken = await window.api.auth.getUserAccessToken();
+      console.log("serverUrl:", selectedServer?.connections);
+
+      const response = await fetch(`http://127.0.0.1:34567/init`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          serverUrl: selectedServer?.connections[0].uri,
+          libraries: selectedLibraries,
+        }),
+      });
+      await response.json();
+      router.navigate({ to: "/app" });
     }
   };
 
@@ -45,21 +106,48 @@ function RouteComponent() {
     });
   }, [api]);
 
+  useEffect(() => {
+    const checkSetupComplete = async () => {
+      const isServerSelected = await window.api.auth.isServerSelected();
+      if (isServerSelected) {
+        router.navigate({ to: "/app" });
+      }
+    };
+    checkSetupComplete();
+  }, []);
+
+  useEffect(() => {
+    if (!load) {
+      getServers();
+      onLoad(true);
+    }
+  }, [load]);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen">
-      <Carousel className="w-full max-w-[12rem] sm:max-w-xs" setApi={setApi}>
+    <div className="flex flex-col items-center justify-center w-full h-screen p-16">
+      <Carousel className="w-full h-full" setApi={setApi}>
         <CarouselContent className="w-full">
           <CarouselItem>
-            <SelectServer progress={progressForwards} />
+            <SelectServer
+              progress={progressForwards}
+              servers={servers}
+              selectServer={selectServer}
+            />
           </CarouselItem>
           <CarouselItem>
-            <Libraries progress={progressBackwards} />
+            <Libraries
+              progress={progressBackwards}
+              server={selectedServer}
+              complete={complete}
+              selectedLibraries={selectedLibraries}
+              selectLibrary={selectLibrary}
+            />
           </CarouselItem>
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        {current === 2 && <CarouselPrevious />}
+        {/* {current === 1 && <CarouselNext />} */}
       </Carousel>
-      <div className="flex flex-row gap-1 text-muted-foreground py-2 text-center text-sm">
+      <div className="flex flex-row justify-self-end gap-1 text-muted-foreground py-2 text-center text-sm">
         {[1, 2].map((item: number, index) => (
           <div
             className={cn(

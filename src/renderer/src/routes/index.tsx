@@ -1,58 +1,59 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { ChartAreaInteractive } from '@/components/chart-area-interactive'
-import { DataTable } from '@/components/data-table'
-import { SectionCards } from '@/components/section-cards'
-import data from '../data.json'
-import { PlexServer } from '@/types'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { DataTable } from "@/components/data-table";
+import { SectionCards } from "@/components/section-cards";
+import data from "../data.json";
+import { PlexServer } from "@/types";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: Index,
   beforeLoad: async () => {
-    const isUserLoggedIn = await window.api.auth.isUserSignedIn()
-    const hasUserSelectedAServer = await window.api.auth.isServerSelected()
+    const isUserLoggedIn = await window.api.auth.isUserSignedIn();
+    const hasUserSelectedAServer = await window.api.auth.isServerSelected();
+    const server: PlexServer | null =
+      await window.api.auth.getUserSelectedServer();
 
     if (!isUserLoggedIn) {
       throw redirect({
-        to: '/auth'
-      })
+        to: "/auth",
+      });
     }
 
-    if (!hasUserSelectedAServer) {
-      throw redirect({
-        to: '/setup'
-      })
-    }
+    // if (!hasUserSelectedAServer) {
+    //   throw redirect({
+    //     to: "/setup",
+    //   });
+    // }
 
-    const server: PlexServer | null = await window.api.auth.getUserSelectedServer()
     if (!server) {
       throw redirect({
-        to: '/setup'
-      })
+        to: "/setup",
+      });
     }
 
-    const accessToken = await window.api.auth.getUserAccessToken()
-    try {
-      const response = await fetch(`http://127.0.0.1:34567/init`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          serverUrl: server.connections[0].uri
-        })
-      })
-      await response.json()
-    } catch (e) {
-      console.error('Failed to init API:', e)
-      // We don't redirect here to allow the loader to show the error state if needed
-    }
+    const accessToken = await window.api.auth.getUserAccessToken();
+    // try {
+    //   const response = await fetch(`http://127.0.0.1:34567/init`, {
+    //     method: 'POST',
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //       serverUrl: server.connections[0].uri
+    //     })
+    //   })
+    //   await response.json()
+    // } catch (e) {
+    //   console.error('Failed to init API:', e)
+    //   // We don't redirect here to allow the loader to show the error state if needed
+    // }
 
     throw redirect({
-      to: '/setup' //Change back to /app
-    })
-  }
-})
+      to: "/app", //Change back to /app
+    });
+  },
+});
 
 function Index() {
   return (
@@ -67,5 +68,5 @@ function Index() {
         <DataTable data={data} />
       </div>
     </div>
-  )
+  );
 }

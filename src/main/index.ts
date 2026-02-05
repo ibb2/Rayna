@@ -119,11 +119,15 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('auth:selectServer', (_, server: PlexServer) => auth.selectServer(server))
 
+  ipcMain.handle('auth:selectLibraries', (_, libraries) => auth.selectLibraries(libraries))
+
   ipcMain.handle('auth:isServerSelected', () => auth.isServerSelected())
 
   ipcMain.handle('auth:getUserSelectedServer', () => auth.getUserSelectedServer())
 
   ipcMain.handle('auth:getUserAccessToken', () => auth.getUserAccessToken())
+
+  ipcMain.handle('auth:getUserSelectedLibraries', () => auth.getUserSelectedLibraries())
 
   ipcMain.handle('auth:closeLoopbackServer', () => auth.closeLoopbackServer())
 
