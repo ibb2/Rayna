@@ -152,7 +152,9 @@ function RouteComponent() {
           <div
             className={cn(
               "h-2 w-8 rounded-2xl",
-              item === current ? "bg-gray-300" : "bg-gray-100/20",
+              item === current
+                ? "bg-zinc-800 dark:bg-gray-300"
+                : "bg-zinc-500/20 dark:bg-gray-100/20",
             )}
             key={index}
           ></div>
