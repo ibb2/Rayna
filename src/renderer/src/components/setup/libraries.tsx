@@ -67,7 +67,7 @@ export default function Libraries({
                     <ItemDescription>{library.type}</ItemDescription>
                   </ItemContent>
                   <ItemActions>
-                    {selectedLibraries.some(library.uuid) && (
+                    {selectedLibraries.some((l) => l.uuid === library.uuid) && (
                       <Check className="size-4" />
                     )}
                   </ItemActions>

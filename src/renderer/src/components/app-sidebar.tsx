@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import * as React from 'react'
-import { Sidebar, SidebarContent } from './ui/sidebar'
-import { NavMain } from './nav-main'
-import { Heart, Home, Music } from 'lucide-react'
+import * as React from "react";
+import { Sidebar, SidebarContent } from "./ui/sidebar";
+import { NavMain } from "./nav-main";
+import { Heart, Home, Music } from "lucide-react";
 
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg'
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
-      title: 'Home',
-      url: '/app',
-      icon: Home
-    }
+      title: "Home",
+      url: "/app",
+      icon: Home,
+    },
     // { title: 'Your Library', url: '/app', icon: Library }
   ],
   // navClouds: [
@@ -85,17 +85,17 @@ const data = {
   // ],
   documents: [
     {
-      name: 'Liked Songs',
-      url: '#',
-      icon: Heart
+      name: "Liked Songs",
+      url: "#",
+      icon: Heart,
     },
     {
-      name: 'All Music',
-      url: '#',
-      icon: Music
-    }
-  ]
-}
+      name: "All Music",
+      url: "#",
+      icon: Music,
+    },
+  ],
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Check if running on macOS
@@ -117,11 +117,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>*/}
-      <SidebarContent className="mt-2.5">
+      <SidebarContent className="mt-[0.6rem]">
         <NavMain items={data.navMain} />
         {/*<NavDocuments items={data.documents} />*/}
         {/*<NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
