@@ -189,7 +189,7 @@ def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
             "year": a.year,
             "artist": a.parentTitle,
             "ratingKey": a.ratingKey,
-            "thumb": plex.url(a.thumb, includeToken=True),
+            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
         }
         for a in albums
     ]
@@ -210,7 +210,7 @@ def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
             "year": a.year,
             "artist": a.parentTitle,
             "ratingKey": a.ratingKey,
-            "thumb": plex.url(a.thumb, includeToken=True),
+            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
         }
         for a in albums
     ]
@@ -231,7 +231,7 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
             "year": a.year,
             "artist": a.parentTitle,
             "ratingKey": a.ratingKey,
-            "thumb": plex.url(a.thumb, includeToken=True),
+            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
         }
         for a in albums
     ]
@@ -255,7 +255,7 @@ def read_album(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]):
         "artistKey": artist_rating_key,
         "ratingKey": album.ratingKey,
         "leafCount": album.leafCount,
-        "thumb": plex.url(album.thumb, includeToken=True),
+        "thumb": plex.url(album.thumb, includeToken=True) if album.thumb else None,
         "tracks": [
             {
                 "number": t.trackNumber,
@@ -277,7 +277,7 @@ def read_artists(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)]
         "title": artist.title,
         "ratingKey": artist.ratingKey,
         "summary": artist.summary,
-        "thumb": plex.url(artist.thumb, includeToken=True),
+        "thumb": plex.url(artist.thumb, includeToken=True) if artist.thumb else None,
         "viewCount": artist.viewCount,
     }
 
@@ -296,7 +296,7 @@ def read_artist_albums(rating_key: int, plex: Annotated[PlexServer, Depends(get_
             "artistKey": a.parentKey,
             "ratingKey": a.ratingKey,
             "leafCount": a.leafCount,
-            "thumb": plex.url(a.thumb, includeToken=True),
+            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
         }
         for a in artist_albums
     ]
@@ -369,7 +369,9 @@ def read_playlist(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)
                 "number": t.trackNumber,
                 "title": t.title,
                 "duration": t.duration,
-                "albumThumb": plex.url(t.parentThumb, includeToken=True),
+                "albumThumb": plex.url(t.parentThumb, includeToken=True)
+                if t.parentThumb
+                else None,
                 "albumTitle": t.parentTitle,
                 "albumRatingKey": t.parentRatingKey,
                 "artistTitle": t.grandparentTitle,
@@ -409,7 +411,7 @@ def read_top_eight(plex: Annotated[PlexServer, Depends(get_plex)]):
             "year": a.year,
             "artist": a.parentTitle,
             "ratingKey": a.ratingKey,
-            "thumb": plex.url(a.thumb, includeToken=True),
+            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
             "type": "album",
             "lastViewedAt": a.lastViewedAt
             or a.addedAt,  # Fallback to addedAt if never viewed
