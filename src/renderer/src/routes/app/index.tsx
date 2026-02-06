@@ -13,6 +13,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 import noPlaylistCover from "../../assets/no-playlist-cover.png";
+import BlankImage from "@/assets/512px-Black_colour.jpg";
 import { Spinner } from "@/components/ui/spinner";
 import { useRef } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
@@ -141,13 +142,13 @@ export default function Home() {
             >
               <ItemMedia className="rounded-l-md rounded-r-none">
                 <img
-                  src={x.thumb}
+                  src={x.thumb ?? BlankImage}
                   alt={x.title}
-                  className="w-13 object-cover"
+                  className="size-12 object-cover"
                 />
               </ItemMedia>
               <ItemContent>
-                <ItemTitle>{x.title}</ItemTitle>
+                <ItemTitle className="line-clamp-2">{x.title}</ItemTitle>
               </ItemContent>
             </Item>
           </Link>
@@ -175,7 +176,7 @@ export default function Home() {
                   <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-100 dark:hover:bg-zinc-800/30 dark:bg-transparent p-2 rounded-md">
                     <CardHeader className="p-0">
                       <img
-                        src={album.thumb}
+                        src={album.thumb ?? BlankImage}
                         alt={album.title}
                         className="w-full object-cover rounded-lg aspect-square"
                       />
@@ -226,7 +227,7 @@ export default function Home() {
                   <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-100 dark:hover:bg-zinc-800/30 dark:bg-transparent p-2 rounded-md">
                     <CardHeader className="p-0">
                       <img
-                        src={album.thumb}
+                        src={album.thumb ?? BlankImage}
                         alt={album.title}
                         className="w-full object-cover rounded-lg aspect-square"
                       />
@@ -274,7 +275,11 @@ export default function Home() {
                   <Card className="flex justify-center min-w-40 shrink-0 border-0 shadow-none hover:bg-zinc-100 dark:hover:bg-zinc-800/30 dark:bg-transparent p-2 rounded-md">
                     <CardHeader className="p-0">
                       <img
-                        src={playlist.composite || noPlaylistCover}
+                        src={
+                          playlist.composite.length > 0
+                            ? playlist.composite
+                            : BlankImage
+                        }
                         alt={playlist.title}
                         className="w-full object-cover rounded-lg aspect-square"
                       />
