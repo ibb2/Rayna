@@ -2,7 +2,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import BlankImage from "@/assets/512px-Black_colour.jpg";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/app/library/albums")({
   component: RouteComponent,
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/app/library/albums")({
 function RouteComponent() {
   const fetchAlbums = async ({ pageParam }) => {
     const res = await fetch(
-      `http://127.0.0.1:34567/music/albums/all?cursor=${pageParam || ""}&page_size=20`,
+      `http://127.0.0.1:34567/music/albums/all?cursor=${pageParam || ""}&page_size=10`,
     );
     return res.json();
   };
@@ -31,6 +31,22 @@ function RouteComponent() {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
+  const observerRef = useRef(0);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    });
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [hasNextPage]);
+
   return status === "pending" ? (
     <p>Loading...</p>
   ) : status === "error" ? (
@@ -46,11 +62,11 @@ function RouteComponent() {
         {/* Filters */}
         {/* <p></p> */}
       </div>
-      {data.pages.map((group, i) => (
-        <React.Fragment key={i}>
-          <div className="flex flex-wrap gap-x-8 w-full gap-y-8 pb-4">
+      <div className="flex flex-wrap gap-x-8 w-full gap-y-8 pb-4">
+        {data.pages.map((group, i) => (
+          <React.Fragment key={i}>
             {group.items.map((album) => (
-              <div className="flex flex-col gap-2 max-w-sm">
+              <div className="gap-2 max-w-sm">
                 <img
                   src={album.thumb ?? BlankImage}
                   alt="Event cover"
@@ -66,10 +82,10 @@ function RouteComponent() {
                 </div>
               </div>
             ))}
-          </div>
-        </React.Fragment>
-      ))}
-      <div>
+          </React.Fragment>
+        ))}
+      </div>
+      {/* <div>
         <button
           onClick={() => fetchNextPage()}
           disabled={!hasNextPage || isFetching}
@@ -80,8 +96,12 @@ function RouteComponent() {
               ? "Load More"
               : "Nothing more to load"}
         </button>
+      </div> */}
+      <div ref={observerRef} className="flex items-center">
+        {isFetching && !isFetchingNextPage ? (
+          <Spinner className="size-4" />
+        ) : null}
       </div>
-      <div>{isFetching && !isFetchingNextPage ? "Fetching..." : null}</div>
     </div>
   );
 }
