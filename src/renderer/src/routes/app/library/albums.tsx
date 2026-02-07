@@ -81,14 +81,14 @@ function RouteComponent() {
           <Spinner className="size-4" />
         ) : null}
       </div> */}
-      <div className="flex flex-wrap gap-x-8 w-full gap-y-8 pb-4">
+      <div className="flex flex-wrap gap-8 w-full pb-4">
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group.items.map((album) => (
-              <div className="gap-2 max-w-sm">
+              <div className="flex flex-col gap-4 max-w-sm">
                 <img
                   src={album.thumb ?? BlankImage}
-                  alt="Event cover"
+                  alt={album.title}
                   className="relative z-20 aspect-video rounded-lg size-36 object-cover"
                 />
                 <div className="w-36">
@@ -104,7 +104,7 @@ function RouteComponent() {
                     to={`/app/artist/$ratingKey`}
                     params={{ ratingKey: album.parentRatingKey }}
                   >
-                    <p className="hover:underline font-semibold text-xs">
+                    <p className="hover:underline font-semibold text-xs text-muted-foreground">
                       {album.artist}
                     </p>
                   </Link>
