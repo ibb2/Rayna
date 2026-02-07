@@ -35,19 +35,11 @@ export default function Home() {
     direction: "left" | "right",
   ) => {
     if (!ref.current) {
-      console.log("Ref is null");
       return;
     }
 
     const scrollAmount = 300; // width of ~2 cards
     const scrollLeft = direction === "left" ? -scrollAmount : scrollAmount;
-
-    console.log(
-      "Scrolling:",
-      direction,
-      "Current scrollLeft:",
-      ref.current.scrollLeft,
-    );
 
     ref.current.scrollBy({
       left: scrollLeft,

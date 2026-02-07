@@ -58,12 +58,10 @@ function RouteComponent() {
 
   const complete = async () => {
     if (selectedLibraries.length > 0) {
-      console.log("complete");
       await window.api.auth.selectServer(selectedServer);
       await window.api.auth.selectLibraries(selectedLibraries);
 
       const accessToken = await window.api.auth.getUserAccessToken();
-      console.log("serverUrl:", selectedServer?.connections);
 
       const response = await fetch(`http://127.0.0.1:34567/init`, {
         method: "POST",

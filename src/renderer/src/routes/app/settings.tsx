@@ -91,7 +91,6 @@ export function SettingsPage() {
     const fetchSelectedLibraries = async () => {
       try {
         const libs = await window.api.auth.getUserSelectedLibraries();
-        console.log(libs);
         setSelectedLibraries(libs);
       } catch (error) {
         console.error("Failed to fetch selected libraries:", error);

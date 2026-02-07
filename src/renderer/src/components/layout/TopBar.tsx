@@ -54,7 +54,6 @@ export function TopBar() {
       : false;
 
   const logout = async () => {
-    console.log("Logging out");
     const logoutSuccessful = await window.api.auth.logout();
     if (logoutSuccessful) {
       router.navigate({
@@ -62,7 +61,6 @@ export function TopBar() {
         replace: true,
       });
     }
-    console.log("Logged out");
   };
 
   if (isPending) {

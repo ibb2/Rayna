@@ -48,7 +48,6 @@ function RouteComponent() {
     const hasScroll = container.scrollHeight > container.clientHeight;
 
     if (!hasScroll) {
-      console.log("Content doesn't fill viewport, fetching more...");
       fetchNextPage();
     }
   }, [data, hasNextPage, isFetching, fetchNextPage]);
@@ -56,10 +55,7 @@ function RouteComponent() {
   // Intersection observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      console.log("intersection", entries[0].isIntersecting);
-      console.log("next page", hasNextPage);
       if (entries[0].isIntersecting && hasNextPage && !isFetching) {
-        console.log("fetching next page");
         fetchNextPage();
       }
     });

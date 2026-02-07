@@ -20,7 +20,6 @@ export class LoopbackAuthServer {
                 const address = this.server?.address()
                 if (address && typeof address !== 'string') {
                     this.port = address.port
-                    console.log(`Loopback server listening on port ${this.port}`)
                     resolve(this.port)
                 } else {
                     reject(new Error('Failed to get server port'))
@@ -78,9 +77,7 @@ export class LoopbackAuthServer {
 
     public close() {
         if (this.server) {
-            this.server.close(() => {
-                console.log('Loopback server closed')
-            })
+            this.server.close()
             this.server = null
         }
     }

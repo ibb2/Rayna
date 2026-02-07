@@ -25,8 +25,6 @@ export function StartupLoading({
         const server = await window.api.auth.getUserSelectedServer();
         const libraries = await window.api.auth.getUserSelectedLibraries();
 
-        console.log("serverUrl:", server.connections);
-
         const response = await fetch(`http://127.0.0.1:34567/init`, {
           method: "POST",
           headers: {
@@ -72,7 +70,6 @@ export function StartupLoading({
 
   useEffect(() => {
     checkApi();
-    console.log("isReady:", isReady);
   }, []);
 
   const handleRetry = () => {

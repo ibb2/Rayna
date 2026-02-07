@@ -30,7 +30,6 @@ export default function SelectServer({ progress, servers, selectServer }) {
                 await window.api.auth.selectServer(server);
 
                 const accessToken = await window.api.auth.getUserAccessToken();
-                console.log("serverUrl:", server.connections);
 
                 const response = await fetch(`http://127.0.0.1:34567/init`, {
                   method: "POST",

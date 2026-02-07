@@ -129,7 +129,6 @@ class Authentication {
     // Start the loopback server
     this.loopbackServer = new LoopbackAuthServer()
     this.loopbackServer.onRedirect = () => {
-      console.log('Loopback server hit, checking PIN status...')
       this.checkPinStatus(this.plexId)
     }
 
@@ -248,13 +247,10 @@ class Authentication {
   public isServerSelected(): boolean {
     const selectedServer = this.store.get('selectedServer') as string | undefined
 
-    console.log('Selected Server,', selectedServer)
 
     if (selectedServer === undefined || selectedServer === null) {
-      console.log('No server selected')
       return false
     }
-    console.log('Server selected')
     return true
   }
 
@@ -265,7 +261,6 @@ class Authentication {
       return selectedServer
     }
 
-    console.log('No server seleted returning null')
     return null
   }
 
