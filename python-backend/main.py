@@ -269,6 +269,7 @@ def read_all_albums(
                 "year": a.get('year'),
                 "artist": a.get('parentTitle'),
                 "ratingKey": a.get('ratingKey'),
+                "parentRatingKey": a.get("parentRatingKey"),
                 "thumb": plex.url(a.get('thumb'), includeToken=True) if a.get('thumb') else None,
             }
             for a in albums

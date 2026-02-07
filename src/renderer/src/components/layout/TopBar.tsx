@@ -74,7 +74,7 @@ export function TopBar() {
   }
 
   return (
-    <div className="flex items-center justify-between bg-background/95 backdrop-blur sticky top-0 z-10 w-full mb-4">
+    <div className="flex items-center justify-between bg-background/95 backdrop-blur sticky top-0 z-10 w-full">
       <div className="flex items-center gap-2">
         <Button
           disabled={!canGoBack}

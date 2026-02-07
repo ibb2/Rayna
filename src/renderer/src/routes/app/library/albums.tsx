@@ -1,6 +1,6 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import BlankImage from "@/assets/512px-Black_colour.jpg";
 import React, { useEffect, useRef } from "react";
 
@@ -73,12 +73,22 @@ function RouteComponent() {
                   className="relative z-20 aspect-video rounded-lg size-36 object-cover"
                 />
                 <div className="w-36">
-                  <p className="truncate hover:underline max-w-sm text-sm">
-                    {album.title}
-                  </p>
-                  <p className="hover:underline font-semibold text-xs">
-                    {album.artist}
-                  </p>
+                  <Link
+                    to={`/app/album/$ratingKey`}
+                    params={{ ratingKey: album.ratingKey }}
+                  >
+                    <p className="truncate hover:underline max-w-sm text-sm">
+                      {album.title}
+                    </p>
+                  </Link>
+                  <Link
+                    to={`/app/artist/$ratingKey`}
+                    params={{ ratingKey: album.parentRatingKey }}
+                  >
+                    <p className="hover:underline font-semibold text-xs">
+                      {album.artist}
+                    </p>
+                  </Link>
                 </div>
               </div>
             ))}
