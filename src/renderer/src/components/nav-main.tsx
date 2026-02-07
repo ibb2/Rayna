@@ -30,7 +30,7 @@ export function NavMain({
               key={item.title}
               onClick={() => navigate({ to: item.url })}
             >
-              <SidebarMenuButton tooltip={item.title}>
+              <SidebarMenuButton>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </SidebarMenuButton>
