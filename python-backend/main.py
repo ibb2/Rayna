@@ -1,7 +1,10 @@
+from typing import Optional
+import base64
+import json
 import time
 from collections import deque
 from datetime import datetime
-from typing import Annotated, Union, cast
+from typing import Annotated, Optional, Union, cast
 
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
@@ -119,6 +122,24 @@ def fetch_recent_albums(sections, limit: int = 50):
     return albums
 
 
+def encode_cursor(section_idx: int, offset: int) -> str:
+    """Encode section index and offset into a cursor"""
+    cursor_data = {"s": section_idx, "o": offset}
+    return base64.urlsafe_b64encode(json.dumps(cursor_data).encode()).decode()
+
+
+def decode_cursor(cursor: Optional[str]) -> tuple[int, int]:
+    """Decode cursor to section index and offset"""
+    if not cursor:
+        return 0, 0
+    try:
+        cursor_data = json.loads(
+            base64.urlsafe_b64decode(cursor.encode()).decode())
+        return cursor_data["s"], cursor_data["o"]
+    except:
+        return 0, 0
+
+
 class LibrariesUpdate(BaseModel):
     libraries: list = []
 
@@ -183,24 +204,78 @@ def get_all_library_sections(plex: Annotated[PlexServer, Depends(get_plex)]):
 
 
 @app.get("/music/albums/all")
-def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
+def read_all_albums(
+    plex: Annotated[PlexServer, Depends(get_plex)],
+    cursor: Optional[str] = None,
+    page_size: int = 20
+):
     sections = get_selected_music_sections(plex)
+    section_idx, offset = decode_cursor(cursor)
 
     albums = []
-    for section in sections:
-        albums.extend(section.albums())
+    current_section_idx = section_idx
+    current_offset = offset
 
-    return [
-        {
-            "id": a.key,
-            "title": a.title,
-            "year": a.year,
-            "artist": a.parentTitle,
-            "ratingKey": a.ratingKey,
-            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
+    # Keep fetching from sections until we have enough albums or run out of sections
+    while len(albums) < page_size and current_section_idx < len(sections):
+        section = sections[current_section_idx]
+
+        # Fetch from current section
+        url = f'{plex._baseurl}/library/sections/{section.key}/all'
+        params = {
+            'type': 9,
+            'X-Plex-Container-Start': current_offset,
+            'X-Plex-Container-Size': page_size - len(albums),
         }
-        for a in albums
-    ]
+        headers = {
+            'X-Plex-Token': plex._token,
+            'Accept': 'application/json'
+        }
+
+        response = plex._session.get(url, params=params, headers=headers)
+        data = response.json()
+        album_data = data.get('MediaContainer', {}).get('Metadata', [])
+
+        if not album_data:
+            # This section is exhausted, move to next
+            current_section_idx += 1
+            current_offset = 0
+        else:
+            albums.extend(album_data)
+            current_offset += len(album_data)
+
+            # Check if this section has more data
+            total_size = data.get('MediaContainer', {}).get('totalSize', 0)
+            if current_offset >= total_size:
+                # Section exhausted, move to next
+                current_section_idx += 1
+                current_offset = 0
+
+        print(
+            f"Section: {section.title}, Got: {len(album_data)}, Total in albums list: {len(albums)}")
+
+    # Determine if there are more results
+    has_more = current_section_idx < len(sections)
+    next_cursor = encode_cursor(
+        current_section_idx, current_offset) if has_more else None
+
+    print(f"Total albums returned: {len(albums)}, Next cursor: {next_cursor}")
+
+    return {
+        "items": [
+            {
+                "id": a.get('key'),
+                "title": a.get('title'),
+                "year": a.get('year'),
+                "artist": a.get('parentTitle'),
+                "ratingKey": a.get('ratingKey'),
+                "thumb": plex.url(a.get('thumb'), includeToken=True) if a.get('thumb') else None,
+            }
+            for a in albums
+        ],
+        "nextCursor": next_cursor,
+        "hasMore": has_more
+    }
 
 
 @app.get("/music/albums/recently-played")
