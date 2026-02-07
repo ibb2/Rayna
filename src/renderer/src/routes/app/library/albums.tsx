@@ -66,11 +66,11 @@ function RouteComponent() {
   ) : status === "error" ? (
     <p>Error: {error.message}</p>
   ) : (
-    <div className="flex flex-col h-full overflow-y-auto mb-20 px-6">
-      <div>
+    <div className="flex flex-col gap-4 h-full overflow-y-auto mb-20 px-6 ">
+      <div className="absolute z-100 bg-background w-full pb-2">
         {/* Header */}
-        {/* <p>Albums</p>
-        <p>count {37}</p> */}
+        <p className="text-2xl font-semibold">Albums</p>
+        {/* <p>count {37}</p> */}
       </div>
       <div>
         {/* Filters */}
@@ -81,7 +81,7 @@ function RouteComponent() {
           <Spinner className="size-4" />
         ) : null}
       </div> */}
-      <div className="flex flex-wrap gap-8 w-full pb-4">
+      <div className="flex flex-wrap gap-8 w-full pb-4 pt-8">
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group.items.map((album) => (
