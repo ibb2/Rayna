@@ -24,6 +24,7 @@ export function SettingsPage() {
   );
   const [selectedServer, setSelectedServer] = useState<PlexServer | null>(null);
   const [loading, setLoading] = useState(true);
+  const [updated, setUpdated] = useState(false);
 
   // queries
   const { isPending, error, data } = useQuery({
@@ -73,10 +74,15 @@ export function SettingsPage() {
             libraries: updated,
           }),
         });
+        setUpdated(true);
       } catch (err) {
         console.error("Failed to update selected libraries:", err);
       }
     })();
+
+    setTimeout(() => {
+      setUpdated(false);
+    }, 1500);
   };
 
   useEffect(() => {
@@ -167,13 +173,22 @@ export function SettingsPage() {
           {/* Library Section */}
           <section className="space-y-4">
             <h2 className=" text-xl">Library</h2>
-            <div className="border-2 border-zinc-100 rounded-lg p-6 space-y-6">
+            <div className="border border-zinc-300 dark:border-zinc-700 rounded-lg p-6 space-y-6">
               <div className="flex flex-col gap-4">
-                <div>
-                  <Label className=" mb-2 block">Selected Libraries</Label>
-                  <Label className=" mb-2 block text-sm text-muted-foreground">
-                    Choose which libraries to display in your app
-                  </Label>
+                <div className="flex flex-row">
+                  <div className="w-full">
+                    <Label className=" mb-2 block">Selected Libraries</Label>
+                    <Label className=" mb-2 block text-sm text-muted-foreground">
+                      Choose which libraries to display in your app
+                    </Label>
+                  </div>
+                  {updated && (
+                    <div className=" items-center self-center">
+                      <p className="text-green-700 dark:text-green-300">
+                        Updated
+                      </p>
+                    </div>
+                  )}
                 </div>
                 {loading ? (
                   <div className=" text-sm">Loading libraries...</div>
