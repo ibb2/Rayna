@@ -6,7 +6,7 @@ export const Route = createFileRoute("/app/library")({
 
 function RouteComponent() {
   return (
-    <div>
+    <div className="flex flex-col flex-1 min-h-0">
       <Outlet />
     </div>
   );
