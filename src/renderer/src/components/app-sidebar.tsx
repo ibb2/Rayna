@@ -32,11 +32,11 @@ const data = {
       icon: Home,
     },
     { title: "Albums", url: "/app/library/albums", icon: DiscAlbum },
-    {
-      title: "Artists",
-      url: "/app/library/artists",
-      icon: ContactRound,
-    },
+    // {
+    //   title: "Artists",
+    //   url: "/app/library/artists",
+    //   icon: ContactRound,
+    // },
   ],
   // navClouds: [
   //   {
