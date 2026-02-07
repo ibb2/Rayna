@@ -1,8 +1,23 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from "react";
-import { Sidebar, SidebarContent } from "./ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "./ui/sidebar";
 import { NavMain } from "./nav-main";
-import { Heart, Home, Music } from "lucide-react";
+import {
+  AudioLines,
+  AudioWaveform,
+  ContactRound,
+  DiscAlbum,
+  Heart,
+  Home,
+  Music,
+} from "lucide-react";
 
 const data = {
   user: {
@@ -16,7 +31,12 @@ const data = {
       url: "/app",
       icon: Home,
     },
-    // { title: 'Your Library', url: '/app', icon: Library }
+    { title: "Albums", url: "/app/(library)/albums", icon: DiscAlbum },
+    {
+      title: "Artists",
+      url: "/app/(library)/artists",
+      icon: ContactRound,
+    },
   ],
   // navClouds: [
   //   {
@@ -103,21 +123,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      {/*<SidebarHeader>
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
-              <div className="flex flex-row gap-4">
-                <AudioWaveform className="size-5!" />
-                <span className="text-base font-semibold group-data-[collapsible=icon]:hidden">
-                  Rayna
-                </span>
+            <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
+              <div className="flex flex-row">
+                <div className="bg-[#ffb150] dark:text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <AudioLines className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">Rayna</span>
+                  {/* <span className="truncate text-xs">Enterprise</span> */}
+                </div>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarHeader>*/}
-      <SidebarContent className="mt-[0.6rem]">
+      </SidebarHeader>
+      <SidebarContent>
         <NavMain items={data.navMain} />
         {/*<NavDocuments items={data.documents} />*/}
         {/*<NavSecondary items={data.navSecondary} className="mt-auto" /> */}
