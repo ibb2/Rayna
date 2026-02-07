@@ -12,7 +12,6 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
-import noPlaylistCover from "../../assets/no-playlist-cover.png";
 import BlankImage from "@/assets/512px-Black_colour.jpg";
 import { Spinner } from "@/components/ui/spinner";
 import { useRef } from "react";

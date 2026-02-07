@@ -9,15 +9,7 @@ import {
   SidebarMenuItem,
 } from "./ui/sidebar";
 import { NavMain } from "./nav-main";
-import {
-  AudioLines,
-  AudioWaveform,
-  ContactRound,
-  DiscAlbum,
-  Heart,
-  Home,
-  Music,
-} from "lucide-react";
+import { AudioLines, DiscAlbum, Heart, Home, Music } from "lucide-react";
 
 const data = {
   user: {
@@ -128,7 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
               <div className="flex flex-row">
-                <div className="bg-[#ffb150] dark:text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div className="bg-[#ffb150] dark:bg-[#ffb050e1] dark:text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <AudioLines className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">

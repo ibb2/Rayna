@@ -1,5 +1,5 @@
 import { Spinner } from "@/components/ui/spinner";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import BlankImage from "@/assets/512px-Black_colour.jpg";
 import React, { useEffect, useRef } from "react";
