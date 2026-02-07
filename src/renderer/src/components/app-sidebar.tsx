@@ -31,10 +31,10 @@ const data = {
       url: "/app",
       icon: Home,
     },
-    { title: "Albums", url: "/app/(library)/albums", icon: DiscAlbum },
+    { title: "Albums", url: "/app/library/albums", icon: DiscAlbum },
     {
       title: "Artists",
-      url: "/app/(library)/artists",
+      url: "/app/library/artists",
       icon: ContactRound,
     },
   ],
