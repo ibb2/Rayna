@@ -44,6 +44,7 @@ export function TopBar() {
       if (!response.ok) throw new Error("Network response was not ok");
       return response.json();
     },
+    staleTime: 60 * 60 * 1000,
   });
 
   // Check if we can go forward by comparing current index with history length
