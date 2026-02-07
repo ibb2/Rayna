@@ -256,6 +256,8 @@ def read_all_albums(
 
     # Determine if there are more results
     has_more = current_section_idx < len(sections)
+    prev_cursor = encode_cursor(section_idx, max(
+        0, offset - page_size)) if offset > 0 or section_idx > 0 else None
     next_cursor = encode_cursor(
         current_section_idx, current_offset) if has_more else None
 
@@ -275,6 +277,7 @@ def read_all_albums(
             for a in albums
         ],
         "nextCursor": next_cursor,
+        "prevCursor": prev_cursor,
         "hasMore": has_more
     }
 

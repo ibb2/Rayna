@@ -20,18 +20,23 @@ function RouteComponent() {
     data,
     error,
     fetchNextPage,
+    // fetchPreviousPage,
     hasNextPage,
+    // hasPreviousPage,
     isFetching,
     isFetchingNextPage,
+    // isFetchingPreviousPage,
     status,
   } = useInfiniteQuery({
     queryKey: ["allAlbums"],
     queryFn: fetchAlbums,
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextCursor,
+    // getPreviousPageParam: (firstPage) => firstPage.prevCursor,
   });
 
   const observerRef = useRef(0);
+  // const previousObserverRef = useRef(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -42,8 +47,17 @@ function RouteComponent() {
     if (observerRef.current) {
       observer.observe(observerRef.current);
     }
+    // const previousObserver = new IntersectionObserver((entries) => {
+    //   if (entries[0].isIntersecting && hasNextPage) {
+    //     fetchPreviousPage();
+    //   }
+    // });
+    // if (previousObserverRef.current) {
+    //   previousObserver.observe(previousObserverRef.current);
+    // }
     return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
+      if (observerRef.current) observer.disconnect();
+      // if (previousObserverRef.current) previousObserver.disconnect();
     };
   }, [hasNextPage]);
 
@@ -62,6 +76,11 @@ function RouteComponent() {
         {/* Filters */}
         {/* <p></p> */}
       </div>
+      {/* <div ref={previousObserverRef} className="flex items-center">
+        {isFetching && !isFetchingNextPage ? (
+          <Spinner className="size-4" />
+        ) : null}
+      </div> */}
       <div className="flex flex-wrap gap-x-8 w-full gap-y-8 pb-4">
         {data.pages.map((group, i) => (
           <React.Fragment key={i}>
