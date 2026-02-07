@@ -111,6 +111,14 @@ def get_selected_music_sections(plex: PlexServer) -> list:
     return selected_sections
 
 
+def fetch_recent_albums(sections, limit: int = 50):
+    albums = []
+    for section in sections:
+        albums.extend(section.searchAlbums(
+            sort="lastViewedAt:desc", maxresults=limit))
+    return albums
+
+
 class LibrariesUpdate(BaseModel):
     libraries: list = []
 
@@ -199,9 +207,7 @@ def read_all_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
 def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = get_selected_music_sections(plex)
 
-    albums = []
-    for section in sections:
-        albums.extend(section.searchAlbums(sort="lastViewedAt:desc"))
+    albums = fetch_recent_albums(sections)
 
     return [
         {
@@ -218,6 +224,7 @@ def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
 
 @app.get("/music/albums/recently-added")
 def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
+
     sections = get_selected_music_sections(plex)
 
     albums = []
@@ -235,6 +242,67 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
         }
         for a in albums
     ]
+
+
+@app.get("/music/library/top-eight")
+def read_top_eight(plex: Annotated[PlexServer, Depends(get_plex)]):
+    # Get music sections
+    sections = get_selected_music_sections(plex)
+
+    # Get recently viewed albums from all selected sections
+    albums = fetch_recent_albums(sections, limit=8)
+
+    # Sort by lastViewedAt and limit to 20 across all sections
+    albums.sort(
+        key=lambda x: x.lastViewedAt or x.addedAt or datetime.min,
+        reverse=True,
+    )
+    albums = albums[:20]
+
+    # Get all playlists (filter for audio if needed)
+    all_playlists = plex.playlists()
+    music_playlists = [p for p in all_playlists if p.playlistType == "audio"]
+
+    # Convert albums to common format
+    album_items = [
+        {
+            "id": a.key,
+            "title": a.title,
+            "year": a.year,
+            "artist": a.parentTitle,
+            "ratingKey": a.ratingKey,
+            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
+            "type": "album",
+            "lastViewedAt": a.lastViewedAt
+            or a.addedAt,  # Fallback to addedAt if never viewed
+        }
+        for a in albums
+    ]
+
+    # Convert playlists to common format
+    playlist_items = [
+        {
+            "id": p.key,
+            "title": p.title,
+            "year": p.addedAt.year if hasattr(p.addedAt, "year") else None,
+            "artist": f"{len(p.items())} tracks",  # Or leave empty
+            "ratingKey": p.ratingKey,
+            "thumb": plex.url(p.composite, includeToken=True) if p.composite else None,
+            "type": "playlist",
+            "lastViewedAt": p.addedAt,  # Fallback to addedAt
+        }
+        for p in music_playlists
+    ]
+
+    # Combine and sort by lastViewedAt (most recent first)
+    combined = album_items + playlist_items
+    combined.sort(
+        key=lambda x: x["lastViewedAt"] if x["lastViewedAt"] else datetime.min,
+        reverse=True,
+    )
+
+    # Return top 8
+    return combined[:8]
 
 
 @app.get("/music/album/{rating_key}")
@@ -380,69 +448,6 @@ def read_playlist(rating_key: int, plex: Annotated[PlexServer, Depends(get_plex)
             for t in tracks
         ],
     }
-
-
-@app.get("/music/library/top-eight")
-def read_top_eight(plex: Annotated[PlexServer, Depends(get_plex)]):
-    # Get music sections
-    sections = get_selected_music_sections(plex)
-
-    # Get recently viewed albums from all selected sections
-    albums = []
-    for section in sections:
-        albums.extend(section.searchAlbums(sort="lastViewedAt:desc", limit=20))
-
-    # Sort by lastViewedAt and limit to 20 across all sections
-    albums.sort(
-        key=lambda x: x.lastViewedAt or x.addedAt or datetime.min,
-        reverse=True,
-    )
-    albums = albums[:20]
-
-    # Get all playlists (filter for audio if needed)
-    all_playlists = plex.playlists()
-    music_playlists = [p for p in all_playlists if p.playlistType == "audio"]
-
-    # Convert albums to common format
-    album_items = [
-        {
-            "id": a.key,
-            "title": a.title,
-            "year": a.year,
-            "artist": a.parentTitle,
-            "ratingKey": a.ratingKey,
-            "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
-            "type": "album",
-            "lastViewedAt": a.lastViewedAt
-            or a.addedAt,  # Fallback to addedAt if never viewed
-        }
-        for a in albums
-    ]
-
-    # Convert playlists to common format
-    playlist_items = [
-        {
-            "id": p.key,
-            "title": p.title,
-            "year": p.addedAt.year if hasattr(p.addedAt, "year") else None,
-            "artist": f"{len(p.items())} tracks",  # Or leave empty
-            "ratingKey": p.ratingKey,
-            "thumb": plex.url(p.composite, includeToken=True) if p.composite else None,
-            "type": "playlist",
-            "lastViewedAt": p.addedAt,  # Fallback to addedAt
-        }
-        for p in music_playlists
-    ]
-
-    # Combine and sort by lastViewedAt (most recent first)
-    combined = album_items + playlist_items
-    combined.sort(
-        key=lambda x: x["lastViewedAt"] if x["lastViewedAt"] else datetime.min,
-        reverse=True,
-    )
-
-    # Return top 8
-    return combined[:8]
 
 
 @app.get("/music/play/album/{rating_key}")
