@@ -9,9 +9,11 @@ export const Route = createFileRoute("/app/library/albums")({
 });
 
 function RouteComponent() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const fetchAlbums = async ({ pageParam }) => {
     const res = await fetch(
-      `http://127.0.0.1:34567/music/albums/all?cursor=${pageParam || ""}&page_size=10`,
+      `http://127.0.0.1:34567/music/albums/all?cursor=${pageParam || ""}&page_size=20`,
     );
     return res.json();
   };
@@ -35,15 +37,33 @@ function RouteComponent() {
     // getPreviousPageParam: (firstPage) => firstPage.prevCursor,
   });
 
-  const observerRef = useRef(0);
+  const observerRef = useRef<HTMLDivElement>(null);
   // const previousObserverRef = useRef(0);
 
+  // Check if content fills the viewport and fetch more if needed
+  useEffect(() => {
+    if (!containerRef.current || !hasNextPage || isFetching) return;
+
+    const container = containerRef.current;
+    const hasScroll = container.scrollHeight > container.clientHeight;
+
+    if (!hasScroll) {
+      console.log("Content doesn't fill viewport, fetching more...");
+      fetchNextPage();
+    }
+  }, [data, hasNextPage, isFetching, fetchNextPage]);
+
+  // Intersection observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasNextPage) {
+      console.log("intersection", entries[0].isIntersecting);
+      console.log("next page", hasNextPage);
+      if (entries[0].isIntersecting && hasNextPage && !isFetching) {
+        console.log("fetching next page");
         fetchNextPage();
       }
     });
+
     if (observerRef.current) {
       observer.observe(observerRef.current);
     }
@@ -56,18 +76,21 @@ function RouteComponent() {
     //   previousObserver.observe(previousObserverRef.current);
     // }
     return () => {
-      if (observerRef.current) observer.disconnect();
+      if (observerRef.current) observer.unobserve(observerRef.current);
       // if (previousObserverRef.current) previousObserver.disconnect();
     };
-  }, [hasNextPage]);
+  }, [hasNextPage, isFetching, fetchNextPage]);
 
   return status === "pending" ? (
     <p>Loading...</p>
   ) : status === "error" ? (
     <p>Error: {error.message}</p>
   ) : (
-    <div className="flex flex-col gap-4 h-full overflow-y-auto mb-20 px-6 ">
-      <div className="absolute z-100 bg-background w-full pb-2">
+    <div
+      ref={containerRef}
+      className="flex flex-col gap-4 h-full overflow-y-scroll mb-20 px-6 "
+    >
+      <div className="absolute z-50 bg-background w-full pb-2">
         {/* Header */}
         <p className="text-2xl font-semibold">Albums</p>
         {/* <p>count {37}</p> */}
