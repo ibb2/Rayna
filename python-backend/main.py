@@ -119,6 +119,9 @@ def fetch_recent_albums(sections, limit: int = 50):
     for section in sections:
         albums.extend(section.searchAlbums(
             sort="lastViewedAt:desc", maxresults=limit))
+
+    print("Count of albums, ", len(albums))
+
     return albums
 
 
@@ -286,7 +289,16 @@ def read_all_albums(
 def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
     sections = get_selected_music_sections(plex)
 
-    albums = fetch_recent_albums(sections)
+    albums = fetch_recent_albums(sections, 5)
+    albums = [a for a in albums if a.lastViewedAt is not None]
+
+    albums.sort(
+        key=lambda x: x.lastViewedAt,
+        reverse=True,
+    )
+
+    for album in albums:
+        print(f"Last played", album.lastViewedAt)
 
     return [
         {
@@ -297,7 +309,7 @@ def read_recently_played_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
             "ratingKey": a.ratingKey,
             "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
         }
-        for a in albums
+        for a in albums[:50]
     ]
 
 
@@ -319,7 +331,7 @@ def read_recently_added_albums(plex: Annotated[PlexServer, Depends(get_plex)]):
             "ratingKey": a.ratingKey,
             "thumb": plex.url(a.thumb, includeToken=True) if a.thumb else None,
         }
-        for a in albums
+        for a in albums[:50]
     ]
 
 
@@ -336,7 +348,7 @@ def read_top_eight(plex: Annotated[PlexServer, Depends(get_plex)]):
         key=lambda x: x.lastViewedAt or x.addedAt or datetime.min,
         reverse=True,
     )
-    albums = albums[:20]
+    albums = albums[:8]
 
     # Get all playlists (filter for audio if needed)
     all_playlists = plex.playlists()
