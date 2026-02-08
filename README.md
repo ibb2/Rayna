@@ -50,24 +50,37 @@ On install login to you Plex account and select your server[^1], that is all.
 - [x] Add Screenshots
 - [x] Artist page
   - [x] Play popular tracks
+  - [ ] Artist library page
 - [x] Playlist page
   - [ ] Play entire playlist
   - [ ] Play individual track for playlist
+  - [ ] Playlist library page
+- [ ] Albums page
+  - [x] Albums library page
+  - [x] Albums detail page
+  - [ ] Filtering options
+- [ ] Tracks page
+  - [ ] Tracks library page
+  - [ ] Filtering options
 - [ ] Search
 - [ ] Queue's
   - [ ] Queue Albums
   - [ ] Queue individual tracks
   - [ ] Display Queue
 - [ ] Offline support
+- [x] Multi-library support
 - [ ] Caching
 - [ ] Database support
 - [ ] Lyrics
 - [x] Performance Improvements
 - [x] Server select
   - [ ] Change selected server
+  - [x] Select libraries
+- [ ] Sessions support
+- [ ] Timeline support
 - [ ] Transcoding
 - [ ] Sync
-- [ ] TV Support
+- [ ] TV Support (Probably never happening)
 - [ ] Settings Page
 - [x] Prev and Next functionality
 
