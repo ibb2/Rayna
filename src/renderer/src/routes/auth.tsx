@@ -1,64 +1,61 @@
-import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 
-export const Route = createFileRoute('/auth')({
-  component: Auth
-})
+export const Route = createFileRoute("/auth")({
+  component: Auth,
+});
 
 function Auth() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function authenticate() {
     try {
-      setLoading(true)
-      await window.api.auth.generateClientIdentifier()
-      await window.api.auth.generateKeyPair()
-      await window.api.auth.generatePin()
-      const { authUrl, plexId } = await window.api.auth.checkPin()
+      setLoading(true);
+      await window.api.auth.generateClientIdentifier();
+      await window.api.auth.generateKeyPair();
+      await window.api.auth.generatePin();
+      const { authUrl, plexId } = await window.api.auth.checkPin();
 
       // Open the authentication URL in the default browser
       if (authUrl) {
-        window.open(authUrl, '_blank')
+        window.open(authUrl, "_blank");
       }
 
       // Poll for the token
       const pollInterval = setInterval(async () => {
         try {
-          console.log('Polling for auth token...', plexId)
-          const status = await window.api.auth.checkPinStatus(plexId)
-          console.log('Poll response:', status)
+          const status = await window.api.auth.checkPinStatus(plexId);
 
           if (status.authToken || status.auth_token) {
-            clearInterval(pollInterval)
-            setSuccess(true)
-            console.log('Authenticated!', status.authToken || status.auth_token)
+            clearInterval(pollInterval);
+            setSuccess(true);
 
             // Wait a moment to show success message before redirecting
             setTimeout(() => {
               navigate({
-                to: '/server',
-                replace: true
-              })
-            }, 1500)
+                to: "/setup",
+                replace: true,
+              });
+            }, 1500);
           }
         } catch (err) {
-          console.error('Polling error:', err)
+          console.error("Polling error:", err);
         }
-      }, 2000)
+      }, 2000);
 
       // Stop polling after 2 minutes (timeout)
       setTimeout(() => {
-        clearInterval(pollInterval)
-        setLoading(false)
-      }, 120000)
+        clearInterval(pollInterval);
+        setLoading(false);
+      }, 120000);
     } catch (error) {
-      console.error('Authentication error:', error)
-      setLoading(false)
+      console.error("Authentication error:", error);
+      setLoading(false);
     }
   }
 
@@ -69,10 +66,10 @@ function Auth() {
       </h1>
       {!loading && !success && (
         <Button
-          variant={'secondary'}
+          variant={"secondary"}
           className="w-1/2 max-w-1/2"
           onClick={() => {
-            authenticate()
+            authenticate();
           }}
         >
           Sign in with Plex
@@ -82,7 +79,9 @@ function Auth() {
         <div className="flex flex-col gap-4 items-center justify-items-center justify-center">
           <Spinner className="size-8" />
           <div className="flex flex-col items-center">
-            <h1 className="text-muted-foreground">Waiting for Authentication</h1>
+            <h1 className="text-muted-foreground">
+              Waiting for Authentication
+            </h1>
             <p className="text-muted-foreground">Please continue in browser</p>
           </div>
         </div>
@@ -106,13 +105,15 @@ function Auth() {
             </svg>
           </div>
           <div className="flex flex-col items-center">
-            <h1 className="text-xl font-semibold">Successfully Authenticated!</h1>
+            <h1 className="text-xl font-semibold">
+              Successfully Authenticated!
+            </h1>
             <p className="text-muted-foreground">Redirecting...</p>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Auth
+export default Auth;

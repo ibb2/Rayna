@@ -1,9 +1,13 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
-import { ModeToggle } from '../mode-toggle'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  useCanGoBack,
+  useRouter,
+  useRouterState,
+} from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ModeToggle } from "../mode-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,62 +15,65 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '../ui/dropdown-menu'
-import { Icon } from '../ui/Icon'
-import { useQuery } from '@tanstack/react-query'
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Icon } from "../ui/Icon";
+import { useQuery } from "@tanstack/react-query";
 
 export function TopBar() {
-  const router = useRouter()
-  const canGoBack = useCanGoBack()
-  const routerState = useRouterState()
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
+  const routerState = useRouterState();
 
   // Queries
   const { isPending, error, data } = useQuery({
-    queryKey: ['userInfo'],
+    queryKey: ["userInfo"],
     queryFn: async () => {
-      const accessToken = await window.api.auth.getUserAccessToken()
+      const accessToken = await window.api.auth.getUserAccessToken();
 
-      const response = await fetch(`https://plex.tv/api/v2/user?X-Plex-Token=${accessToken}`, {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
+      const response = await fetch(
+        `https://plex.tv/api/v2/user?X-Plex-Token=${accessToken}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
-      if (!response.ok) throw new Error('Network response was not ok')
-      return response.json()
-    }
-  })
+      if (!response.ok) throw new Error("Network response was not ok");
+      return response.json();
+    },
+    staleTime: 60 * 60 * 1000,
+  });
 
   // Check if we can go forward by comparing current index with history length
   const canGoForward =
     routerState.resolvedLocation?.state?.__TSR_index !== undefined
-      ? (routerState.resolvedLocation?.state.__TSR_index as number) < router.history.length - 1
-      : false
+      ? (routerState.resolvedLocation?.state.__TSR_index as number) <
+        router.history.length - 1
+      : false;
 
   const logout = async () => {
-    console.log('Logging out')
-    const logoutSuccessful = await window.api.auth.logout()
+    const logoutSuccessful = await window.api.auth.logout();
     if (logoutSuccessful) {
       router.navigate({
-        to: '/auth',
-        replace: true
-      })
+        to: "/auth",
+        replace: true,
+      });
     }
-    console.log('Logged out')
-  }
+  };
 
   if (isPending) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>
+    return <div>Error: {error.message}</div>;
   }
 
   return (
-    <div className="flex h-16 items-center justify-between py-4 bg-background/95 backdrop-blur sticky top-0 z-10 w-full">
+    <div className="flex items-center justify-between bg-background/95 backdrop-blur sticky top-0 z-10 w-full">
       <div className="flex items-center gap-2">
         <Button
           disabled={!canGoBack}
@@ -106,16 +113,23 @@ export function TopBar() {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="mb-1 mr-2" sideOffset={8}>
-            {/*<DropdownMenuGroup>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>
-                <ModeToggle />
-              </DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-            </DropdownMenuGroup>*/}
             <DropdownMenuGroup>
-              <DropdownMenuLabel>Personalisation</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs">
+                My Account
+              </DropdownMenuLabel>
+              {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
+              <DropdownMenuItem
+                onClick={() => router.navigate({ to: "/app/settings" })}
+              >
+                <Icon name="Cog" />
+                Settings
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-xs">
+                Personalization
+              </DropdownMenuLabel>
               <DropdownMenuItem className="flex flex-row justify-between w-full gap-8">
                 <div className="flex items-center gap-2">
                   <Icon name="Moon" />
@@ -141,5 +155,5 @@ export function TopBar() {
         {/* </Link> */}
       </div>
     </div>
-  )
+  );
 }

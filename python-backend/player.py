@@ -18,6 +18,7 @@ class AudioPlayer:
         self.queue: deque = deque()
         self.current_track: Optional[Dict[str, Any]] = None
         self.is_playing: bool = False
+        self.selected_libraries: List = []
 
         # --- Audio Engine State ---
         self.current_data: Optional[np.ndarray] = None
@@ -48,16 +49,17 @@ class AudioPlayer:
             return
 
         self.stop_playback_thread()
-        
+
         # Reset state immediately before starting new thread
         with self.position_lock:
             self.current_data = None
             self.position_frames = 0
             self.current_samplerate = 44100
-            
+
         self.current_track = self.queue.popleft()
         self.stop_event.clear()
-        self.playback_thread = threading.Thread(target=self._play_thread, daemon=True)
+        self.playback_thread = threading.Thread(
+            target=self._play_thread, daemon=True)
         self.playback_thread.start()
         self.is_playing = True
 
@@ -170,7 +172,7 @@ class AudioPlayer:
 
             if remaining < chunk_size:
                 # End of track
-                outdata[:remaining] = self.current_data[self.position_frames :]
+                outdata[:remaining] = self.current_data[self.position_frames:]
                 outdata[remaining:] = 0
                 self.position_frames += remaining
                 raise sd.CallbackStop()
@@ -178,7 +180,7 @@ class AudioPlayer:
                 # Normal chunk
                 outdata[:] = (
                     self.current_data[
-                        self.position_frames : self.position_frames + chunk_size
+                        self.position_frames: self.position_frames + chunk_size
                     ]
                     * self.volume
                 )
@@ -191,7 +193,8 @@ class AudioPlayer:
 
         try:
             # 1. Load the audio data
-            data, samplerate = self._load_track(self.current_track["ratingKey"])
+            data, samplerate = self._load_track(
+                self.current_track["ratingKey"])
 
             # 2. Update engine state
             self.current_data = data

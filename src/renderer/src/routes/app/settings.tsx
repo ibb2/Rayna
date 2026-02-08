@@ -1,254 +1,270 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
+import { PlexServer } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { Music, Check } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export const Route = createFileRoute('/app/settings')({
-  component: SettingsPage
-})
+export const Route = createFileRoute("/app/settings")({
+  component: SettingsPage,
+});
 
 export function SettingsPage() {
-  // const [volume, setVolume] = useState([70])
-  const [crossfade, setCrossfade] = useState([0])
+  const [selectedLibraries, setSelectedLibraries] = useState<any[] | null>(
+    null,
+  );
+  const [selectedServer, setSelectedServer] = useState<PlexServer | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [updated, setUpdated] = useState(false);
+
+  // queries
+  const { isPending, error, data } = useQuery({
+    queryKey: ["libraries"],
+    queryFn: () =>
+      fetch("http://127.0.0.1:34567/library/sections/all").then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      }),
+    staleTime: 30 * 60 * 1000,
+    retry: true,
+  });
+
+  const selectLibrary = async (library) => {
+    const exists = selectedLibraries?.some((l) =>
+      typeof l === "string" ? l === library.uuid : l.uuid === library.uuid,
+    );
+
+    let updated;
+    if (exists) {
+      updated = (selectedLibraries || []).filter((s) =>
+        typeof s === "string" ? s !== library.uuid : s.uuid !== library.uuid,
+      );
+    } else {
+      updated = [...(selectedLibraries || []), library];
+    }
+
+    setSelectedLibraries(updated);
+
+    // Persist selection in main process store
+    await window.api.auth
+      .selectLibraries(updated)
+      .catch((e) => console.error(e));
+
+    // Update backend immediately
+    (async () => {
+      try {
+        const token = await window.api.auth.getUserAccessToken();
+        await fetch(`http://127.0.0.1:34567/init`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            serverUrl: selectedServer?.connections[0].uri,
+            libraries: updated,
+          }),
+        });
+        setUpdated(true);
+      } catch (err) {
+        console.error("Failed to update selected libraries:", err);
+      }
+    })();
+
+    setTimeout(() => {
+      setUpdated(false);
+    }, 1500);
+  };
+
+  useEffect(() => {
+    const fetchSelectedServer = async () => {
+      try {
+        const server = await window.api.auth.getUserSelectedServer();
+        setSelectedServer(server);
+      } catch (error) {
+        console.error("Failed to fetch selected server:", error);
+      }
+    };
+    const fetchSelectedLibraries = async () => {
+      try {
+        const libs = await window.api.auth.getUserSelectedLibraries();
+        setSelectedLibraries(libs);
+      } catch (error) {
+        console.error("Failed to fetch selected libraries:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSelectedServer();
+    fetchSelectedLibraries();
+  }, []);
+
+  if (isPending)
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Spinner className="size-8" />
+      </div>
+    );
+
+  if (error) return "An error has occurred: " + error.message;
 
   return (
-    <div className="flex flex-col h-full bg-zinc-900">
-      <main className="flex-1 overflow-y-auto p-6">
+    <div className="flex flex-col overflow-y-auto gap-2 p-6 mb-20">
+      <div className="flex-1 overflow-y-auto scrollbar-hidden">
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
-            <h1 className="text-white text-3xl mb-2">Settings</h1>
-            <p className="text-zinc-400">Manage your pMusic preferences</p>
+            <h1 className="text-3xl mb-2">Settings</h1>
+            <p>Manage your preferences</p>
           </div>
 
-          <Separator className="bg-zinc-800" />
-
           {/* Account Section */}
-          <section className="space-y-4">
-            <h2 className="text-white text-xl">Account</h2>
-            <div className="bg-zinc-800/40 rounded-lg p-6 space-y-4">
+          {/* <section className="space-y-4">
+            <h2 className=" text-xl">Account</h2>
+            <div className=" rounded-lg p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-white">Username</div>
-                  <div className="text-zinc-400 text-sm">music_lover_2024</div>
+                  <div className="">Username</div>
+                  <div className=" text-sm">music_lover_2024</div>
                 </div>
-                <Button
-                  variant="outline"
-                  className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800"
-                >
+                <Button variant="outline" className="bg-transparent">
                   Edit Profile
                 </Button>
               </div>
-              <Separator className="bg-zinc-700" />
+              <Separator className="" />
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-white">Plex Server</div>
-                  <div className="text-zinc-400 text-sm">Connected to: home-server.local</div>
+                  <div className="">Plex Server</div>
+                  <div className=" text-sm">
+                    Connected to: home-server.local
+                  </div>
                 </div>
-                <Button
-                  variant="outline"
-                  className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800"
-                >
+                <Button variant="outline" className="bg-transparent">
                   Change Server
                 </Button>
               </div>
             </div>
-          </section>
-
-          <Separator className="bg-zinc-800" />
+          </section> */}
 
           {/* Playback Section */}
-          <section className="space-y-4">
-            <h2 className="text-white text-xl">Playback</h2>
-            <div className="bg-zinc-800/40 rounded-lg p-6 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="crossfade" className="text-white">
-                  Crossfade
-                </Label>
-                <div className="flex items-center gap-4">
-                  <Slider
-                    id="crossfade"
-                    value={crossfade}
-                    onValueChange={setCrossfade}
-                    max={12}
-                    step={1}
-                    className="flex-1"
-                  />
-                  <span className="text-zinc-400 text-sm w-12">{crossfade[0]}s</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="gapless" className="text-white">
-                    Gapless Playback
-                  </Label>
-                  <p className="text-zinc-400 text-sm">Eliminates silence between tracks</p>
-                </div>
-                <Switch id="gapless" />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="normalize" className="text-white">
-                    Normalize Volume
-                  </Label>
-                  <p className="text-zinc-400 text-sm">Set the same volume level for all songs</p>
-                </div>
-                <Switch id="normalize" defaultChecked />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="quality" className="text-white">
-                  Audio Quality
-                </Label>
-                <Select defaultValue="high">
-                  <SelectTrigger id="quality" className="bg-zinc-900 border-zinc-700 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-700 text-white">
-                    <SelectItem value="low">Low (96 kbps)</SelectItem>
-                    <SelectItem value="medium">Medium (160 kbps)</SelectItem>
-                    <SelectItem value="high">High (320 kbps)</SelectItem>
-                    <SelectItem value="lossless">Lossless (FLAC)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          {/* <section className="space-y-4">
+            <h2 className=" text-xl">Playback</h2>
+            <div className=" rounded-lg p-6">
+              <p className=" text-sm">Playback settings coming soon</p>
             </div>
-          </section>
-
-          <Separator className="bg-zinc-800" />
+          </section> */}
 
           {/* Display Section */}
-          <section className="space-y-4">
-            <h2 className="text-white text-xl">Display</h2>
-            <div className="bg-zinc-800/40 rounded-lg p-6 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="theme" className="text-white">
-                  Theme
-                </Label>
-                <Select defaultValue="dark">
-                  <SelectTrigger id="theme" className="bg-zinc-900 border-zinc-700 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-700 text-white">
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="auto">Auto</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="animations" className="text-white">
-                    Show Animations
-                  </Label>
-                  <p className="text-zinc-400 text-sm">Enable UI animations and transitions</p>
-                </div>
-                <Switch id="animations" defaultChecked />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="now-playing" className="text-white">
-                    Show Now Playing Bar
-                  </Label>
-                  <p className="text-zinc-400 text-sm">Display currently playing track info</p>
-                </div>
-                <Switch id="now-playing" defaultChecked />
-              </div>
+          {/* <section className="space-y-4">
+            <h2 className=" text-xl">Display</h2>
+            <div className=" rounded-lg p-6">
+              <p className=" text-sm">Display settings coming soon</p>
             </div>
-          </section>
-
-          <Separator className="bg-zinc-800" />
+          </section> */}
 
           {/* Library Section */}
           <section className="space-y-4">
-            <h2 className="text-white text-xl">Library</h2>
-            <div className="bg-zinc-800/40 rounded-lg p-6 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="library-path" className="text-white">
-                  Library Path
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="library-path"
-                    value="/media/music"
-                    className="bg-zinc-900 border-zinc-700 text-white"
-                    readOnly
-                  />
-                  <Button
-                    variant="outline"
-                    className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800"
-                  >
-                    Browse
-                  </Button>
+            <h2 className=" text-xl">Library</h2>
+            <div className="border border-zinc-300 dark:border-zinc-700 rounded-lg p-6 space-y-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row">
+                  <div className="w-full">
+                    <Label className=" mb-2 block">Selected Libraries</Label>
+                    <Label className=" mb-2 block text-sm text-muted-foreground">
+                      Choose which libraries to display in your app
+                    </Label>
+                  </div>
+                  {updated && (
+                    <div className=" items-center self-center">
+                      <p className="text-green-700 dark:text-green-300">
+                        Updated
+                      </p>
+                    </div>
+                  )}
                 </div>
+                {loading ? (
+                  <div className=" text-sm">Loading libraries...</div>
+                ) : data && data.length > 0 ? (
+                  <div className="space-y-2 mb-4">
+                    {data?.map((library) => (
+                      <>
+                        {library.type === "artist" ? (
+                          <Item
+                            variant={"outline"}
+                            size="sm"
+                            asChild
+                            onClick={() => selectLibrary(library)}
+                            className={cn(
+                              "hover:border-zinc-400 hover:bg-zinc-50/50",
+                              selectedLibraries?.some(
+                                (l) => l.uuid === library.uuid,
+                              )
+                                ? "border-zinc-500 bg-zinc-100/20 dark:bg-zinc-600/20"
+                                : "",
+                            )}
+                          >
+                            <div className="w-full h-full">
+                              <ItemMedia>
+                                <Music className="size-5" />
+                              </ItemMedia>
+                              <ItemContent>
+                                <ItemTitle className="justify-self-start">
+                                  {library.title}
+                                </ItemTitle>
+                              </ItemContent>
+                              <ItemActions>
+                                {selectedLibraries?.some(
+                                  (l) => l.uuid === library.uuid,
+                                ) && <Check className="size-4" />}
+                              </ItemActions>
+                            </div>
+                          </Item>
+                        ) : (
+                          <div></div>
+                        )}
+                      </>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm mb-4">No libraries selected</div>
+                )}
               </div>
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="auto-organize" className="text-white">
-                    Auto-organize Files
-                  </Label>
-                  <p className="text-zinc-400 text-sm">
-                    Automatically organize music files by artist and album
-                  </p>
-                </div>
-                <Switch id="auto-organize" />
-              </div>
+              {/* Framework for future library features */}
+              {/* <Separator className="bg-zinc-700" />
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="download-metadata" className="text-white">
-                    Download Metadata
-                  </Label>
-                  <p className="text-zinc-400 text-sm">
-                    Fetch album art and track info from online sources
-                  </p>
-                </div>
-                <Switch id="download-metadata" defaultChecked />
-              </div>
-
-              <Button className="bg-zinc-700 hover:bg-zinc-600 text-white">Scan Library</Button>
+              <div className="text-zinc-500 text-sm space-y-2">
+                <p className="">Additional library features coming soon:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Auto-organize Files</li>
+                  <li>Download Metadata</li>
+                  <li>Library Scan</li>
+                </ul>
+              </div> */}
             </div>
           </section>
 
-          <Separator className="bg-zinc-800" />
+          {/* <Separator className="" /> */}
 
           {/* Storage Section */}
-          <section className="space-y-4">
-            <h2 className="text-white text-xl">Storage</h2>
-            <div className="bg-zinc-800/40 rounded-lg p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-white">Cache Size</div>
-                  <div className="text-zinc-400 text-sm">2.4 GB of cached data</div>
-                </div>
-                <Button
-                  variant="outline"
-                  className="bg-transparent border-zinc-700 text-white hover:bg-zinc-800"
-                >
-                  Clear Cache
-                </Button>
-              </div>
+          {/* <section className="space-y-4">
+            <h2 className=" text-xl">Storage</h2>
+            <div className=" rounded-lg p-6">
+              <p className=" text-sm">Storage management coming soon</p>
             </div>
           </section>
 
-          <div className="pb-8"></div>
+          <div className="pb-8"></div> */}
         </div>
-      </main>
+      </div>
     </div>
-  )
+  );
 }

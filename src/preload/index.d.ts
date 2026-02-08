@@ -18,7 +18,9 @@ declare global {
         logout: () => Promise<boolean>
         getServers: () => Promise<any[]>
         selectServer: (server: any) => Promise<void>
+        selectLibraries: (libraries: any) => Promise<void>
         getUserSelectedServer: () => Promise<any | null>
+        getUserSelectedLibraries: () => Promise<any | null>
         getUserAccessToken: () => Promise<string>
         isServerSelected: () => Promise<boolean>
         closeLoopbackServer: () => Promise<void>

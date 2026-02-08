@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react'
-import { Spinner } from './ui/spinner'
+import { useEffect, useState } from "react";
+import { Spinner } from "./ui/spinner";
 
-const API_HEALTH_URL = 'http://127.0.0.1:34567/health'
+const API_HEALTH_URL = "http://127.0.0.1:34567/health";
 
-export function StartupLoading({ children }: { children: React.ReactNode }): React.ReactElement {
-  const [isReady, setIsReady] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [logs, setLogs] = useState<string>('')
+export function StartupLoading({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactElement {
+  const [isReady, setIsReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [logs, setLogs] = useState<string>("");
   // const [retryCount, setRetryCount] = useState(0)
   // const [lastCheck, setLastCheck] = useState<string>('')
 
@@ -15,66 +19,67 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
     // setLastCheck(new Date().toLocaleTimeString())
 
     try {
-      const response = await fetch(API_HEALTH_URL)
+      const response = await fetch(API_HEALTH_URL);
       if (response.ok) {
-        const accessToken = await window.api.auth.getUserAccessToken()
-        const server = await window.api.auth.getUserSelectedServer()
-
-        console.log('serverUrl:', server.connections)
+        const accessToken = await window.api.auth.getUserAccessToken();
+        const server = await window.api.auth.getUserSelectedServer();
+        const libraries = await window.api.auth.getUserSelectedLibraries();
 
         const response = await fetch(`http://127.0.0.1:34567/init`, {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            serverUrl: server.connections[0].uri
-          })
-        })
-        await response.json()
+            serverUrl: server.connections[0].uri,
+            libraries: libraries,
+          }),
+        });
+        await response.json();
 
-        setIsReady(true)
+        setIsReady(true);
 
-        return
+        return;
       }
     } catch (e: any) {
       // Fetch failed
     }
 
     // Check process status via IPC
-    const status = await window.api.server.getStatus()
-    const apiLogs = await window.api.server.getLogs()
-    setLogs(apiLogs)
+    const status = await window.api.server.getStatus();
+    const apiLogs = await window.api.server.getLogs();
+    setLogs(apiLogs);
 
-    if (status.startsWith('exited')) {
-      setError(`Background service failed to start (${status})`)
-      return
+    if (status.startsWith("exited")) {
+      setError(`Background service failed to start (${status})`);
+      return;
     }
 
     if (count >= 120) {
       // Increase to 2 minutes
-      setError('Connection timeout: Background service is taking too long to respond.')
-      return
+      setError(
+        "Connection timeout: Background service is taking too long to respond.",
+      );
+      return;
     }
 
-    const nextDelay = Math.min(delay * 1.5, 2000) // Slower backoff
-    setTimeout(() => checkApi(count + 1, nextDelay), delay)
-  }
+    const nextDelay = Math.min(delay * 1.5, 2000); // Slower backoff
+    setTimeout(() => checkApi(count + 1, nextDelay), delay);
+  };
 
   useEffect(() => {
-    checkApi()
-    console.log('isReady:', isReady)
-  }, [])
+    checkApi();
+  }, []);
 
   const handleRetry = () => {
-    setError(null)
-    setLogs('')
-    checkApi(0, 100)
-  }
+    setError(null);
+    setLogs("");
+    checkApi(0, 100);
+  };
 
   if (isReady) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   return (
@@ -93,7 +98,7 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
               </span>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setLogs('')}
+                  onClick={() => setLogs("")}
                   className="text-[10px] px-2 py-1 bg-white/5 hover:bg-white/10 rounded transition-colors text-white/50"
                 >
                   Clear
@@ -108,7 +113,7 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
             </div>
 
             <div className="w-full bg-black/80 p-4 rounded-lg border border-white/10 font-mono text-xs text-white/80 whitespace-pre-wrap overflow-auto shadow-inner flex-1">
-              {logs || 'Waiting for log output...'}
+              {logs || "Waiting for log output..."}
             </div>
           </div>
         ) : (
@@ -122,7 +127,9 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
             </div>
 
             <div className="flex flex-col items-center gap-3 text-center">
-              <h1 className="text-2xl font-semibold tracking-tight">Initialising Rayna</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Initialising Rayna
+              </h1>
               <p className="text-white/40 text-sm max-w-xs leading-relaxed">
                 Starting background services and preparing your music library.
               </p>
@@ -136,5 +143,5 @@ export function StartupLoading({ children }: { children: React.ReactNode }): Rea
         )}
       </div>
     </div>
-  )
+  );
 }

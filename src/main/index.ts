@@ -81,7 +81,6 @@ app.whenReady().then(async () => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
 
   const db = new DatabaseManager()
   ipcMain.handle('db:get', (_, key) => db.get(key))
@@ -119,11 +118,15 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('auth:selectServer', (_, server: PlexServer) => auth.selectServer(server))
 
+  ipcMain.handle('auth:selectLibraries', (_, libraries) => auth.selectLibraries(libraries))
+
   ipcMain.handle('auth:isServerSelected', () => auth.isServerSelected())
 
   ipcMain.handle('auth:getUserSelectedServer', () => auth.getUserSelectedServer())
 
   ipcMain.handle('auth:getUserAccessToken', () => auth.getUserAccessToken())
+
+  ipcMain.handle('auth:getUserSelectedLibraries', () => auth.getUserSelectedLibraries())
 
   ipcMain.handle('auth:closeLoopbackServer', () => auth.closeLoopbackServer())
 
@@ -200,7 +203,6 @@ function startApi(): void {
   const cwd = is.dev ? join(__dirname, '../../python-backend') : join(process.resourcesPath, 'api')
 
   const logPrefix = `[API Start] Binary: ${apiPath} | CWD: ${cwd}\n`
-  console.log(logPrefix)
   apiLogs += logPrefix
 
   // Check if file exists in production
@@ -232,7 +234,6 @@ function startApi(): void {
 
     apiProcess.stdout?.on('data', (data) => {
       const log = data.toString()
-      console.log(`API: ${log}`)
       apiLogs += log
     })
 
@@ -250,7 +251,6 @@ function startApi(): void {
 
     apiProcess.on('exit', (code, signal) => {
       const log = `API process exited with code ${code} and signal ${signal}\n`
-      console.log(log)
       apiLogs += log
       apiProcess = null
     })
