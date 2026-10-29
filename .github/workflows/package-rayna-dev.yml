@@ -1,0 +1,43 @@
+name: Package rayna-dev for macOS
+
+on:
+  push:
+    branches: ["experimental/port-to-expo-desktop"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            architecture: arm64
+          - os: macos-15-intel
+            architecture: x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci --no-audit --no-fund
+        working-directory: desktop
+      - run: npm run prebuild -- --no-install --platform=macos
+        working-directory: desktop
+      - run: pod install
+        working-directory: desktop/macos
+      - name: Build and package the app
+        run: bash desktop/scripts/package-macos-dev.sh
+        env:
+          RAYNA_BUILD_ARCH: ${{ matrix.architecture }}
+          RAYNA_DMG_OUTPUT_DIR: ${{ runner.temp }}/rayna-dev-dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rayna-dev-${{ matrix.architecture }}
+          path: ${{ runner.temp }}/rayna-dev-dist/*
+          if-no-files-found: error
+          retention-days: 14

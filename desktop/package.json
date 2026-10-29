@@ -1,0 +1,55 @@
+{
+  "name": "rayna-desktop",
+  "version": "0.4.0",
+  "homepage": "https://github.com/ibb2/Rayna",
+  "main": "index.ts",
+  "dependencies": {
+    "@noble/hashes": "1.7.2",
+    "expo": "55.0.31",
+    "expo-desktop": "1.0.6",
+    "expo-desktop-modules-core": "55.0.2",
+    "expo-desktop-stubs": "55.0.2",
+    "expo-status-bar": "55.0.6",
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-macos": "0.83.0",
+    "react-native-url-polyfill": "3.0.0",
+    "react-native-windows": "0.83.2"
+  },
+  "devDependencies": {
+    "@expo/image-utils": "0.8.17",
+    "@react-native-windows/find-dotnet-tools": "0.0.0-canary.3",
+    "@types/react": "~19.2.17",
+    "expo-desktop-metro-config": "~55.83.3",
+    "expo-desktop-template-bare-minimum": "55.83.10",
+    "patch-package": "^8.0.1",
+    "typescript": "~5.9.2"
+  },
+  "overrides": {
+    "react": "19.2.0",
+    "react-native": "0.83.10"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "react-native-windows"
+      ]
+    },
+    "install": {
+      "exclude": [
+        "react",
+        "react-native"
+      ]
+    }
+  },
+  "scripts": {
+    "postinstall": "patch-package",
+    "start": "expo start",
+    "macos": "expo-desktop run macos",
+    "windows": "expo-desktop run windows",
+    "prebuild": "expo-desktop prebuild",
+    "autolink-windows": "react-native autolink-windows",
+    "typecheck": "tsc --noEmit"
+  },
+  "private": true
+}

@@ -1,0 +1,155 @@
+name: Expo Desktop checks
+
+on:
+  push:
+    branches: ["experimental/port-to-expo-desktop"]
+  pull_request:
+    paths:
+      - "desktop/**"
+      - "vendor/bass/**"
+      - ".github/workflows/expo-desktop.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+      - run: bun install --frozen-lockfile
+      - run: bun test
+      - run: npm ci --no-audit --no-fund
+        working-directory: desktop
+      - run: npm run typecheck
+        working-directory: desktop
+      - name: Compile and exercise BASS
+        shell: bash
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/BassEngine.cpp desktop/native/audio/smoke.cpp -ldl -o /tmp/rayna-bass-smoke
+          python3 desktop/native/audio/test_stream.py /tmp/rayna-bass-smoke vendor/bass/linux/libs/x86_64
+      - name: Exercise stream proxy
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/proxy/StreamProxy.cpp desktop/native/audio/proxy/smoke.cpp -o /tmp/rayna-proxy-smoke
+          python3 desktop/native/audio/proxy/test_proxy.py /tmp/rayna-proxy-smoke /tmp/rayna-bass-smoke vendor/bass/linux/libs/x86_64
+      - name: Exercise legacy data migration
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror desktop/native/audio/session/SessionFile.cpp desktop/native/audio/session/smoke.cpp -o /tmp/rayna-session-smoke
+          /tmp/rayna-session-smoke "$(mktemp -d)"
+          gcc -O1 -DSQLITE_THREADSAFE=1 -c desktop/native/audio/sqlite/vendor/sqlite3.c -o /tmp/rayna-sqlite.o
+          g++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/sqlite/Database.cpp desktop/native/audio/sqlite/smoke.cpp /tmp/rayna-sqlite.o -ldl -o /tmp/rayna-sqlite-smoke
+          python3 desktop/native/audio/sqlite/test_migration.py /tmp/rayna-sqlite-smoke
+      - name: Exercise resumable transfers
+        run: |
+          g++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/transfer/Transfer.cpp desktop/native/audio/transfer/smoke.cpp -o /tmp/rayna-transfer-smoke
+          python3 desktop/native/audio/transfer/test_transfer.py /tmp/rayna-transfer-smoke
+
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci --no-audit --no-fund
+        working-directory: desktop
+      - run: npm run prebuild -- --no-install --platform=macos
+        working-directory: desktop
+      - run: pod install
+        working-directory: desktop/macos
+      - name: Build macOS application
+        working-directory: desktop
+        run: xcodebuild -workspace macos/Rayna.xcworkspace -scheme Rayna-macOS -configuration Debug -derivedDataPath "$RUNNER_TEMP/rayna-build" CODE_SIGNING_ALLOWED=NO build
+      - name: Exercise packaged BASS libraries
+        shell: bash
+        run: |
+          app="$(find "$RUNNER_TEMP/rayna-build/Build/Products" -name Rayna.app -type d -print -quit)"
+          test -n "$app"
+          for library in libbass.dylib libbassflac.dylib libbasshls.dylib libbassopus.dylib; do
+            test -f "$app/Contents/Resources/$library"
+          done
+          test -f "$app/Contents/Resources/cpp-httplib-LICENSE.txt"
+          clang++ -std=c++17 -Wall -Wextra -Werror desktop/native/audio/BassEngine.cpp desktop/native/audio/smoke.cpp -o /tmp/rayna-bass-smoke
+          python3 desktop/native/audio/test_stream.py /tmp/rayna-bass-smoke "$app/Contents/Resources"
+          clang++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/proxy/StreamProxy.cpp desktop/native/audio/proxy/smoke.cpp -o /tmp/rayna-proxy-smoke
+          python3 desktop/native/audio/proxy/test_proxy.py /tmp/rayna-proxy-smoke /tmp/rayna-bass-smoke "$app/Contents/Resources"
+      - name: Exercise legacy data migration
+        run: |
+          clang++ -std=c++17 -Wall -Wextra -Werror desktop/native/audio/session/SessionFile.cpp desktop/native/audio/session/smoke.cpp -o /tmp/rayna-session-smoke
+          /tmp/rayna-session-smoke "$(mktemp -d)"
+          clang -O1 -DSQLITE_THREADSAFE=1 -c desktop/native/audio/sqlite/vendor/sqlite3.c -o /tmp/rayna-sqlite.o
+          clang++ -std=c++17 -Wall -Wextra -Werror desktop/native/audio/sqlite/Database.cpp desktop/native/audio/sqlite/smoke.cpp /tmp/rayna-sqlite.o -o /tmp/rayna-sqlite-smoke
+          python3 desktop/native/audio/sqlite/test_migration.py /tmp/rayna-sqlite-smoke
+      - name: Exercise resumable transfers
+        run: |
+          clang++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/transfer/Transfer.cpp desktop/native/audio/transfer/smoke.cpp -o /tmp/rayna-transfer-smoke
+          python3 desktop/native/audio/transfer/test_transfer.py /tmp/rayna-transfer-smoke
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - run: npm ci --no-audit --no-fund
+        working-directory: desktop
+      - run: npm run prebuild -- --no-install --platform=windows
+        working-directory: desktop
+      - name: Build Windows application
+        run: npx expo-desktop run windows --no-install --no-bundler --no-launch --arch=x64
+        working-directory: desktop
+      - name: Compile BASS smoke test
+        shell: cmd
+        run: |
+          cl /nologo /std:c++17 /EHsc desktop\native\audio\BassEngine.cpp desktop\native\audio\smoke.cpp /Fe:rayna-bass-smoke.exe
+          if errorlevel 1 exit /b 1
+          cl /nologo /std:c++17 /EHsc desktop\native\audio\proxy\StreamProxy.cpp desktop\native\audio\proxy\smoke.cpp /Fe:rayna-proxy-smoke.exe /link ws2_32.lib
+          if errorlevel 1 exit /b 1
+      - name: Exercise packaged BASS libraries
+        shell: pwsh
+        run: |
+          $main = Get-ChildItem desktop/windows -Recurse -Filter bass.dll | Select-Object -First 1
+          if (-not $main) { throw 'The Windows build did not package bass.dll' }
+          foreach ($library in @('bass.dll', 'bassflac.dll', 'basshls.dll', 'bassopus.dll')) {
+            if (-not (Test-Path (Join-Path $main.DirectoryName $library))) { throw "Missing packaged BASS library: $library" }
+          }
+          if (-not (Test-Path (Join-Path $main.DirectoryName 'cpp-httplib-LICENSE.txt'))) { throw 'The cpp-httplib license was not packaged' }
+          python desktop/native/audio/test_stream.py rayna-bass-smoke.exe $main.DirectoryName
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python desktop/native/audio/proxy/test_proxy.py rayna-proxy-smoke.exe rayna-bass-smoke.exe $main.DirectoryName
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise legacy data migration
+        shell: cmd
+        run: |
+          cl /nologo /std:c++17 /EHsc desktop\native\audio\session\SessionFile.cpp desktop\native\audio\session\smoke.cpp /Fe:rayna-session-smoke.exe
+          if errorlevel 1 exit /b 1
+          rayna-session-smoke.exe "%TEMP%\rayna-session-test"
+          if errorlevel 1 exit /b 1
+          cl /nologo /O1 /DSQLITE_THREADSAFE=1 /c desktop\native\audio\sqlite\vendor\sqlite3.c /Fo:rayna-sqlite.obj
+          if errorlevel 1 exit /b 1
+          cl /nologo /std:c++17 /EHsc desktop\native\audio\sqlite\Database.cpp desktop\native\audio\sqlite\smoke.cpp rayna-sqlite.obj /Fe:rayna-sqlite-smoke.exe
+          if errorlevel 1 exit /b 1
+          python desktop\native\audio\sqlite\test_migration.py rayna-sqlite-smoke.exe
+          if errorlevel 1 exit /b 1
+      - name: Exercise resumable transfers
+        shell: cmd
+        run: |
+          cl /nologo /std:c++17 /EHsc desktop\native\audio\transfer\Transfer.cpp desktop\native\audio\transfer\smoke.cpp /Fe:rayna-transfer-smoke.exe
+          if errorlevel 1 exit /b 1
+          python desktop\native\audio\transfer\test_transfer.py rayna-transfer-smoke.exe
+          if errorlevel 1 exit /b 1

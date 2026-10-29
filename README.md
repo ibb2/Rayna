@@ -88,6 +88,9 @@
 
 Rayna is a 3<sup>rd</sup>-party music player for Plex, inspired by Spotify. Built with Electrobun it provides a UI built for the desktop.
 
+An experimental Expo Desktop port is being developed in [`desktop/`](desktop/README.md).
+It is not yet a feature-complete replacement for the current application.
+
 
 
 <!-- ### Built With
