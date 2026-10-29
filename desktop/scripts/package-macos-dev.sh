@@ -20,6 +20,7 @@ temporary_dir="$(mktemp -d "${TMPDIR:-/tmp}/rayna-dev.XXXXXXXX")"
 trap 'rm -rf "$temporary_dir"' EXIT
 
 xcodebuild \
+  -quiet \
   -workspace "$project_dir/macos/Rayna.xcworkspace" \
   -scheme Rayna-macOS \
   -configuration Release \

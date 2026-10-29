@@ -57,6 +57,8 @@ jobs:
       matrix:
         os: [macos-15, macos-15-intel]
     runs-on: ${{ matrix.os }}
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -70,7 +72,7 @@ jobs:
         working-directory: desktop/macos
       - name: Build macOS application
         working-directory: desktop
-        run: xcodebuild -workspace macos/Rayna.xcworkspace -scheme Rayna-macOS -configuration Debug -derivedDataPath "$RUNNER_TEMP/rayna-build" CODE_SIGNING_ALLOWED=NO build
+        run: xcodebuild -quiet -workspace macos/Rayna.xcworkspace -scheme Rayna-macOS -configuration Debug -derivedDataPath "$RUNNER_TEMP/rayna-build" CODE_SIGNING_ALLOWED=NO build
       - name: Exercise packaged BASS libraries
         shell: bash
         run: |

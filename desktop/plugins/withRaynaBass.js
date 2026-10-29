@@ -191,11 +191,15 @@ module.exports = function withRaynaBass(config) {
       const hostCompile = xml.includes('<ClCompile Include="MyApp.cpp" />')
         ? '<ClCompile Include="MyApp.cpp" />'
         : '<ClCompile Include="MyApp.cpp"></ClCompile>';
+      xml = xml.replace(
+        "<LanguageStandard>stdcpp17</LanguageStandard>",
+        "<LanguageStandard>stdcpp20</LanguageStandard>",
+      );
       xml = insertOnce(
         xml,
-        "<LanguageStandard>stdcpp17</LanguageStandard>",
+        "<LanguageStandard>stdcpp20</LanguageStandard>",
         "<ClCompile>",
-        "\n      <LanguageStandard>stdcpp17</LanguageStandard>",
+        "\n      <LanguageStandard>stdcpp20</LanguageStandard>",
       );
       xml = insertOnce(
         xml,

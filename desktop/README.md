@@ -19,7 +19,7 @@ npm ci
 npm run prebuild -- --no-install --platform=desktop
 ```
 
-On macOS, install Xcode and CocoaPods, run `pod install` in `macos`, and start
+On macOS, install Xcode 26.3 or newer and CocoaPods, run `pod install` in `macos`, and start
 the app with `npm run macos`. On Windows, install the React Native Windows
 toolchain required by Expo Desktop and run `npm run windows`. The template
 currently uses the v145 Windows C++ toolset. Native projects are generated and
