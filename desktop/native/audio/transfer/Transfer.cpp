@@ -2,6 +2,7 @@
 #define NOMINMAX
 #endif
 #include "Transfer.h"
+#include "../Utf8Path.h"
 
 #include <algorithm>
 #include <atomic>
@@ -281,10 +282,10 @@ Transfer::~Transfer() = default;
 std::string Transfer::defaultDirectory() {
 #ifdef _WIN32
   const auto* home = _wgetenv(L"USERPROFILE");
-  if (home) return (fs::path(home) / L"Music" / L"Rayna").u8string();
+  if (home) return utf8Path(fs::path(home) / L"Music" / L"Rayna");
 #else
   const auto* home = std::getenv("HOME");
-  if (home) return (fs::path(home) / "Music" / "Rayna").u8string();
+  if (home) return utf8Path(fs::path(home) / "Music" / "Rayna");
 #endif
   throw std::runtime_error("Cannot determine the default download directory");
 }
@@ -292,37 +293,37 @@ std::string Transfer::defaultDirectory() {
 std::string Transfer::legacyArtworkDirectory() {
 #ifdef _WIN32
   const auto* home = _wgetenv(L"USERPROFILE");
-  if (home) return (fs::path(home) / L".rayna" / L"artwork-cache").u8string();
+  if (home) return utf8Path(fs::path(home) / L".rayna" / L"artwork-cache");
 #else
   const auto* home = std::getenv("HOME");
-  if (home) return (fs::path(home) / ".rayna" / "artwork-cache").u8string();
+  if (home) return utf8Path(fs::path(home) / ".rayna" / "artwork-cache");
 #endif
   throw std::runtime_error("Cannot determine the legacy artwork cache directory");
 }
 
 DownloadPaths Transfer::paths(const std::string& directory, const std::string& server, const std::string& id, const std::string& title, const std::string& extension) {
-  const auto root = fs::u8path(directory);
+  const auto root = pathFromUtf8(directory);
   if (!root.is_absolute()) throw std::runtime_error("Choose an absolute download directory");
   const auto suffix = extension.size() > 1 && extension.size() < 12 && extension[0] == '.' &&
       std::all_of(extension.begin() + 1, extension.end(), [](unsigned char c) { return std::isalnum(c); }) ? extension : ".audio";
   const auto destination = root / ("server-" + safeSegment(server, 80)) / ("track-" + safeSegment(title, 80) + "-" + safeSegment(id, 80) + suffix);
   auto partial = destination;
   partial += ".partial";
-  return {destination.u8string(), partial.u8string()};
+  return {utf8Path(destination), utf8Path(partial)};
 }
 
 double Transfer::size(const std::string& path) {
   std::error_code error;
-  const auto status = fs::symlink_status(fs::u8path(path), error);
+  const auto status = fs::symlink_status(pathFromUtf8(path), error);
   if (error == std::errc::no_such_file_or_directory || (!error && !fs::exists(status))) return -1;
   if (error || fs::is_symlink(status) || !fs::is_regular_file(status)) throw std::runtime_error("Cannot inspect download file");
-  const auto bytes = fs::file_size(fs::u8path(path));
+  const auto bytes = fs::file_size(pathFromUtf8(path));
   if (bytes > 9007199254740991ULL) throw std::runtime_error("Download is too large");
   return static_cast<double>(bytes);
 }
 
 void Transfer::remove(const std::string& directory, const std::string& name) {
-  const auto root = fs::u8path(directory), path = fs::u8path(name);
+  const auto root = pathFromUtf8(directory), path = pathFromUtf8(name);
   if (!root.is_absolute() || !path.is_absolute()) throw std::runtime_error("Cannot remove a file outside the configured download directory");
   if (size(name) < 0) return;
   if (!fs::exists(root)) throw std::runtime_error("Cannot remove a file outside the configured download directory");
@@ -333,14 +334,14 @@ void Transfer::remove(const std::string& directory, const std::string& name) {
 }
 
 std::string Transfer::prepareDirectory(const std::string& directory) {
-  const auto root = fs::u8path(directory);
+  const auto root = pathFromUtf8(directory);
   if (!root.is_absolute()) throw std::runtime_error("Choose an absolute download directory");
   fs::create_directories(root);
-  return fs::canonical(root).u8string();
+  return utf8Path(fs::canonical(root));
 }
 
 std::optional<std::string> Transfer::rebase(const std::string& oldDirectory, const std::string& newDirectory, const std::string& name) {
-  const auto oldRoot = fs::u8path(oldDirectory), newRoot = fs::u8path(newDirectory), path = fs::u8path(name);
+  const auto oldRoot = pathFromUtf8(oldDirectory), newRoot = pathFromUtf8(newDirectory), path = pathFromUtf8(name);
   if (!oldRoot.is_absolute() || !newRoot.is_absolute() || !path.is_absolute()) throw std::runtime_error("Storage paths must be absolute");
   const auto root = fs::weakly_canonical(oldRoot);
   const auto parent = fs::weakly_canonical(path.parent_path());
@@ -350,14 +351,14 @@ std::optional<std::string> Transfer::rebase(const std::string& oldDirectory, con
   const auto status = fs::symlink_status(source, error);
   if (error && error != std::errc::no_such_file_or_directory) throw std::system_error(error, "Cannot inspect a download to move");
   if (fs::is_symlink(status) || (fs::exists(status) && !fs::is_regular_file(status))) throw std::runtime_error("Cannot move a download that is not a regular file");
-  return (fs::weakly_canonical(newRoot) / source.lexically_relative(root)).u8string();
+  return utf8Path(fs::weakly_canonical(newRoot) / source.lexically_relative(root));
 }
 
 bool Transfer::copyForMove(const std::string& oldDirectory, const std::string& newDirectory, const std::string& sourceName, const std::string& destinationName) {
   const auto mapped = rebase(oldDirectory, newDirectory, sourceName);
-  if (!mapped || fs::weakly_canonical(fs::u8path(*mapped)) != fs::weakly_canonical(fs::u8path(destinationName))) throw std::runtime_error("Invalid storage move destination");
-  const auto source = fs::u8path(sourceName), destination = fs::u8path(destinationName);
-  const auto root = fs::canonical(fs::u8path(newDirectory));
+  if (!mapped || fs::weakly_canonical(pathFromUtf8(*mapped)) != fs::weakly_canonical(pathFromUtf8(destinationName))) throw std::runtime_error("Invalid storage move destination");
+  const auto source = pathFromUtf8(sourceName), destination = pathFromUtf8(destinationName);
+  const auto root = fs::canonical(pathFromUtf8(newDirectory));
   const auto parent = fs::weakly_canonical(destination.parent_path());
   if (!isInside(root, parent / destination.filename())) throw std::runtime_error("Storage move destination is outside the selected directory");
   fs::create_directories(parent);
@@ -379,7 +380,7 @@ bool Transfer::copyForMove(const std::string& oldDirectory, const std::string& n
     output.flush();
     if (!output) throw std::runtime_error("Cannot flush a copied download");
     output.close(); input.close();
-    if (size(sourceName) != sourceSize || fs::last_write_time(source) != modified || size(temporary.u8string()) != sourceSize) throw std::runtime_error("A download changed while it was being copied");
+    if (size(sourceName) != sourceSize || fs::last_write_time(source) != modified || size(utf8Path(temporary)) != sourceSize) throw std::runtime_error("A download changed while it was being copied");
     flushFile(temporary);
     publish(temporary, destination);
     return true;
@@ -392,12 +393,12 @@ bool Transfer::copyForMove(const std::string& oldDirectory, const std::string& n
 
 bool Transfer::removeIfSame(const std::string& oldDirectory, const std::string& newDirectory, const std::string& sourceName, const std::string& destinationName) {
   const auto mapped = rebase(oldDirectory, newDirectory, sourceName);
-  if (!mapped || fs::weakly_canonical(fs::u8path(*mapped)) != fs::weakly_canonical(fs::u8path(destinationName))) throw std::runtime_error("Invalid storage cleanup destination");
+  if (!mapped || fs::weakly_canonical(pathFromUtf8(*mapped)) != fs::weakly_canonical(pathFromUtf8(destinationName))) throw std::runtime_error("Invalid storage cleanup destination");
   const auto sourceSize = size(sourceName);
   if (sourceSize < 0) return true;
   if (size(destinationName) != sourceSize) return false;
-  const auto modified = fs::last_write_time(fs::u8path(sourceName));
-  std::ifstream source(fs::u8path(sourceName), std::ios::binary), destination(fs::u8path(destinationName), std::ios::binary);
+  const auto modified = fs::last_write_time(pathFromUtf8(sourceName));
+  std::ifstream source(pathFromUtf8(sourceName), std::ios::binary), destination(pathFromUtf8(destinationName), std::ios::binary);
   if (!source || !destination) throw std::runtime_error("Cannot verify copied downloads");
   char left[64 * 1024], right[64 * 1024];
   while (source && destination) {
@@ -406,15 +407,15 @@ bool Transfer::removeIfSame(const std::string& oldDirectory, const std::string& 
   }
   if (!source.eof() || !destination.eof()) throw std::runtime_error("Cannot verify copied downloads");
   source.close(); destination.close();
-  if (size(sourceName) != sourceSize || fs::last_write_time(fs::u8path(sourceName)) != modified) return false;
+  if (size(sourceName) != sourceSize || fs::last_write_time(pathFromUtf8(sourceName)) != modified) return false;
   remove(oldDirectory, sourceName);
   return true;
 }
 
 double Transfer::download(const std::string& id, const std::string& url, const std::string& directory, const std::string& partialName, const std::string& destinationName, double maximumBytes) {
   if (id.empty() || !std::isfinite(maximumBytes) || maximumBytes < 0 || maximumBytes > 9007199254740991.0 || (url.rfind("https://", 0) != 0 && url.rfind("http://", 0) != 0)) throw std::runtime_error("Invalid download request");
-  const auto partial = fs::u8path(partialName), destination = fs::u8path(destinationName);
-  validatePaths(fs::u8path(directory), partial, destination);
+  const auto partial = pathFromUtf8(partialName), destination = pathFromUtf8(destinationName);
+  validatePaths(pathFromUtf8(directory), partial, destination);
   if (size(destinationName) >= 0) throw std::runtime_error("The download destination already exists");
   auto job = std::make_shared<Job>();
   job->destination = fs::weakly_canonical(destination);
@@ -429,7 +430,7 @@ double Transfer::download(const std::string& id, const std::string& url, const s
     if (impl->jobs[id] == job) impl->jobs.erase(id);
   });
   auto perform = [&](const fs::path& output, bool resume) {
-    const auto config = "url = " + configValue(url) + "\noutput = " + configValue(output.u8string()) +
+    const auto config = "url = " + configValue(url) + "\noutput = " + configValue(utf8Path(output)) +
         "\nfail\nlocation\nsilent\nmax-redirs = 5\nconnect-timeout = 15\nspeed-time = 30\nspeed-limit = 1\nproto = \"=http,https\"\nproto-redir = \"=http,https\"\n" + (resume ? "continue-at = \"-\"\n" : "") + (maximumBytes > 0 ? "max-filesize = " + std::to_string(static_cast<unsigned long long>(maximumBytes)) + "\n" : "");
     return runCurl(job, config);
   };
@@ -444,7 +445,7 @@ double Transfer::download(const std::string& id, const std::string& url, const s
     if (output != partial) { std::error_code ignored; fs::remove(output, ignored); }
     throw std::runtime_error(job->cancelled ? "Download paused" : "Download failed (curl error " + std::to_string(code) + ")");
   }
-  const auto bytes = size(output.u8string());
+  const auto bytes = size(utf8Path(output));
   if (bytes <= 0) throw std::runtime_error("The server returned an empty download");
   if (maximumBytes > 0 && bytes > maximumBytes) throw std::runtime_error("The download exceeds its size limit");
   {

@@ -44,11 +44,11 @@ jobs:
           g++ -std=c++17 -Wall -Wextra -Werror desktop/native/audio/session/SessionFile.cpp desktop/native/audio/session/smoke.cpp -o /tmp/rayna-session-smoke
           /tmp/rayna-session-smoke "$(mktemp -d)"
           gcc -O1 -DSQLITE_THREADSAFE=1 -c desktop/native/audio/sqlite/vendor/sqlite3.c -o /tmp/rayna-sqlite.o
-          g++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/sqlite/Database.cpp desktop/native/audio/sqlite/smoke.cpp /tmp/rayna-sqlite.o -ldl -o /tmp/rayna-sqlite-smoke
+          g++ -std=c++20 -Wall -Wextra -Werror -pthread desktop/native/audio/sqlite/Database.cpp desktop/native/audio/sqlite/smoke.cpp /tmp/rayna-sqlite.o -ldl -o /tmp/rayna-sqlite-smoke
           python3 desktop/native/audio/sqlite/test_migration.py /tmp/rayna-sqlite-smoke
       - name: Exercise resumable transfers
         run: |
-          g++ -std=c++17 -Wall -Wextra -Werror -pthread desktop/native/audio/transfer/Transfer.cpp desktop/native/audio/transfer/smoke.cpp -o /tmp/rayna-transfer-smoke
+          g++ -std=c++20 -Wall -Wextra -Werror -pthread desktop/native/audio/transfer/Transfer.cpp desktop/native/audio/transfer/smoke.cpp -o /tmp/rayna-transfer-smoke
           python3 desktop/native/audio/transfer/test_transfer.py /tmp/rayna-transfer-smoke
 
   macos:
@@ -111,7 +111,7 @@ jobs:
       - run: npm run prebuild -- --no-install --platform=windows
         working-directory: desktop
       - name: Build Windows application
-        run: npx expo-desktop run windows --no-install --no-bundler --no-launch --arch=x64
+        run: npx expo-desktop run windows --no-install --no-bundler --no-launch --arch=x64 --msbuildprops=WindowsTargetPlatformVersion=10.0.26100.0
         working-directory: desktop
       - name: Compile BASS smoke test
         shell: cmd

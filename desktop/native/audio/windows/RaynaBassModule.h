@@ -2,6 +2,7 @@
 
 #include "NativeModules.h"
 #include "../BassEngine.h"
+#include "../Utf8Path.h"
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
@@ -21,7 +22,7 @@ struct RaynaBass {
       std::vector<wchar_t> path(32768);
       const auto size = GetModuleFileNameW(nullptr, path.data(), static_cast<DWORD>(path.size()));
       if (!size || size == path.size()) throw std::runtime_error("The application directory is unavailable");
-      engine->initialize(std::filesystem::path(std::wstring(path.data(), size)).parent_path().u8string());
+      engine->initialize(rayna::utf8Path(std::filesystem::path(std::wstring(path.data(), size)).parent_path()));
       JSValueArray plugins;
       for (const auto& plugin : engine->plugins()) {
         plugins.push_back(JSValueObject{{"name", plugin.name}, {"loaded", plugin.loaded}, {"error", plugin.error}});

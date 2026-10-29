@@ -4,6 +4,7 @@
 #define BASSDEF(f) WINAPI f
 #include "../../../vendor/bass/macos/bass.h"
 #include "BassEngine.h"
+#include "Utf8Path.h"
 
 #include <algorithm>
 #include <chrono>
@@ -119,7 +120,7 @@ BassEngine::~BassEngine() { impl_->release(); }
 void BassEngine::initialize(const std::string& libraryDirectory, bool noSound) {
   const std::lock_guard<std::mutex> lock(impl_->mutex);
   if (impl_->initialized) return;
-  const auto directory = std::filesystem::u8path(libraryDirectory);
+  const auto directory = pathFromUtf8(libraryDirectory);
   impl_->library = loadLibrary(directory / kMainLibrary);
   if (!impl_->library) throw std::runtime_error("Unable to load the BASS library");
   try {
@@ -165,7 +166,7 @@ void BassEngine::openFile(const std::string& utf8Path) {
   impl_->requireInitialized();
   impl_->closeStream();
 #ifdef _WIN32
-  const auto widePath = std::filesystem::u8path(utf8Path).wstring();
+  const auto widePath = pathFromUtf8(utf8Path).wstring();
   impl_->stream = impl_->createFile(false, widePath.c_str(), 0, 0, BASS_UNICODE);
 #else
   impl_->stream = impl_->createFile(false, utf8Path.c_str(), 0, 0, 0);

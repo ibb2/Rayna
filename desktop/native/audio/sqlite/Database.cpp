@@ -2,6 +2,7 @@
 #define NOMINMAX
 #endif
 #include "Database.h"
+#include "../Utf8Path.h"
 #include "vendor/sqlite3.h"
 
 #include <atomic>
@@ -107,9 +108,9 @@ void snapshot(const std::filesystem::path& source, const std::filesystem::path& 
   sqlite3* from = nullptr;
   sqlite3* to = nullptr;
   try {
-    if (sqlite3_open_v2(source.u8string().c_str(), &from, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) throw std::runtime_error(message(from, "Cannot open the legacy database"));
+    if (sqlite3_open_v2(utf8Path(source).c_str(), &from, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) throw std::runtime_error(message(from, "Cannot open the legacy database"));
     sqlite3_busy_timeout(from, 5000);
-    if (sqlite3_open_v2(temporary.u8string().c_str(), &to, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_EXCLUSIVE, nullptr) != SQLITE_OK) throw std::runtime_error(message(to, "Cannot create a database snapshot"));
+    if (sqlite3_open_v2(utf8Path(temporary).c_str(), &to, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_EXCLUSIVE, nullptr) != SQLITE_OK) throw std::runtime_error(message(to, "Cannot create a database snapshot"));
     sqlite3_backup* backup = sqlite3_backup_init(to, "main", from, "main");
     if (!backup) throw std::runtime_error(message(to, "Cannot begin the database snapshot"));
     int result = SQLITE_OK;
@@ -169,7 +170,7 @@ bool Database::open() {
     snapshot(source, destination);
     imported = true;
   }
-  if (sqlite3_open_v2(destination.u8string().c_str(), &impl_->db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, nullptr) != SQLITE_OK) {
+  if (sqlite3_open_v2(utf8Path(destination).c_str(), &impl_->db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, nullptr) != SQLITE_OK) {
     const auto error = message(impl_->db, "Cannot open the desktop database");
     sqlite3_close_v2(impl_->db); impl_->db = nullptr;
     throw std::runtime_error(error);

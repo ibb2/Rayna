@@ -67,7 +67,7 @@ worker = threading.Thread(target=server.serve_forever, daemon=True)
 worker.start()
 try:
     with tempfile.TemporaryDirectory(prefix="rayna-transfer-") as temp:
-        root = pathlib.Path(temp) / "music"
+        root = pathlib.Path(temp) / ("music" if os.name == "nt" else "music-音楽")
         root.mkdir()
         for name in ("resume", "ignore", "error", "slow", "interrupt"):
             output = subprocess.check_output([executable, "paths", str(root), "../server", name, "../../song", ".flac"], text=True).splitlines()
