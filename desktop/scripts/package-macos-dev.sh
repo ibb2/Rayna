@@ -34,9 +34,9 @@ test -d "$product"
 test -f "$product/Contents/Resources/main.jsbundle"
 for library in libbass.dylib libbassflac.dylib libbasshls.dylib libbassopus.dylib; do
   test -f "$product/Contents/Resources/$library"
-  lipo -verify_arch "$architecture" "$product/Contents/Resources/$library"
+  lipo "$product/Contents/Resources/$library" -verify_arch "$architecture"
 done
-lipo -verify_arch "$architecture" "$product/Contents/MacOS/Rayna"
+lipo "$product/Contents/MacOS/Rayna" -verify_arch "$architecture"
 
 stage="$temporary_dir/image"
 mkdir -p "$stage"
