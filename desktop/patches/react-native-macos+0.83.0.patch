@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-macos/React/Fabric/Mounting/ComponentViews/ScrollView/RCTEnhancedScrollView.mm b/node_modules/react-native-macos/React/Fabric/Mounting/ComponentViews/ScrollView/RCTEnhancedScrollView.mm
+index 8c14f01..a81ef10 100644
+--- a/node_modules/react-native-macos/React/Fabric/Mounting/ComponentViews/ScrollView/RCTEnhancedScrollView.mm
++++ b/node_modules/react-native-macos/React/Fabric/Mounting/ComponentViews/ScrollView/RCTEnhancedScrollView.mm
+@@ -65,3 +65,21 @@
++#if TARGET_OS_OSX
++- (void)scrollWheel:(NSEvent *)event
++{
++  BOOL verticalGesture = fabs(event.scrollingDeltaY) > fabs(event.scrollingDeltaX);
++  BOOL horizontalOnly = self.contentSize.width > self.bounds.size.width &&
++      self.contentSize.height <= self.bounds.size.height + 1;
++  if (verticalGesture && horizontalOnly) {
++    NSView *ancestor = self.superview;
++    while (ancestor && ![ancestor isKindOfClass:[NSScrollView class]]) ancestor = ancestor.superview;
++    if (ancestor) {
++      [(NSScrollView *)ancestor scrollWheel:event];
++      return;
++    }
++  }
++  [super scrollWheel:event];
++}
++#endif
++
+ - (void)preserveContentOffsetWithBlock:(void (^)())block
+ {
+   if (!block) {

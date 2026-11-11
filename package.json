@@ -15,7 +15,6 @@
     "typecheck:bun": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "bun run typecheck:bun && bun run typecheck:web",
-    "test": "bun test",
     "electrobun": "bun scripts/run-electrobun.ts",
     "dev:renderer": "vite --host 127.0.0.1",
     "dev:desktop:live": "RAYNA_RENDERER_URL=http://127.0.0.1:5173 bun run electrobun -- dev",

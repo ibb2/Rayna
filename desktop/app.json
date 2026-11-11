@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Rayna",
+    "slug": "rayna",
+    "version": "0.4.0",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ib.rayna",
+      "infoPlist": {
+        "CFBundleName": "Rayna"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.ib.rayna"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "windows": {
+      "displayName": "Rayna",
+      "namespace": "Rayna",
+      "packageGuid": "b92b52df-a505-4faa-a2d6-6872f9d04bd3",
+      "projectGuid": "31daef49-9eda-4cfd-a495-64bf22c8a8a0"
+    },
+    "macos": {
+      "bundleIdentifier": "com.ib.rayna",
+      "entitlements": {
+        "com.apple.security.app-sandbox": false,
+        "com.apple.security.network.client": true,
+        "com.apple.security.cs.disable-library-validation": true
+      },
+      "infoPlist": {
+        "CFBundleName": "Rayna"
+      }
+    },
+    "experiments": {
+      "outOfTreePlatforms": true
+    },
+    "plugins": ["./plugins/withRaynaBass"],
+    "platforms": ["macos", "windows"]
+  }
+}
